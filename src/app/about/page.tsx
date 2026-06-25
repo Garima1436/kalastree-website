@@ -1,0 +1,166 @@
+import Link from 'next/link'
+
+export default function AboutPage() {
+  return (
+    <div style={{ background: 'var(--parchment)', minHeight: '80vh' }}>
+      {/* Hero */}
+      <div style={{ background: '#1B2E4A', padding: '4rem 5%', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', inset: 0, backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cg fill='%23B8860B' opacity='0.06'%3E%3Ccircle cx='10' cy='10' r='3'/%3E%3Ccircle cx='30' cy='30' r='3'/%3E%3Ccircle cx='50' cy='10' r='3'/%3E%3C/g%3E%3C/svg%3E\")", pointerEvents: 'none' }} />
+        <div style={{ maxWidth: 760, margin: '0 auto', position: 'relative', zIndex: 1 }}>
+          <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(2rem, 4vw, 3.2rem)', fontWeight: 700, color: '#fff', marginBottom: '1rem' }}>
+            India's Heritage is <span style={{ color: '#C94B1A' }}>Hidden.</span><br />Its Women are <span style={{ color: '#B8860B' }}>Invisible.</span>
+          </h1>
+          <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: '1.05rem', lineHeight: 1.85 }}>
+            KalaStree exists to change that — one verified GI product, one direct payment, one artisan at a time.
+          </p>
+        </div>
+      </div>
+
+      {/* Mission */}
+      <section id="gi-products" style={{ padding: '5rem 5%' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '5rem', alignItems: 'center' }}>
+          <div>
+            <p style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#3B5A2F', marginBottom: '0.6rem' }}>Our Mission</p>
+            <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.8rem, 3vw, 2.4rem)', fontWeight: 700, color: '#1B2E4A', marginBottom: '1.5rem' }}>
+              One Platform. <span style={{ color: '#C94B1A' }}>Three Transformations.</span>
+            </h2>
+            {[
+              { n: '01', title: 'Verified GI Marketplace', body: 'AI-verified product listings cross-checked with the DPIIT registry. Every product you buy is authentic, and every rupee goes directly to the artisan.' },
+              { n: '02', title: 'FinTech for Artisans', body: 'Digital wallets, Artisan Credit Scores, microloans, and sachet insurance — financial tools built specifically for women in GI value chains.' },
+              { n: '03', title: 'AI Knowledge Engine', body: 'A RAG chatbot trained on 478 GI products and 2,500 survey responses. Ask it anything about Indian crafts, regions, or artisan stories.' },
+            ].map(({ n, title, body }) => (
+              <div key={n} style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
+                <div style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.8rem', fontWeight: 700, color: '#C94B1A', flexShrink: 0, lineHeight: 1 }}>{n}</div>
+                <div>
+                  <div style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.15rem', fontWeight: 600, color: '#1B2E4A', marginBottom: 4 }}>{title}</div>
+                  <p style={{ fontSize: '0.9rem', color: '#5C5542', lineHeight: 1.75 }}>{body}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div style={{ background: '#F2E8D5', borderRadius: '12px 50% 12px 50%', border: '2.5px solid #B8860B', padding: '3rem', textAlign: 'center' }}>
+            <div style={{ fontSize: '3rem', marginBottom: '1.5rem' }}>🌾</div>
+            <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.3rem', fontStyle: 'italic', color: '#1B2E4A', lineHeight: 1.7 }}>
+              "When a woman artisan earns her first digital payment, she doesn't just gain income — she gains identity, visibility, and power."
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* About Garima + Research */}
+      <section id="research" style={{ padding: '5rem 5%', background: '#F2E8D5' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '300px 1fr', gap: '4rem', alignItems: 'center' }}>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ width: '100%', aspectRatio: '4/5', borderRadius: '12px 50% 12px 50%', border: '2.5px solid #B8860B', overflow: 'hidden', background: '#FDF6E3', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem' }}>
+              <img src="/garima.jpeg" alt="Garima Awasthi" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            </div>
+            <div style={{ background: '#C94B1A', color: '#fff', padding: '10px 18px', borderRadius: 8, fontSize: '0.78rem', fontWeight: 700, display: 'inline-block' }}>IIT Patna, 2025</div>
+          </div>
+          <div>
+            <p style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#3B5A2F', marginBottom: '0.6rem' }}>About the Founder</p>
+            <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.8rem, 3vw, 2.4rem)', fontWeight: 700, color: '#1B2E4A', marginBottom: '1rem' }}>
+              I'm <span style={{ color: '#C94B1A' }}>Garima Awasthi</span>
+            </h2>
+            <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.2rem', fontStyle: 'italic', color: '#1B2E4A', lineHeight: 1.7, marginBottom: '1rem' }}>
+              "I believe the hands creating India's heritage deserve global recognition, financial independence, and access to modern digital tools."
+            </p>
+            <p style={{ fontSize: '0.95rem', lineHeight: 1.85, color: '#5C5542', marginBottom: '1rem' }}>
+              I'm a PhD researcher, author, and women empowerment advocate at the <strong>Department of Computer Science & Engineering, IIT Patna</strong>. My research combines FinTech, women empowerment, and GI-tagged products to explore how traditional women artisans can grow in the digital economy.
+            </p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: '1.5rem' }}>
+              {['PhD Scholar', 'IIT Patna', 'FinTech Research', 'Women Empowerment', 'GI Products', 'Springer Author'].map(t => (
+                <span key={t} style={{ background: '#FDF6E3', border: '1px solid #D9C9A8', padding: '5px 14px', borderRadius: 30, fontSize: '0.75rem', fontWeight: 700, color: '#5C5542', letterSpacing: '0.05em' }}>{t}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Research Stats */}
+      <section style={{ padding: '5rem 5%', background: '#1B2E4A' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.8rem, 3vw, 2.4rem)', fontWeight: 700, color: '#fff', textAlign: 'center', marginBottom: '3rem' }}>
+            4 Years of Primary Evidence — <span style={{ color: '#B8860B' }}>Not Just a Pitch Deck</span>
+          </h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
+            {[
+              { n: '478', l: 'GI Tags Documented', s: '2004–2023, across 32 States', c: '#C94B1A' },
+              { n: '2,500', l: 'Women Surveyed', s: 'Primary data from 16 Indian states', c: '#3B5A2F' },
+              { n: '0.527', l: 'Avg FinTech Index', s: 'GI workers score 12–18% higher', c: '#B8860B' },
+              { n: '47.4%', l: 'Digital Literacy Gap', s: '#1 barrier to FinTech adoption', c: '#7A3B52' },
+              { n: '1', l: 'Springer Paper', s: 'ISMS 2025 · LNNS Series · Peer-reviewed', c: '#C94B1A' },
+              { n: '815', l: 'Lines of AI Code', s: 'RAG system · 100% local · 0 cloud dependency', c: '#B8860B' },
+            ].map(({ n, l, s, c }) => (
+              <div key={l} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(184,134,11,0.25)', borderRadius: 10, padding: '1.75rem 1.5rem', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 4, background: c }} />
+                <div style={{ fontFamily: "'EB Garamond', serif", fontSize: '2.5rem', fontWeight: 700, color: c, lineHeight: 1, marginBottom: 8 }}>{n}</div>
+                <div style={{ fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.7)', marginBottom: 4 }}>{l}</div>
+                <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)', lineHeight: 1.5 }}>{s}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Publications */}
+      <section id="publications" style={{ padding: '5rem 5%', background: 'var(--parchment)' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          <p style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#3B5A2F', marginBottom: '0.6rem' }}>Research Publications</p>
+          <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.8rem, 3vw, 2.4rem)', fontWeight: 700, color: '#1B2E4A', marginBottom: '2.5rem' }}>
+            Published <span style={{ color: '#C94B1A' }}>Work & Presentations</span>
+          </h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            {[
+              { venue: 'Springer LNNS · ISMS 2025', title: 'Building a Domain-Specific AI Research Assistant Using Llama 3.1 & Retrieval-Augmented Generation (RAG)', meta: 'Garima Awasthi, Dr. Rajiv Misra, Dr. Nutan Kumar Tomar · IIT Patna · 2025 · A local RAG pipeline making PhD research on GI products and women empowerment queryable with zero cloud dependency.' },
+              { venue: 'Primary Research · 2024–25', title: 'Empowering Women with FinTech Access in GI-Tagged Product Ecosystems — A Survey of 2,500 Women across 16 Indian States', meta: 'Garima Awasthi · IIT Patna · Ongoing PhD Research · Examining UPI, AEPS, microloan, marketplace and insurtech adoption among women artisans in GI value chains.' },
+              { venue: 'Conference Presentation', title: 'Multimodal Research Framework: Integrating Survey Data, GI Registry, and AI for Women\'s Empowerment Analysis', meta: 'Garima Awasthi · IIT Patna · 2025 · Presented at ISMS 2025 — combining CSV data, Excel multimodal reports, and RAG AI for comprehensive GI research.' },
+            ].map(({ venue, title, meta }) => (
+              <div key={title} style={{ background: '#FFFEF9', border: '1.5px solid #D9C9A8', borderLeft: '4px solid #C94B1A', borderRadius: '0 10px 10px 0', padding: '1.5rem 1.75rem' }}>
+                <div style={{ display: 'inline-block', background: '#1B2E4A', color: '#B8860B', fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', padding: '3px 10px', borderRadius: 3, marginBottom: 8 }}>{venue}</div>
+                <div style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.15rem', fontWeight: 600, color: '#1B2E4A', marginBottom: 6, lineHeight: 1.4 }}>{title}</div>
+                <div style={{ fontSize: '0.82rem', color: '#5C5542', lineHeight: 1.6 }}>{meta}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Memorial */}
+      <section id="tribute" style={{ background: '#1B2E4A', padding: '4rem 5%', borderTop: '1px solid rgba(184,134,11,0.2)', textAlign: 'center' }}>
+        <div style={{ maxWidth: 680, margin: '0 auto' }}>
+          <div style={{ fontSize: '2.5rem', marginBottom: '1rem', animation: 'diya 3s ease-in-out infinite', display: 'inline-block' }}>🪔</div>
+          <p style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#B8860B', marginBottom: '1rem' }}>In Loving Memory</p>
+          <h3 style={{ fontFamily: "'EB Garamond', serif", fontSize: '2rem', fontWeight: 700, color: '#fff', marginBottom: '0.5rem' }}>Late Shri <span style={{ color: '#B8860B' }}>S.B. Sharma</span></h3>
+          <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.1rem', fontStyle: 'italic', color: 'rgba(255,255,255,0.8)', lineHeight: 1.85, maxWidth: 580, margin: '1.5rem auto' }}>
+            "Every word I write, every woman's story I tell, every step I take — I take it hoping you are watching, and that it makes you proud."
+          </p>
+          <p style={{ fontSize: '0.88rem', color: 'rgba(255,255,255,0.5)', lineHeight: 1.75 }}>
+            — Garima, your daughter-in-law, with all her love.
+          </p>
+        </div>
+        <style>{`@keyframes diya { 0%,100%{transform:scale(1) rotate(-2deg)} 50%{transform:scale(1.08) rotate(2deg)} }`}</style>
+      </section>
+
+      {/* Contact */}
+      <section id="contact" style={{ padding: '5rem 5%' }}>
+        <div style={{ maxWidth: 700, margin: '0 auto', textAlign: 'center' }}>
+          <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.8rem, 3vw, 2.4rem)', fontWeight: 700, color: '#1B2E4A', marginBottom: '1rem' }}>
+            Research Enquiries & Collaborations
+          </h2>
+          <p style={{ color: '#5C5542', lineHeight: 1.8, marginBottom: '2rem' }}>
+            Researcher, journalist, NGO, policymaker, or craftsperson — every conversation about women's heritage and digital empowerment matters.
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center' }}>
+            <a href="mailto:garima@kalastree.com" style={{ color: '#C94B1A', fontWeight: 700, textDecoration: 'none', fontSize: '1.05rem' }}>✉️ garima@kalastree.com</a>
+            <span style={{ color: '#5C5542' }}>🏛️ IIT Patna, Department of Computer Science & Engineering</span>
+            <a href="https://www.linkedin.com/in/iammishu" target="_blank" rel="noopener" style={{ color: '#C94B1A', fontWeight: 700, textDecoration: 'none' }}>💼 linkedin.com/in/iammishu</a>
+          </div>
+          <div style={{ marginTop: '2.5rem' }}>
+            <Link href="/join" style={{ background: '#C94B1A', color: '#fff', padding: '14px 32px', borderRadius: 5, fontWeight: 700, textDecoration: 'none', marginRight: '1rem' }}>Join as Artisan →</Link>
+            <Link href="/shop" style={{ background: 'transparent', color: '#C94B1A', padding: '14px 32px', borderRadius: 5, border: '2px solid #C94B1A', fontWeight: 700, textDecoration: 'none' }}>Browse Products →</Link>
+          </div>
+        </div>
+      </section>
+    </div>
+  )
+}

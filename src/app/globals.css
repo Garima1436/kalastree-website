@@ -1,26 +1,123 @@
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Lato:wght@300;400;700&display=swap');
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --saffron: #C94B1A;
+  --saffron-light: #F5E8E0;
+  --saffron-dark: #8B3010;
+  --gold: #B8860B;
+  --gold-light: #F9F0D0;
+  --forest: #3B5A2F;
+  --forest-light: #E8F0E4;
+  --parchment: #FDF6E3;
+  --parchment-dark: #F2E8D5;
+  --navy: #1B2E4A;
+  --navy-light: #E8ECF2;
+  --mauve: #7A3B52;
+  --mauve-light: #F5EBF0;
+  --cream: #FFFEF9;
+  --text: #1A1A1A;
+  --text-muted: #5C5542;
+  --border: #D9C9A8;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-saffron: #C94B1A;
+  --color-saffron-light: #F5E8E0;
+  --color-saffron-dark: #8B3010;
+  --color-gold: #B8860B;
+  --color-gold-light: #F9F0D0;
+  --color-forest: #3B5A2F;
+  --color-forest-light: #E8F0E4;
+  --color-parchment: #FDF6E3;
+  --color-parchment-dark: #F2E8D5;
+  --color-navy: #1B2E4A;
+  --color-navy-light: #E8ECF2;
+  --color-mauve: #7A3B52;
+  --color-mauve-light: #F5EBF0;
+  --color-cream: #FFFEF9;
+  --color-text-muted: #5C5542;
+  --color-border: #D9C9A8;
+  --font-sans: 'Lato', sans-serif;
+  --font-serif: 'EB Garamond', serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--parchment);
+  color: var(--text);
+  font-family: 'Lato', sans-serif;
+  overflow-x: hidden;
+}
+
+.font-serif { font-family: 'EB Garamond', serif; }
+
+/* Folk pattern band */
+.folk-band {
+  width: 100%;
+  height: 6px;
+  background: linear-gradient(90deg, var(--saffron) 0%, var(--gold) 25%, var(--forest) 50%, var(--mauve) 75%, var(--saffron) 100%);
+}
+
+/* GI badge */
+.gi-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--gold-light);
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+/* Verified artisan badge */
+.verified-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--forest-light);
+  border: 1px solid var(--forest);
+  color: var(--forest);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+/* Scroll reveal */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Folk divider */
+.folk-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 2rem 0;
+}
+.folk-divider::before,
+.folk-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+.folk-divider span {
+  color: var(--gold);
+  font-size: 1rem;
+  letter-spacing: 6px;
 }
