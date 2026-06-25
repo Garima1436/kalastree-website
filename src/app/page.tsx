@@ -60,17 +60,49 @@ export default async function HomePage() {
           </div>
         </div>
 
-        {/* Hero right — artisan collage */}
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '4rem 0' }}>
-          <img
-            src="/artisan_collage.png"
-            alt="Women artisans from across India crafting GI-tagged products"
-            style={{ width: '100%', maxWidth: 560, borderRadius: 16, boxShadow: '0 12px 48px rgba(26,10,0,0.18)' }}
-          />
+        {/* Hero right — artisan collage 3D */}
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '3rem 0', perspective: '1200px' }}>
+          <div className="collage-3d-wrapper" style={{
+            position: 'relative',
+            transform: 'perspective(1200px) rotateY(-10deg) rotateX(4deg)',
+            transition: 'transform 0.5s ease, box-shadow 0.5s ease',
+            borderRadius: 20,
+            boxShadow: '24px 24px 64px rgba(26,10,0,0.28), -4px -4px 20px rgba(184,134,11,0.12), inset 0 0 0 1.5px rgba(184,134,11,0.25)',
+          }}>
+            {/* Decorative border glow */}
+            <div style={{
+              position: 'absolute', inset: -3, borderRadius: 22,
+              background: 'linear-gradient(135deg, #B8860B44, #C94B1A33, #B8860B44)',
+              zIndex: 0,
+            }} />
+            <img
+              src="/artisan_collage.png"
+              alt="Women artisans from across India crafting GI-tagged products"
+              style={{
+                position: 'relative', zIndex: 1,
+                width: '100%', maxWidth: 540,
+                borderRadius: 18,
+                display: 'block',
+                filter: 'drop-shadow(0 8px 24px rgba(26,10,0,0.2))',
+              }}
+            />
+            {/* Bottom reflection */}
+            <div style={{
+              position: 'absolute', bottom: -18, left: '8%', right: '8%',
+              height: 18, borderRadius: '0 0 50% 50%',
+              background: 'rgba(26,10,0,0.12)',
+              filter: 'blur(10px)',
+              zIndex: 0,
+            }} />
+          </div>
         </div>
 
         <style>{`
           @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.4)} }
+          .collage-3d-wrapper:hover {
+            transform: perspective(1200px) rotateY(-4deg) rotateX(2deg) scale(1.03) !important;
+            box-shadow: 36px 36px 80px rgba(26,10,0,0.32), -4px -4px 24px rgba(184,134,11,0.18), inset 0 0 0 1.5px rgba(184,134,11,0.35) !important;
+          }
           @media(max-width:768px){ .hero-section { grid-template-columns:1fr !important; } .hero-image { display:none !important; } }
         `}</style>
       </section>
