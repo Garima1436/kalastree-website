@@ -60,49 +60,58 @@ export default async function HomePage() {
           </div>
         </div>
 
-        {/* Hero right — artisan collage 3D */}
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '3rem 0', perspective: '1200px' }}>
-          <div className="collage-3d-wrapper" style={{
-            position: 'relative',
-            transform: 'perspective(1200px) rotateY(-10deg) rotateX(4deg)',
-            transition: 'transform 0.5s ease, box-shadow 0.5s ease',
+        {/* Hero right — artisan collage + animated craft cards */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', padding: '2rem 0' }}>
+
+          {/* Main straight image */}
+          <div style={{
             borderRadius: 20,
-            boxShadow: '24px 24px 64px rgba(26,10,0,0.28), -4px -4px 20px rgba(184,134,11,0.12), inset 0 0 0 1.5px rgba(184,134,11,0.25)',
+            overflow: 'hidden',
+            boxShadow: '0 16px 56px rgba(26,10,0,0.22)',
+            animation: 'fadeInUp 0.7s ease both',
           }}>
-            {/* Decorative border glow */}
-            <div style={{
-              position: 'absolute', inset: -3, borderRadius: 22,
-              background: 'linear-gradient(135deg, #B8860B44, #C94B1A33, #B8860B44)',
-              zIndex: 0,
-            }} />
             <img
               src="/artisan_collage.png"
               alt="Women artisans from across India crafting GI-tagged products"
-              style={{
-                position: 'relative', zIndex: 1,
-                width: '100%', maxWidth: 540,
-                borderRadius: 18,
-                display: 'block',
-                filter: 'drop-shadow(0 8px 24px rgba(26,10,0,0.2))',
-              }}
+              style={{ width: '100%', maxWidth: 520, display: 'block' }}
             />
-            {/* Bottom reflection */}
-            <div style={{
-              position: 'absolute', bottom: -18, left: '8%', right: '8%',
-              height: 18, borderRadius: '0 0 50% 50%',
-              background: 'rgba(26,10,0,0.12)',
-              filter: 'blur(10px)',
-              zIndex: 0,
-            }} />
+          </div>
+
+          {/* Craft cards that pop in one by one */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem', justifyContent: 'center', maxWidth: 520 }}>
+            {[
+              { craft: 'Blue Pottery', state: 'Rajasthan', color: '#1B6CA8', delay: '0.3s' },
+              { craft: 'Madhubani Painting', state: 'Bihar', color: '#C94B1A', delay: '0.55s' },
+              { craft: 'Kashmiri Embroidery', state: 'Jammu & Kashmir', color: '#2D6B4F', delay: '0.8s' },
+              { craft: 'Pattachitra', state: 'Odisha', color: '#B8860B', delay: '1.05s' },
+              { craft: 'Phulkari Embroidery', state: 'Punjab', color: '#8B3A8B', delay: '1.3s' },
+              { craft: 'Gond Painting', state: 'Madhya Pradesh', color: '#3B5A2F', delay: '1.55s' },
+              { craft: 'Block Printing', state: 'Rajasthan', color: '#8B4513', delay: '1.8s' },
+              { craft: 'Coir Craft', state: 'Kerala', color: '#2E7D32', delay: '2.05s' },
+            ].map(({ craft, state, color, delay }) => (
+              <div key={craft} className="craft-card" style={{
+                background: '#FFFEF9',
+                border: `1.5px solid ${color}33`,
+                borderLeft: `3px solid ${color}`,
+                borderRadius: 8,
+                padding: '6px 12px',
+                display: 'flex', flexDirection: 'column',
+                animation: `cardPopIn 0.45s cubic-bezier(0.34,1.56,0.64,1) both`,
+                animationDelay: delay,
+                boxShadow: `0 2px 12px ${color}22`,
+              }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color, fontFamily: "'Lato', sans-serif" }}>{craft}</span>
+                <span style={{ fontSize: '0.65rem', color: '#9A8E7A', letterSpacing: '0.05em' }}>{state}</span>
+              </div>
+            ))}
           </div>
         </div>
 
         <style>{`
           @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.4)} }
-          .collage-3d-wrapper:hover {
-            transform: perspective(1200px) rotateY(-4deg) rotateX(2deg) scale(1.03) !important;
-            box-shadow: 36px 36px 80px rgba(26,10,0,0.32), -4px -4px 24px rgba(184,134,11,0.18), inset 0 0 0 1.5px rgba(184,134,11,0.35) !important;
-          }
+          @keyframes fadeInUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+          @keyframes cardPopIn { from{opacity:0;transform:translateY(16px) scale(0.85)} to{opacity:1;transform:translateY(0) scale(1)} }
+          .craft-card { opacity: 0; }
           @media(max-width:768px){ .hero-section { grid-template-columns:1fr !important; } .hero-image { display:none !important; } }
         `}</style>
       </section>
