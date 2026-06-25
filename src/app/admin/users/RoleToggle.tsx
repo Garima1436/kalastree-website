@@ -10,12 +10,17 @@ export default function RoleToggle({ userId, currentRole }: { userId: string; cu
     const newRole = currentRole === 'admin' ? 'user' : 'admin'
     if (!confirm(`Change this user to "${newRole}"?`)) return
     setLoading(true)
-    await fetch('/api/admin/users', {
+    const res = await fetch('/api/admin/users', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userId, role: newRole }),
     })
     setLoading(false)
+    if (!res.ok) {
+      const data = await res.json()
+      alert('Failed: ' + (data.error || 'Unknown error'))
+      return
+    }
     router.refresh()
   }
 

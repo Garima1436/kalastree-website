@@ -19,14 +19,12 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: 'Cannot change your own role' }, { status: 400 })
   }
 
-  // Update profiles.role — works via "Admin update any profile" RLS policy
-  const { error: updateError } = await supabase.from('profiles').update({ role }).eq('id', userId)
+  // Use supabaseAdmin to bypass RLS — admin-only action already verified above
+  const { error: updateError } = await supabaseAdmin.from('profiles').update({ role }).eq('id', userId)
   if (updateError) return NextResponse.json({ error: updateError.message }, { status: 500 })
 
-  // Also sync user_metadata so navbar updates on next login (needs service role)
-  if (process.env.SUPABASE_SERVICE_ROLE_KEY && !process.env.SUPABASE_SERVICE_ROLE_KEY.includes('REPLACE_ME')) {
-    await supabaseAdmin.auth.admin.updateUserById(userId, { user_metadata: { role } })
-  }
+  // Sync user_metadata so navbar admin button updates on next login
+  await supabaseAdmin.auth.admin.updateUserById(userId, { user_metadata: { role } })
 
   return NextResponse.json({ success: true })
 }
