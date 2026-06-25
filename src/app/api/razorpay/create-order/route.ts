@@ -3,12 +3,11 @@ import Razorpay from 'razorpay'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID!,
-  key_secret: process.env.RAZORPAY_KEY_SECRET!,
-})
-
 export async function POST(req: NextRequest) {
+  const razorpay = new Razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID!,
+    key_secret: process.env.RAZORPAY_KEY_SECRET!,
+  })
   try {
     const body = await req.json()
     const { items, name, email, phone, address, city, state, pincode } = body
