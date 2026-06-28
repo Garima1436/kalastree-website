@@ -23,8 +23,8 @@ export default function JoinPage() {
 
     if (error) { setStatus('error'); return }
 
-    // Send confirmation + notification emails
-    await fetch('/api/send-email', {
+    // Send confirmation + notification emails (non-blocking — form success doesn't depend on email)
+    fetch('/api/send-email', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -32,7 +32,8 @@ export default function JoinPage() {
         craft: form.craft, state: form.state,
         story: `GI Product: ${form.gi_product || 'N/A'}\n\n${form.message}`,
       }),
-    })
+    }).then(r => { if (!r.ok) console.error('Email send failed:', r.status) })
+      .catch(err => console.error('Email send error:', err))
 
     setStatus('success')
   }

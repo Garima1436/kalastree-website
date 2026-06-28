@@ -8,7 +8,7 @@ export async function POST(req: Request) {
   const { name, email, craft, state, phone, story } = body
 
   try {
-    await Promise.all([
+    const [conf, notif] = await Promise.all([
       // Confirmation to applicant
       resend.emails.send({
         from: 'KalaStree <team@kalastree.com>',
@@ -77,6 +77,14 @@ export async function POST(req: Request) {
         `,
       }),
     ])
+
+    // Resend v6 returns { data, error } instead of throwing
+    if (conf.error) console.error('Confirmation email error:', conf.error)
+    if (notif.error) console.error('Notification email error:', notif.error)
+
+    if (conf.error && notif.error) {
+      return NextResponse.json({ ok: false, error: conf.error.message }, { status: 500 })
+    }
 
     return NextResponse.json({ ok: true })
   } catch (err) {
