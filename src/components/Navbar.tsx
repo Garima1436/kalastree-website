@@ -9,7 +9,7 @@ const NAV_LINKS = [
   { href: '/shop', label: 'Shop' },
   { href: '/artisans', label: 'Artisans' },
   { href: '/about#research', label: 'Research' },
-  { href: '/about#gi-products', label: 'GI Products' },
+  { href: '/gi-products', label: 'GI Products' },
 ]
 
 const TICKER_ITEMS = [
