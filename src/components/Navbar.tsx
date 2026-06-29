@@ -7,7 +7,7 @@ import { createClient } from '@/lib/supabase-browser'
 
 const NAV_LINKS = [
   { href: '/artisans', label: 'Artisans' },
-  { href: '/about#research', label: 'Research' },
+  { href: '/about', label: 'About Us' },
   { href: '/gi-products', label: 'GI Products' },
 ]
 
