@@ -6,10 +6,22 @@ import CartIcon from './CartIcon'
 import { createClient } from '@/lib/supabase-browser'
 
 const NAV_LINKS = [
-  { href: '/shop', label: 'Shop' },
   { href: '/artisans', label: 'Artisans' },
   { href: '/about#research', label: 'Research' },
   { href: '/gi-products', label: 'GI Products' },
+]
+
+const SHOP_CATEGORIES = [
+  { href: '/shop?category=textile', label: 'Textiles & Silk', icon: '🧵' },
+  { href: '/shop?category=handicraft', label: 'Handicrafts', icon: '🏺' },
+  { href: '/shop?category=agricultural', label: 'Agricultural', icon: '🌾' },
+  { href: '/shop?category=food', label: 'Food & Natural', icon: '🍯' },
+]
+
+const SHOP_STATES = [
+  'Rajasthan', 'Uttar Pradesh', 'West Bengal', 'Kashmir',
+  'Bihar', 'Odisha', 'Punjab', 'Kerala',
+  'Tamil Nadu', 'Gujarat', 'Madhya Pradesh', 'Karnataka',
 ]
 
 const TICKER_ITEMS = [
@@ -21,15 +33,21 @@ const TICKER_ITEMS = [
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [userDropdown, setUserDropdown] = useState(false)
+  const [shopDropdown, setShopDropdown] = useState(false)
+  const [mobileShopOpen, setMobileShopOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [user, setUser] = useState<any>(null)
   const [isAdmin, setIsAdmin] = useState(false)
   const dropdownRef = useRef<HTMLLIElement>(null)
+  const shopRef = useRef<HTMLLIElement>(null)
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setUserDropdown(false)
+      }
+      if (shopRef.current && !shopRef.current.contains(e.target as Node)) {
+        setShopDropdown(false)
       }
     }
     document.addEventListener('mousedown', handler)
@@ -99,6 +117,49 @@ export default function Navbar() {
 
           {/* Desktop nav */}
           <ul className="nav-desktop" style={{ display: 'flex', gap: '0.15rem', listStyle: 'none', alignItems: 'center', flexWrap: 'nowrap' }}>
+            {/* Shop dropdown */}
+            <li ref={shopRef} style={{ position: 'relative' }}>
+              <button onClick={() => setShopDropdown(v => !v)}
+                className="nav-link"
+                style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
+                Shop <span style={{ fontSize: '0.55rem', marginTop: 1 }}>{shopDropdown ? '▲' : '▼'}</span>
+              </button>
+              {shopDropdown && (
+                <div style={{ position: 'absolute', top: 'calc(100% + 12px)', left: 0, background: '#FFFEF9', border: '1.5px solid #D9C9A8', borderRadius: 12, boxShadow: '0 12px 40px rgba(26,10,0,0.14)', zIndex: 300, minWidth: 480, display: 'grid', gridTemplateColumns: '1fr 1fr', overflow: 'hidden' }}>
+                  {/* By Category */}
+                  <div style={{ padding: '1.25rem 1.5rem', borderRight: '1px solid #EDE0C8' }}>
+                    <div style={{ fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#B8860B', marginBottom: '0.75rem' }}>Shop by Category</div>
+                    {SHOP_CATEGORIES.map(({ href, label, icon }) => (
+                      <Link key={href} href={href} onClick={() => setShopDropdown(false)}
+                        style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', textDecoration: 'none', borderBottom: '1px solid #F2E8D5', color: '#1B2E4A', fontSize: '0.88rem', fontWeight: 600, fontFamily: "'Lato', sans-serif" }}
+                        onMouseEnter={e => (e.currentTarget.style.color = '#C94B1A')}
+                        onMouseLeave={e => (e.currentTarget.style.color = '#1B2E4A')}>
+                        <span>{icon}</span>{label}
+                      </Link>
+                    ))}
+                    <Link href="/shop" onClick={() => setShopDropdown(false)}
+                      style={{ display: 'block', marginTop: '0.75rem', fontSize: '0.78rem', fontWeight: 700, color: '#C94B1A', textDecoration: 'none' }}>
+                      View All Products →
+                    </Link>
+                  </div>
+                  {/* By State */}
+                  <div style={{ padding: '1.25rem 1.5rem', background: '#FDFAF5' }}>
+                    <div style={{ fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#B8860B', marginBottom: '0.75rem' }}>Shop by State</div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2px 8px' }}>
+                      {SHOP_STATES.map(state => (
+                        <Link key={state} href={`/shop?state=${encodeURIComponent(state)}`} onClick={() => setShopDropdown(false)}
+                          style={{ padding: '5px 0', textDecoration: 'none', color: '#5C5542', fontSize: '0.82rem', fontFamily: "'Lato', sans-serif", whiteSpace: 'nowrap' }}
+                          onMouseEnter={e => (e.currentTarget.style.color = '#C94B1A')}
+                          onMouseLeave={e => (e.currentTarget.style.color = '#5C5542')}>
+                          {state}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </li>
+
             {NAV_LINKS.map(({ href, label }) => (
               <li key={href}>
                 <Link href={href} className="nav-link">{label}</Link>
@@ -178,6 +239,38 @@ export default function Navbar() {
         {/* Mobile dropdown */}
         {menuOpen && (
           <div style={{ background: 'rgba(253,246,227,0.99)', borderTop: '1px solid #D9C9A8', padding: '1.25rem 5%', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+            {/* Shop expandable */}
+            <div>
+              <button onClick={() => setMobileShopOpen(v => !v)}
+                style={{ width: '100%', background: 'none', border: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontFamily: "'Lato', sans-serif", fontWeight: 700, color: '#1B2E4A', fontSize: '0.95rem', padding: '4px 0', borderBottom: '1px solid #EDE0C8', cursor: 'pointer' }}>
+                Shop <span style={{ fontSize: '0.7rem', color: '#9A8E7A' }}>{mobileShopOpen ? '▲' : '▼'}</span>
+              </button>
+              {mobileShopOpen && (
+                <div style={{ paddingTop: '0.75rem', paddingLeft: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  <div style={{ fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#B8860B', marginBottom: 2 }}>By Category</div>
+                  {SHOP_CATEGORIES.map(({ href, label, icon }) => (
+                    <Link key={href} href={href} onClick={() => { setMenuOpen(false); setMobileShopOpen(false) }}
+                      style={{ fontFamily: "'Lato', sans-serif", color: '#1B2E4A', textDecoration: 'none', fontSize: '0.88rem', padding: '3px 0' }}>
+                      {icon} {label}
+                    </Link>
+                  ))}
+                  <div style={{ fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#B8860B', marginTop: '0.5rem', marginBottom: 2 }}>By State</div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px 12px' }}>
+                    {SHOP_STATES.map(state => (
+                      <Link key={state} href={`/shop?state=${encodeURIComponent(state)}`} onClick={() => { setMenuOpen(false); setMobileShopOpen(false) }}
+                        style={{ color: '#5C5542', textDecoration: 'none', fontSize: '0.82rem', fontFamily: "'Lato', sans-serif" }}>
+                        {state}
+                      </Link>
+                    ))}
+                  </div>
+                  <Link href="/shop" onClick={() => { setMenuOpen(false); setMobileShopOpen(false) }}
+                    style={{ color: '#C94B1A', fontWeight: 700, textDecoration: 'none', fontSize: '0.82rem', marginTop: 4 }}>
+                    View All →
+                  </Link>
+                </div>
+              )}
+            </div>
+
             {NAV_LINKS.map(({ href, label }) => (
               <Link key={href} href={href} onClick={() => setMenuOpen(false)}
                 style={{ fontFamily: "'Lato', sans-serif", fontWeight: 700, color: '#1B2E4A', textDecoration: 'none', fontSize: '0.95rem', letterSpacing: '0.04em', padding: '4px 0', borderBottom: '1px solid #EDE0C8' }}>
