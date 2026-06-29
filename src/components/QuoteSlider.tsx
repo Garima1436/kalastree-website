@@ -116,10 +116,17 @@ export default function QuoteSlider() {
           style={{ width: 32, height: 32, borderRadius: '50%', border: '1.5px solid #D9C9A8', background: '#FFFEF9', cursor: 'pointer', color: '#9A8E7A', fontSize: '0.9rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           ‹
         </button>
-        {SLIDES.map((_, i) => (
-          <button key={i} onClick={() => { goTo(i, i > current ? 'next' : 'prev'); resetTimer() }}
-            style={{ width: i === current ? 22 : 7, height: 7, borderRadius: 4, background: i === current ? '#C94B1A' : '#D9C9A8', border: 'none', cursor: 'pointer', transition: 'all 0.3s ease', padding: 0 }} />
-        ))}
+
+        {SLIDES.length <= 5
+          ? SLIDES.map((_, i) => (
+              <button key={i} onClick={() => { goTo(i, i > current ? 'next' : 'prev'); resetTimer() }}
+                style={{ width: i === current ? 22 : 7, height: 7, borderRadius: 4, background: i === current ? '#C94B1A' : '#D9C9A8', border: 'none', cursor: 'pointer', transition: 'all 0.3s ease', padding: 0 }} />
+            ))
+          : <span style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.8rem', color: '#9A8E7A', minWidth: 40, textAlign: 'center' }}>
+              {current + 1} / {SLIDES.length}
+            </span>
+        }
+
         <button onClick={() => { next(); resetTimer() }}
           style={{ width: 32, height: 32, borderRadius: '50%', border: '1.5px solid #D9C9A8', background: '#FFFEF9', cursor: 'pointer', color: '#9A8E7A', fontSize: '0.9rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           ›
