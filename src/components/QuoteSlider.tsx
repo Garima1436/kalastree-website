@@ -1,26 +1,17 @@
 'use client'
 import { useState, useEffect, useRef, useCallback } from 'react'
 
-const SLIDES = [
-  {
-    photo: '/quote1.jpeg',
-    quote: "When a woman artisan earns her first digital payment, she doesn't just gain income — she gains identity, visibility, and power.",
-    name: 'Garima Awasthi',
-    role: 'Founder, KalaStree · PhD Scholar, IIT Patna',
-  },
-  {
-    photo: '/quote2.jpeg',
-    quote: "India has 478 GI-tagged products and millions of women behind them. Yet their names are unknown. KalaStree exists to change that.",
-    name: 'Garima Awasthi',
-    role: 'IIT Patna · FinTech & Women Empowerment Researcher',
-  },
-  {
-    photo: '/quote3.jpeg',
-    quote: "FinTech is not just a tool for the urban elite — it is the lifeline that women artisans in remote India have been waiting for.",
-    name: 'Garima Awasthi',
-    role: 'From the PhD Research, 2025 · Springer LNNS',
-  },
+const PHOTOS = [
+  '/quote1.jpeg',
+  '/quote2.jpeg',
+  '/quote3.jpeg',
+  '/quote4.jpeg',
+  '/quote5.jpeg',
+  '/quote6.jpeg',
+  '/quote7.jpeg',
 ]
+
+const FIXED_QUOTE = "When a woman artisan earns her first digital payment, she doesn't just gain income — she gains identity, visibility, and power."
 
 export default function QuoteSlider() {
   const [current, setCurrent] = useState(0)
@@ -36,11 +27,11 @@ export default function QuoteSlider() {
   }, [])
 
   const next = useCallback(() => {
-    goTo((current + 1) % SLIDES.length, 'next')
+    goTo((current + 1) % PHOTOS.length, 'next')
   }, [current, goTo])
 
   const prev = useCallback(() => {
-    goTo((current - 1 + SLIDES.length) % SLIDES.length, 'prev')
+    goTo((current - 1 + PHOTOS.length) % PHOTOS.length, 'prev')
   }, [current, goTo])
 
   const resetTimer = useCallback(() => {
@@ -67,65 +58,59 @@ export default function QuoteSlider() {
     touchStartX.current = null
   }
 
-  const slide = SLIDES[current]
-
   return (
     <div style={{ position: 'relative', userSelect: 'none' }}>
-      {/* Slide */}
+      {/* Sliding image */}
       <div
         key={key}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
         style={{
-          borderRadius: 16,
+          borderRadius: '16px 16px 0 0',
           overflow: 'hidden',
           border: '2px solid #D9C9A8',
-          background: '#FFFEF9',
+          borderBottom: 'none',
+          background: '#FDF6E3',
           animation: `${dir === 'next' ? 'slideFromRight' : 'slideFromLeft'} 0.45s cubic-bezier(0.25,0.8,0.25,1) both`,
         }}
       >
-        {/* Full photo */}
-        <div style={{ width: '100%', aspectRatio: '4/3', overflow: 'hidden' }}>
-          <img
-            src={slide.photo}
-            alt={slide.name}
-            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-          />
-        </div>
+        <img
+          src={PHOTOS[current]}
+          alt={`Slide ${current + 1}`}
+          style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'contain' }}
+        />
+      </div>
 
-        {/* Quote below photo */}
-        <div style={{ padding: '1.5rem 1.75rem 1.25rem', borderTop: '2px solid #B8860B' }}>
-          <div style={{ fontSize: '1.8rem', color: '#C94B1A', fontFamily: "'EB Garamond', serif", lineHeight: 0.8, marginBottom: '0.5rem', opacity: 0.5 }}>"</div>
-          <p style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(0.95rem, 1.6vw, 1.1rem)', fontStyle: 'italic', color: '#1B2E4A', lineHeight: 1.75, marginBottom: '1rem' }}>
-            {slide.quote}
-          </p>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ width: 28, height: 2, background: '#B8860B', borderRadius: 2, flexShrink: 0 }} />
-            <div>
-              <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#C94B1A', fontFamily: "'Lato', sans-serif" }}>{slide.name}</div>
-              <div style={{ fontSize: '0.7rem', color: '#9A8E7A', fontFamily: "'Lato', sans-serif", marginTop: 1 }}>{slide.role}</div>
-            </div>
+      {/* Fixed quote — never changes */}
+      <div style={{ border: '2px solid #D9C9A8', borderTop: '2px solid #B8860B', borderRadius: '0 0 16px 16px', background: '#FFFEF9', padding: '1.5rem 1.75rem 1.25rem' }}>
+        <div style={{ fontSize: '1.8rem', color: '#C94B1A', fontFamily: "'EB Garamond', serif", lineHeight: 0.8, marginBottom: '0.5rem', opacity: 0.5 }}>"</div>
+        <p style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(0.95rem, 1.6vw, 1.1rem)', fontStyle: 'italic', color: '#1B2E4A', lineHeight: 1.75, marginBottom: '1rem' }}>
+          {FIXED_QUOTE}
+        </p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ width: 28, height: 2, background: '#B8860B', borderRadius: 2, flexShrink: 0 }} />
+          <div>
+            <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#C94B1A', fontFamily: "'Lato', sans-serif" }}>Garima Awasthi</div>
+            <div style={{ fontSize: '0.7rem', color: '#9A8E7A', fontFamily: "'Lato', sans-serif", marginTop: 1 }}>Founder, KalaStree · PhD Scholar, IIT Patna</div>
           </div>
         </div>
       </div>
 
       {/* Controls */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, marginTop: '1rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginTop: '1rem' }}>
         <button onClick={() => { prev(); resetTimer() }}
           style={{ width: 32, height: 32, borderRadius: '50%', border: '1.5px solid #D9C9A8', background: '#FFFEF9', cursor: 'pointer', color: '#9A8E7A', fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           ‹
         </button>
-
-        {SLIDES.length <= 5
-          ? SLIDES.map((_, i) => (
+        {PHOTOS.length <= 7
+          ? PHOTOS.map((_, i) => (
               <button key={i} onClick={() => { goTo(i, i > current ? 'next' : 'prev'); resetTimer() }}
-                style={{ width: i === current ? 22 : 7, height: 7, borderRadius: 4, background: i === current ? '#C94B1A' : '#D9C9A8', border: 'none', cursor: 'pointer', transition: 'all 0.3s ease', padding: 0 }} />
+                style={{ width: i === current ? 20 : 6, height: 6, borderRadius: 4, background: i === current ? '#C94B1A' : '#D9C9A8', border: 'none', cursor: 'pointer', transition: 'all 0.3s ease', padding: 0 }} />
             ))
           : <span style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.8rem', color: '#9A8E7A', minWidth: 40, textAlign: 'center' }}>
-              {current + 1} / {SLIDES.length}
+              {current + 1} / {PHOTOS.length}
             </span>
         }
-
         <button onClick={() => { next(); resetTimer() }}
           style={{ width: 32, height: 32, borderRadius: '50%', border: '1.5px solid #D9C9A8', background: '#FFFEF9', cursor: 'pointer', color: '#9A8E7A', fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           ›
