@@ -117,6 +117,7 @@ export default function Navbar() {
 
           {/* Desktop nav */}
           <ul className="nav-desktop" style={{ display: 'flex', gap: '0.15rem', listStyle: 'none', alignItems: 'center', flexWrap: 'nowrap' }}>
+            <li><Link href="/" className="nav-link">Home</Link></li>
             {/* Shop dropdown */}
             <li ref={shopRef} style={{ position: 'relative' }}>
               <button onClick={() => setShopDropdown(v => !v)}
@@ -239,6 +240,10 @@ export default function Navbar() {
         {/* Mobile dropdown */}
         {menuOpen && (
           <div style={{ background: 'rgba(253,246,227,0.99)', borderTop: '1px solid #D9C9A8', padding: '1.25rem 5%', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+            <Link href="/" onClick={() => setMenuOpen(false)}
+              style={{ fontFamily: "'Lato', sans-serif", fontWeight: 700, color: '#1B2E4A', textDecoration: 'none', fontSize: '0.95rem', letterSpacing: '0.04em', padding: '4px 0', borderBottom: '1px solid #EDE0C8' }}>
+              Home
+            </Link>
             {/* Shop expandable */}
             <div>
               <button onClick={() => setMobileShopOpen(v => !v)}
