@@ -19,7 +19,7 @@ export default function AboutPage() {
 
       {/* Mission */}
       <section id="gi-products" style={{ padding: '5rem 5%' }}>
-        <div className="about-mission-grid" style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '5rem', alignItems: 'center' }}>
+        <div className="about-mission-grid" style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '5rem', alignItems: 'start' }}>
           <div>
             <p style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#3B5A2F', marginBottom: '0.6rem' }}>Our Mission</p>
             <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.8rem, 3vw, 2.4rem)', fontWeight: 700, color: '#1B2E4A', marginBottom: '1.5rem' }}>
@@ -39,6 +39,8 @@ export default function AboutPage() {
               </div>
             ))}
           </div>
+          {/* Right column — quote slider */}
+          <QuoteSlider />
         </div>
       </section>
 
@@ -66,7 +68,6 @@ export default function AboutPage() {
                 <span key={t} style={{ background: '#FDF6E3', border: '1px solid #D9C9A8', padding: '5px 14px', borderRadius: 30, fontSize: '0.75rem', fontWeight: 700, color: '#5C5542', letterSpacing: '0.05em' }}>{t}</span>
               ))}
             </div>
-            <QuoteSlider />
           </div>
         </div>
       </section>
