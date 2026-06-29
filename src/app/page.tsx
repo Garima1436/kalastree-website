@@ -135,9 +135,8 @@ export default async function HomePage() {
       {/* MISSION STRIP */}
       <section style={{ background: '#1B2E4A', padding: '4rem 5%', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', inset: 0, backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cg fill='%23B8860B' opacity='0.06'%3E%3Ccircle cx='10' cy='10' r='3'/%3E%3Ccircle cx='30' cy='10' r='3'/%3E%3Ccircle cx='50' cy='10' r='3'/%3E%3Ccircle cx='10' cy='30' r='3'/%3E%3Ccircle cx='30' cy='30' r='3'/%3E%3Ccircle cx='50' cy='30' r='3'/%3E%3Ccircle cx='10' cy='50' r='3'/%3E%3Ccircle cx='30' cy='50' r='3'/%3E%3Ccircle cx='50' cy='50' r='3'/%3E%3C/g%3E%3C/svg%3E\")", pointerEvents: 'none' }} />
-        <div style={{ maxWidth: 1280, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '2.5rem', position: 'relative', zIndex: 1 }}>
+        <div style={{ maxWidth: 860, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '2.5rem', position: 'relative', zIndex: 1 }}>
           {[
-            { icon: '💳', title: 'Direct Payment', body: 'Money goes straight to the artisan\'s account — no middlemen, no delays.' },
             { icon: '✅', title: 'GI Verified', body: 'Every product is cross-checked with the DPIIT GI Registry for authenticity.' },
             { icon: '🌾', title: 'Women First', body: '60–80% of GI sector work is done by women. We make sure they get paid for it.' },
             { icon: '🤖', title: 'AI Powered', body: 'Ask our RAG chatbot anything about GI crafts, regions, or product history.' },
