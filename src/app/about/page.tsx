@@ -54,7 +54,6 @@ export default function AboutPage() {
             <div style={{ width: '100%', aspectRatio: '4/5', borderRadius: '12px 50% 12px 50%', border: '2.5px solid #B8860B', overflow: 'hidden', background: '#FDF6E3', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem' }}>
               <img src="/garima.jpeg" alt="Garima Awasthi" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </div>
-            <div style={{ background: '#C94B1A', color: '#fff', padding: '10px 18px', borderRadius: 8, fontSize: '0.78rem', fontWeight: 700, display: 'inline-block' }}>IIT Patna, 2025</div>
           </div>
           <div>
             <p style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#3B5A2F', marginBottom: '0.6rem' }}>About the Founder</p>
