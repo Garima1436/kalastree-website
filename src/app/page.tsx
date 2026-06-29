@@ -86,9 +86,10 @@ export default async function HomePage() {
           .craft-card { opacity: 0; }
           @media(max-width:768px){
             .hero-section { grid-template-columns:1fr !important; padding: 2rem 5% !important; min-height: auto !important; }
-            .hero-image { display:none !important; }
-            .hero-section > div:first-child { padding-top: 2rem !important; padding-bottom: 2rem !important; }
-            .hero-stats { flex-direction: column !important; gap: 1rem !important; }
+            .hero-image { padding: 0 !important; }
+            .hero-image img { max-width: 100% !important; border-radius: 12px !important; }
+            .hero-section > div:first-child { padding-top: 2rem !important; padding-bottom: 1rem !important; }
+            .hero-stats { flex-direction: row !important; gap: 1.5rem !important; flex-wrap: wrap !important; }
           }
         `}</style>
       </section>
