@@ -77,34 +77,6 @@ export default async function HomePage() {
             />
           </div>
 
-          {/* Craft cards that pop in one by one */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem', justifyContent: 'center', maxWidth: 520 }}>
-            {[
-              { craft: 'Blue Pottery', state: 'Rajasthan', color: '#1B6CA8', delay: '0.3s' },
-              { craft: 'Madhubani Painting', state: 'Bihar', color: '#C94B1A', delay: '0.55s' },
-              { craft: 'Kashmiri Embroidery', state: 'Jammu & Kashmir', color: '#2D6B4F', delay: '0.8s' },
-              { craft: 'Pattachitra', state: 'Odisha', color: '#B8860B', delay: '1.05s' },
-              { craft: 'Phulkari Embroidery', state: 'Punjab', color: '#8B3A8B', delay: '1.3s' },
-              { craft: 'Gond Painting', state: 'Madhya Pradesh', color: '#3B5A2F', delay: '1.55s' },
-              { craft: 'Block Printing', state: 'Rajasthan', color: '#8B4513', delay: '1.8s' },
-              { craft: 'Coir Craft', state: 'Kerala', color: '#2E7D32', delay: '2.05s' },
-            ].map(({ craft, state, color, delay }) => (
-              <div key={craft} className="craft-card" style={{
-                background: '#FFFEF9',
-                border: `1.5px solid ${color}33`,
-                borderLeft: `3px solid ${color}`,
-                borderRadius: 8,
-                padding: '6px 12px',
-                display: 'flex', flexDirection: 'column',
-                animation: `cardPopIn 0.45s cubic-bezier(0.34,1.56,0.64,1) both`,
-                animationDelay: delay,
-                boxShadow: `0 2px 12px ${color}22`,
-              }}>
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, color, fontFamily: "'Lato', sans-serif" }}>{craft}</span>
-                <span style={{ fontSize: '0.65rem', color: '#9A8E7A', letterSpacing: '0.05em' }}>{state}</span>
-              </div>
-            ))}
-          </div>
         </div>
 
         <style>{`
