@@ -15,24 +15,11 @@ const FIXED_QUOTE = "When a woman artisan earns her first digital payment, she d
 
 export default function QuoteSlider() {
   const [current, setCurrent] = useState(0)
-  const [dir, setDir] = useState<'next' | 'prev'>('next')
-  const [key, setKey] = useState(0)
   const touchStartX = useRef<number | null>(null)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
-  const goTo = useCallback((idx: number, direction: 'next' | 'prev' = 'next') => {
-    setDir(direction)
-    setKey(k => k + 1)
-    setCurrent(idx)
-  }, [])
-
-  const next = useCallback(() => {
-    goTo((current + 1) % PHOTOS.length, 'next')
-  }, [current, goTo])
-
-  const prev = useCallback(() => {
-    goTo((current - 1 + PHOTOS.length) % PHOTOS.length, 'prev')
-  }, [current, goTo])
+  const next = useCallback(() => setCurrent(c => (c + 1) % PHOTOS.length), [])
+  const prev = useCallback(() => setCurrent(c => (c - 1 + PHOTOS.length) % PHOTOS.length), [])
 
   const resetTimer = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current)
@@ -60,30 +47,30 @@ export default function QuoteSlider() {
 
   return (
     <div style={{ position: 'relative', userSelect: 'none' }}>
-      {/* Sliding image */}
-      <div
-        key={key}
+      {/* Sliding track */}
+      <div style={{ borderRadius: '16px 16px 0 0', overflow: 'hidden', border: '2px solid #D9C9A8', borderBottom: 'none' }}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
-        style={{
-          borderRadius: '16px 16px 0 0',
-          overflow: 'hidden',
-          border: '2px solid #D9C9A8',
-          borderBottom: 'none',
-          background: '#FDF6E3',
-          animation: `${dir === 'next' ? 'slideFromRight' : 'slideFromLeft'} 0.45s cubic-bezier(0.25,0.8,0.25,1) both`,
-        }}
       >
-        <div style={{ width: '100%', height: 320, background: '#F2E8D5', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-          <img
-            src={PHOTOS[current]}
-            alt={`Slide ${current + 1}`}
-            style={{ maxWidth: '100%', maxHeight: '100%', width: 'auto', height: 'auto', display: 'block', objectFit: 'contain' }}
-          />
+        <div style={{
+          display: 'flex',
+          transform: `translateX(-${current * 100}%)`,
+          transition: 'transform 0.55s cubic-bezier(0.4, 0, 0.2, 1)',
+          willChange: 'transform',
+        }}>
+          {PHOTOS.map((photo, i) => (
+            <div key={i} style={{ minWidth: '100%', height: 320, background: '#F2E8D5', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, overflow: 'hidden' }}>
+              <img
+                src={photo}
+                alt={`Slide ${i + 1}`}
+                style={{ maxWidth: '100%', maxHeight: '100%', width: 'auto', height: 'auto', display: 'block', objectFit: 'contain' }}
+              />
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* Fixed quote — never changes */}
+      {/* Fixed quote */}
       <div style={{ border: '2px solid #D9C9A8', borderTop: '2px solid #B8860B', borderRadius: '0 0 16px 16px', background: '#FFFEF9', padding: '1.5rem 1.75rem 1.25rem' }}>
         <div style={{ fontSize: '1.8rem', color: '#C94B1A', fontFamily: "'EB Garamond', serif", lineHeight: 0.8, marginBottom: '0.5rem', opacity: 0.5 }}>"</div>
         <p style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(0.95rem, 1.6vw, 1.1rem)', fontStyle: 'italic', color: '#1B2E4A', lineHeight: 1.75, marginBottom: '1rem' }}>
@@ -104,31 +91,15 @@ export default function QuoteSlider() {
           style={{ width: 32, height: 32, borderRadius: '50%', border: '1.5px solid #D9C9A8', background: '#FFFEF9', cursor: 'pointer', color: '#9A8E7A', fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           ‹
         </button>
-        {PHOTOS.length <= 7
-          ? PHOTOS.map((_, i) => (
-              <button key={i} onClick={() => { goTo(i, i > current ? 'next' : 'prev'); resetTimer() }}
-                style={{ width: i === current ? 20 : 6, height: 6, borderRadius: 4, background: i === current ? '#C94B1A' : '#D9C9A8', border: 'none', cursor: 'pointer', transition: 'all 0.3s ease', padding: 0 }} />
-            ))
-          : <span style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.8rem', color: '#9A8E7A', minWidth: 40, textAlign: 'center' }}>
-              {current + 1} / {PHOTOS.length}
-            </span>
-        }
+        {PHOTOS.map((_, i) => (
+          <button key={i} onClick={() => { setCurrent(i); resetTimer() }}
+            style={{ width: i === current ? 20 : 6, height: 6, borderRadius: 4, background: i === current ? '#C94B1A' : '#D9C9A8', border: 'none', cursor: 'pointer', transition: 'all 0.3s ease', padding: 0 }} />
+        ))}
         <button onClick={() => { next(); resetTimer() }}
           style={{ width: 32, height: 32, borderRadius: '50%', border: '1.5px solid #D9C9A8', background: '#FFFEF9', cursor: 'pointer', color: '#9A8E7A', fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           ›
         </button>
       </div>
-
-      <style>{`
-        @keyframes slideFromRight {
-          from { opacity: 0; transform: translateX(80px); }
-          to   { opacity: 1; transform: translateX(0); }
-        }
-        @keyframes slideFromLeft {
-          from { opacity: 0; transform: translateX(-80px); }
-          to   { opacity: 1; transform: translateX(0); }
-        }
-      `}</style>
     </div>
   )
 }
