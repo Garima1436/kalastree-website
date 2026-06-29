@@ -18,7 +18,7 @@ export default function AboutPage() {
 
       {/* Mission */}
       <section id="gi-products" style={{ padding: '5rem 5%' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '5rem', alignItems: 'center' }}>
+        <div className="about-mission-grid" style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '5rem', alignItems: 'center' }}>
           <div>
             <p style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#3B5A2F', marginBottom: '0.6rem' }}>Our Mission</p>
             <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.8rem, 3vw, 2.4rem)', fontWeight: 700, color: '#1B2E4A', marginBottom: '1.5rem' }}>
@@ -49,7 +49,7 @@ export default function AboutPage() {
 
       {/* About Garima + Research */}
       <section id="research" style={{ padding: '5rem 5%', background: '#F2E8D5' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '300px 1fr', gap: '4rem', alignItems: 'center' }}>
+        <div className="about-research-grid" style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '300px 1fr', gap: '4rem', alignItems: 'center' }}>
           <div style={{ textAlign: 'center' }}>
             <div style={{ width: '100%', aspectRatio: '4/5', borderRadius: '12px 50% 12px 50%', border: '2.5px solid #B8860B', overflow: 'hidden', background: '#FDF6E3', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem' }}>
               <img src="/garima.jpeg" alt="Garima Awasthi" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -155,12 +155,19 @@ export default function AboutPage() {
             <span style={{ color: '#5C5542' }}>🏛️ IIT Patna, Department of Computer Science & Engineering</span>
             <a href="https://www.linkedin.com/in/iammishu" target="_blank" rel="noopener" style={{ color: '#C94B1A', fontWeight: 700, textDecoration: 'none' }}>💼 linkedin.com/in/iammishu</a>
           </div>
-          <div style={{ marginTop: '2.5rem' }}>
-            <Link href="/join" style={{ background: '#C94B1A', color: '#fff', padding: '14px 32px', borderRadius: 5, fontWeight: 700, textDecoration: 'none', marginRight: '1rem' }}>Join as Artisan →</Link>
+          <div className="about-cta-buttons" style={{ marginTop: '2.5rem', display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'center' }}>
+            <Link href="/join" style={{ background: '#C94B1A', color: '#fff', padding: '14px 32px', borderRadius: 5, fontWeight: 700, textDecoration: 'none' }}>Join as Artisan →</Link>
             <Link href="/shop" style={{ background: 'transparent', color: '#C94B1A', padding: '14px 32px', borderRadius: 5, border: '2px solid #C94B1A', fontWeight: 700, textDecoration: 'none' }}>Browse Products →</Link>
           </div>
         </div>
       </section>
+      <style>{`
+        @media(max-width:768px){
+          .about-mission-grid { grid-template-columns:1fr !important; gap:2rem !important; }
+          .about-research-grid { grid-template-columns:1fr !important; gap:2rem !important; }
+          .about-research-grid > div:first-child { max-width:260px; margin:0 auto; }
+        }
+      `}</style>
     </div>
   )
 }

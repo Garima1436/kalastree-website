@@ -252,7 +252,7 @@ export default function Navbar() {
         .nav-cta:hover { background:#8B3010; }
         .ticker-track { display:flex;white-space:nowrap;animation:ticker 40s linear infinite; }
         @keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
-        @media(max-width:1024px) { .nav-desktop{display:none!important;} .nav-mobile-right{display:flex!important;} }
+        @media(max-width:768px) { .nav-desktop{display:none!important;} .nav-mobile-right{display:flex!important;} }
       `}</style>
     </>
   )

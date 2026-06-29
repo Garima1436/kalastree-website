@@ -92,7 +92,7 @@ export default function JoinPage() {
           <form onSubmit={handleSubmit} style={{ background: '#FFFEF9', border: '1.5px solid #D9C9A8', borderRadius: 12, padding: '2.5rem' }}>
             <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.8rem', fontWeight: 600, color: '#1B2E4A', marginBottom: '2rem' }}>Artisan Application Form</h2>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+            <div className="join-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
               <div>
                 <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#5C5542', marginBottom: 8 }}>Your Name *</label>
                 <input required style={inp} value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="Meena Devi" />
@@ -103,7 +103,7 @@ export default function JoinPage() {
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+            <div className="join-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
               <div>
                 <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#5C5542', marginBottom: 8 }}>Phone</label>
                 <input style={inp} value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} placeholder="+91 98765 43210" />
@@ -138,6 +138,11 @@ export default function JoinPage() {
             {status === 'error' && <p style={{ color: '#C94B1A', textAlign: 'center', marginTop: '1rem', fontSize: '0.9rem' }}>Something went wrong. Please email garima@kalastree.com directly.</p>}
           </form>
         )}
+        <style>{`
+          @media(max-width:600px){
+            .join-form-grid { grid-template-columns:1fr !important; }
+          }
+        `}</style>
       </div>
     </div>
   )

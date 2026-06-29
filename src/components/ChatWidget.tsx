@@ -57,7 +57,7 @@ export default function ChatWidget() {
     <>
       {/* Chat panel */}
       {open && (
-        <div style={{
+        <div className="chat-panel" style={{
           position: 'fixed', bottom: 88, right: 24, zIndex: 1000,
           width: 360, height: 520,
           background: '#FFFEF9', border: '1.5px solid #D9C9A8',
@@ -162,6 +162,7 @@ export default function ChatWidget() {
 
       {/* Floating button */}
       <button
+        className="chat-fab"
         onClick={() => setOpen(v => !v)}
         aria-label="Open AI Chatbot"
         style={{
@@ -183,6 +184,10 @@ export default function ChatWidget() {
       <style>{`
         @keyframes chatSlideUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
         @keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
+        @media(max-width:480px){
+          .chat-panel { width:92vw !important; right:4vw !important; bottom:76px !important; height:70vh !important; }
+          .chat-fab { bottom:12px !important; right:12px !important; width:48px !important; height:48px !important; }
+        }
       `}</style>
     </>
   )

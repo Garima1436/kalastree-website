@@ -62,13 +62,18 @@ export default function Footer() {
         </div>
       </div>
 
-      <div style={{ maxWidth: 1280, margin: '0 auto', padding: '1.5rem 5%', borderTop: '1px solid rgba(255,255,255,0.08)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+      <div className="footer-bottom" style={{ maxWidth: 1280, margin: '0 auto', padding: '1.5rem 5%', borderTop: '1px solid rgba(255,255,255,0.08)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <span style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)' }}>© 2025 KalaStree · All Rights Reserved</span>
         <span style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)' }}>IIT Patna · Springer LNNS · ISMS 2025</span>
       </div>
 
       {/* Folk bottom band */}
       <div style={{ height: 6, background: 'linear-gradient(90deg, #C94B1A, #B8860B, #3B5A2F, #7A3B52, #C94B1A)' }} />
+      <style>{`
+        @media(max-width:600px){
+          .footer-bottom { flex-direction:column !important; align-items:center !important; text-align:center !important; }
+        }
+      `}</style>
     </footer>
   )
 }

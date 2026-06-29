@@ -21,7 +21,7 @@ export default async function HomePage() {
   return (
     <>
       {/* HERO */}
-      <section style={{ minHeight: '88vh', display: 'grid', gridTemplateColumns: '1fr 1fr', alignItems: 'center', padding: '0 5%', background: 'var(--parchment)', position: 'relative', overflow: 'hidden' }}>
+      <section className="hero-section" style={{ minHeight: '88vh', display: 'grid', gridTemplateColumns: '1fr 1fr', alignItems: 'center', padding: '0 5%', background: 'var(--parchment)', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(ellipse 60% 80% at 20% 60%, rgba(201,75,26,0.06) 0%, transparent 60%), radial-gradient(ellipse 80% 60% at 80% 40%, rgba(59,90,47,0.05) 0%, transparent 70%)', pointerEvents: 'none' }} />
 
         <div style={{ position: 'relative', zIndex: 2, paddingTop: '4rem', paddingBottom: '4rem' }}>
@@ -50,7 +50,7 @@ export default async function HomePage() {
           </div>
 
           {/* Stats */}
-          <div style={{ display: 'flex', gap: '2.5rem', paddingTop: '2rem', borderTop: '1.5px solid #D9C9A8' }}>
+          <div className="hero-stats" style={{ display: 'flex', gap: '2.5rem', paddingTop: '2rem', borderTop: '1.5px solid #D9C9A8' }}>
             {[['478', 'GI Tags'], ['2,500', 'Women Empowered'], ['16', 'States']].map(([n, l]) => (
               <div key={l}>
                 <div style={{ fontFamily: "'EB Garamond', serif", fontSize: '2rem', fontWeight: 700, color: '#C94B1A', lineHeight: 1 }}>{n}</div>
@@ -61,7 +61,7 @@ export default async function HomePage() {
         </div>
 
         {/* Hero right — artisan collage + animated craft cards */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', padding: '2rem 0' }}>
+        <div className="hero-image" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', padding: '2rem 0' }}>
 
           {/* Main straight image */}
           <div style={{
@@ -112,7 +112,12 @@ export default async function HomePage() {
           @keyframes fadeInUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
           @keyframes cardPopIn { from{opacity:0;transform:translateY(16px) scale(0.85)} to{opacity:1;transform:translateY(0) scale(1)} }
           .craft-card { opacity: 0; }
-          @media(max-width:768px){ .hero-section { grid-template-columns:1fr !important; } .hero-image { display:none !important; } }
+          @media(max-width:768px){
+            .hero-section { grid-template-columns:1fr !important; padding: 2rem 5% !important; min-height: auto !important; }
+            .hero-image { display:none !important; }
+            .hero-section > div:first-child { padding-top: 2rem !important; padding-bottom: 2rem !important; }
+            .hero-stats { flex-direction: column !important; gap: 1rem !important; }
+          }
         `}</style>
       </section>
 
