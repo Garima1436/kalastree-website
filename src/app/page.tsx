@@ -1,6 +1,6 @@
 import { supabase } from '@/lib/supabase'
 import type { Product, Artisan } from '@/lib/types'
-import ProductCard from '@/components/ProductCard'
+import ProductCarousel from '@/components/ProductCarousel'
 import ArtisanCard from '@/components/ArtisanCard'
 import CategoryGrid from '@/components/CategoryGrid'
 import Link from 'next/link'
@@ -127,9 +127,7 @@ export default async function HomePage() {
               <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.3rem' }}>Products coming soon. <Link href="/join" style={{ color: '#C94B1A' }}>Join as an artisan →</Link></p>
             </div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '1.25rem' }}>
-              {products.map(p => <ProductCard key={p.id} product={p} />)}
-            </div>
+            <ProductCarousel products={products} />
           )}
         </div>
       </section>
