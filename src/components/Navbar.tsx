@@ -184,9 +184,9 @@ export default function Navbar() {
                 {label}
               </Link>
             ))}
-            <Link href="/join" onClick={() => setMenuOpen(false)}
-              style={{ fontFamily: "'Lato', sans-serif", fontWeight: 700, color: '#3B5A2F', textDecoration: 'none', fontSize: '0.95rem', padding: '4px 0', borderBottom: '1px solid #EDE0C8' }}>
-              Sell on KalaStree
+            <Link href="/about#contact" onClick={() => setMenuOpen(false)}
+              style={{ fontFamily: "'Lato', sans-serif", fontWeight: 700, color: '#fff', background: '#C94B1A', textDecoration: 'none', fontSize: '0.95rem', padding: '8px 14px', borderRadius: 4, textAlign: 'center' }}>
+              Contact
             </Link>
             {user ? (
               <>
