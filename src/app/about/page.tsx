@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import QuoteSlider from '@/components/QuoteSlider'
 
 export default function AboutPage() {
   return (
@@ -38,12 +39,6 @@ export default function AboutPage() {
               </div>
             ))}
           </div>
-          <div style={{ background: '#F2E8D5', borderRadius: '12px 50% 12px 50%', border: '2.5px solid #B8860B', padding: '3rem', textAlign: 'center' }}>
-            <div style={{ fontSize: '3rem', marginBottom: '1.5rem' }}>🌾</div>
-            <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.3rem', fontStyle: 'italic', color: '#1B2E4A', lineHeight: 1.7 }}>
-              "When a woman artisan earns her first digital payment, she doesn't just gain income — she gains identity, visibility, and power."
-            </p>
-          </div>
         </div>
       </section>
 
@@ -71,6 +66,7 @@ export default function AboutPage() {
                 <span key={t} style={{ background: '#FDF6E3', border: '1px solid #D9C9A8', padding: '5px 14px', borderRadius: 30, fontSize: '0.75rem', fontWeight: 700, color: '#5C5542', letterSpacing: '0.05em' }}>{t}</span>
               ))}
             </div>
+            <QuoteSlider />
           </div>
         </div>
       </section>
