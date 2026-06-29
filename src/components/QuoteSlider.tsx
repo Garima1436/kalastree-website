@@ -74,11 +74,13 @@ export default function QuoteSlider() {
           animation: `${dir === 'next' ? 'slideFromRight' : 'slideFromLeft'} 0.45s cubic-bezier(0.25,0.8,0.25,1) both`,
         }}
       >
-        <img
-          src={PHOTOS[current]}
-          alt={`Slide ${current + 1}`}
-          style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'contain' }}
-        />
+        <div style={{ width: '100%', height: 320, background: '#F2E8D5', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+          <img
+            src={PHOTOS[current]}
+            alt={`Slide ${current + 1}`}
+            style={{ maxWidth: '100%', maxHeight: '100%', width: 'auto', height: 'auto', display: 'block', objectFit: 'contain' }}
+          />
+        </div>
       </div>
 
       {/* Fixed quote — never changes */}
