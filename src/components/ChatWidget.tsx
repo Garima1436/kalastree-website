@@ -37,13 +37,17 @@ export default function ChatWidget() {
     const q = input.trim()
     if (!q || loading) return
     setInput('')
+
+    // Snapshot history before adding the new user message (exclude the initial greeting)
+    const historySnapshot = messages.filter(m => !(m.role === 'ai' && m.text.startsWith('Namaste!')))
+
     setMessages(m => [...m, { role: 'user', text: q }])
     setLoading(true)
     try {
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: q }),
+        body: JSON.stringify({ question: q, history: historySnapshot }),
       })
       const data = await res.json()
       setMessages(m => [...m, { role: 'ai', text: data.answer || 'No answer returned.', sources: data.sources }])
