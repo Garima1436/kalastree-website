@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import Razorpay from 'razorpay'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
+import { supabaseAdmin } from '@/lib/supabase-admin'
 
 export async function POST(req: NextRequest) {
   const razorpay = new Razorpay({
@@ -24,7 +25,7 @@ export async function POST(req: NextRequest) {
 
     // Recalculate total server-side from real DB prices — never trust client amount
     const productIds = items.map((i: any) => i.id)
-    const { data: products, error: productError } = await supabase
+    const { data: products, error: productError } = await supabaseAdmin
       .from('products').select('id, price, stock').in('id', productIds)
     if (productError || !products) return NextResponse.json({ error: 'Could not load products' }, { status: 500 })
 
@@ -39,8 +40,8 @@ export async function POST(req: NextRequest) {
       return sum + Number(product.price) * item.qty
     }, 0)
 
-    // 1. Create order record in DB
-    const { data: order, error: orderError } = await supabase
+    // 1. Create order record in DB (admin client bypasses RLS — works for guests too)
+    const { data: order, error: orderError } = await supabaseAdmin
       .from('orders')
       .insert({
         user_id: user?.id ?? null,
@@ -57,7 +58,7 @@ export async function POST(req: NextRequest) {
     if (orderError) return NextResponse.json({ error: orderError.message }, { status: 500 })
 
     // 2. Create order items
-    await supabase.from('order_items').insert(
+    await supabaseAdmin.from('order_items').insert(
       items.map((item: any) => ({
         order_id: order.id,
         product_id: item.id,
