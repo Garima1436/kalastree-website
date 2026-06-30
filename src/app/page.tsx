@@ -3,9 +3,25 @@ import type { Product, Artisan } from '@/lib/types'
 import ProductCarousel from '@/components/ProductCarousel'
 import ArtisanCard from '@/components/ArtisanCard'
 import CategoryGrid from '@/components/CategoryGrid'
+import HeroCarousel from '@/components/HeroCarousel'
 import Link from 'next/link'
+import fs from 'fs'
+import path from 'path'
 
 export const revalidate = 60
+
+function getHeroImages(): string[] {
+  try {
+    const dir = path.join(process.cwd(), 'public', 'hero')
+    if (!fs.existsSync(dir)) return []
+    return fs.readdirSync(dir)
+      .filter(f => /\.(jpe?g|png|webp|avif|gif)$/i.test(f))
+      .sort()
+      .map(f => `/hero/${f}`)
+  } catch {
+    return []
+  }
+}
 
 async function getData() {
   const [{ data: products }, { data: artisans }] = await Promise.all([
@@ -17,6 +33,7 @@ async function getData() {
 
 export default async function HomePage() {
   const { products, artisans } = await getData()
+  const heroImages = getHeroImages()
 
   return (
     <>
@@ -60,23 +77,9 @@ export default async function HomePage() {
           </div>
         </div>
 
-        {/* Hero right — artisan collage + animated craft cards */}
-        <div className="hero-image" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', padding: '2rem 0' }}>
-
-          {/* Main straight image */}
-          <div style={{
-            borderRadius: 20,
-            overflow: 'hidden',
-            boxShadow: '0 16px 56px rgba(26,10,0,0.22)',
-            animation: 'fadeInUp 0.7s ease both',
-          }}>
-            <img
-              src="/artisan_collage.png"
-              alt="Women artisans from across India crafting GI-tagged products"
-              style={{ width: '100%', maxWidth: 520, display: 'block' }}
-            />
-          </div>
-
+        {/* Hero right — auto-scrolling image carousel */}
+        <div className="hero-image" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '2rem 0 2rem 1rem', animation: 'fadeInUp 0.7s ease both' }}>
+          <HeroCarousel images={heroImages} />
         </div>
 
         <style>{`
