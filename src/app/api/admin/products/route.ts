@@ -15,9 +15,9 @@ export async function POST(req: NextRequest) {
   if (error) return error
 
   const payload = await req.json()
-  const { error: dbError } = await supabase.from('products').insert(payload)
+  const { data, error: dbError } = await supabase.from('products').insert(payload).select('id').single()
   if (dbError) return NextResponse.json({ error: dbError.message }, { status: 500 })
-  return NextResponse.json({ success: true })
+  return NextResponse.json({ success: true, id: data.id })
 }
 
 export async function PATCH(req: NextRequest) {

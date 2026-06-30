@@ -3,6 +3,7 @@ import { useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase-browser'
 import { useRouter } from 'next/navigation'
 import type { Category } from '@/lib/types'
+import ProductMediaManager from '../ProductMediaManager'
 
 const CATEGORIES: Category[] = ['textile', 'handicraft', 'agricultural', 'food']
 
@@ -90,7 +91,8 @@ export default function ProductForm({ artisans, initialData, mode = 'new' }: Pro
     })
     const result = await res.json()
     if (!res.ok) { setError(result.error ?? 'Failed to save product'); setLoading(false) }
-    else { router.push('/admin/products'); router.refresh() }
+    else if (mode === 'edit') { router.push('/admin/products'); router.refresh() }
+    else { router.push(`/admin/products/${result.id}/edit`); router.refresh() }
   }
 
   const inputStyle: React.CSSProperties = {
@@ -114,6 +116,7 @@ export default function ProductForm({ artisans, initialData, mode = 'new' }: Pro
       </div>
 
       <div style={{ background: '#FFFEF9', border: '1.5px solid #D9C9A8', borderRadius: 12, padding: '2rem', maxWidth: 760 }}>
+        {mode === 'new' && <p style={{ fontSize: '0.8rem', color: '#9A8E7A', background: '#F8F2E8', borderRadius: 6, padding: '8px 12px', marginBottom: '1.25rem' }}>💡 After saving, you'll be taken to the edit page where you can upload images and videos.</p>}
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           {error && (
             <div style={{ background: '#FEE2E2', border: '1px solid #EF4444', borderRadius: 6, padding: '10px 14px', color: '#B91C1C', fontSize: '0.85rem' }}>
@@ -224,7 +227,7 @@ export default function ProductForm({ artisans, initialData, mode = 'new' }: Pro
               border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '0.95rem',
               cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1,
             }}>
-              {loading ? 'Saving…' : mode === 'edit' ? 'Save Changes →' : 'Add Product →'}
+              {loading ? 'Saving…' : mode === 'edit' ? 'Save Changes →' : 'Save & Add Media →'}
             </button>
             <button type="button" onClick={() => router.push('/admin/products')} style={{
               background: 'none', color: '#5C5542', padding: '12px 20px',
@@ -234,6 +237,10 @@ export default function ProductForm({ artisans, initialData, mode = 'new' }: Pro
             </button>
           </div>
         </form>
+
+        {mode === 'edit' && initialData?.id && (
+          <ProductMediaManager productId={initialData.id} />
+        )}
       </div>
     </div>
   )

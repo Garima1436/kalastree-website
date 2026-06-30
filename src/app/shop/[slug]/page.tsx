@@ -6,26 +6,114 @@ import type { Product } from '@/lib/types'
 import { CATEGORY_META } from '@/lib/types'
 import Link from 'next/link'
 
+interface MediaItem {
+  id: string
+  url: string
+  type: 'image' | 'video'
+  source: 'upload' | 'youtube'
+  sort_order: number
+}
+
+function extractYouTubeId(url: string): string | null {
+  const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|v\/))([^&\n?#]+)/)
+  return m ? m[1] : null
+}
+
+function MediaViewer({ item, productName }: { item: MediaItem; productName: string }) {
+  if (item.type === 'video' && item.source === 'youtube') {
+    const id = extractYouTubeId(item.url)
+    return (
+      <iframe
+        src={`https://www.youtube.com/embed/${id}?rel=0`}
+        title={productName}
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+        style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
+      />
+    )
+  }
+  if (item.type === 'video' && item.source === 'upload') {
+    return (
+      <video
+        src={item.url}
+        controls
+        style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block', background: '#000' }}
+      />
+    )
+  }
+  return <img src={item.url} alt={productName} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+}
+
+function MediaThumbnail({ item }: { item: MediaItem }) {
+  if (item.type === 'video' && item.source === 'youtube') {
+    const id = extractYouTubeId(item.url)
+    return (
+      <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+        <img src={`https://img.youtube.com/vi/${id}/hqdefault.jpg`} alt="YouTube" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.3)' }}>
+          <span style={{ fontSize: '1rem' }}>▶</span>
+        </div>
+      </div>
+    )
+  }
+  if (item.type === 'video' && item.source === 'upload') {
+    return (
+      <div style={{ width: '100%', height: '100%', background: '#1B2E4A', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <span style={{ fontSize: '1.2rem' }}>🎥</span>
+      </div>
+    )
+  }
+  return <img src={item.url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+}
+
 export default function ProductPage() {
   const { slug } = useParams<{ slug: string }>()
   const router = useRouter()
   const [product, setProduct] = useState<Product | null>(null)
+  const [media, setMedia] = useState<MediaItem[]>([])
   const [loading, setLoading] = useState(true)
+  const [activeIdx, setActiveIdx] = useState(0)
   const [qty, setQty] = useState(1)
   const [added, setAdded] = useState(false)
-  const [activeImg, setActiveImg] = useState(0)
 
   useEffect(() => {
-    supabase.from('products').select('*, artisan:artisans(*)').eq('slug', slug).single()
-      .then(({ data }) => { setProduct(data as unknown as Product); setLoading(false) })
+    const load = async () => {
+      const { data: prod } = await supabase
+        .from('products')
+        .select('*, artisan:artisans(*)')
+        .eq('slug', slug)
+        .single()
+      setProduct(prod as unknown as Product)
+
+      if (prod) {
+        const { data: mediaData } = await supabase
+          .from('product_media')
+          .select('*')
+          .eq('product_id', prod.id)
+          .order('sort_order', { ascending: true })
+          .order('created_at', { ascending: true })
+
+        if (mediaData && mediaData.length > 0) {
+          setMedia(mediaData as MediaItem[])
+        } else if (prod.images?.length > 0) {
+          // Fallback to images[] array for backward compat
+          setMedia(prod.images.map((url: string, i: number) => ({
+            id: `legacy-${i}`, url, type: 'image', source: 'upload', sort_order: i,
+          })))
+        }
+      }
+      setLoading(false)
+    }
+    load()
   }, [slug])
 
   const addToCart = () => {
     if (!product) return
     const cart = JSON.parse(localStorage.getItem('kalastree_cart') || '[]')
     const idx = cart.findIndex((i: { id: string }) => i.id === product.id)
+    const coverImg = media[0]?.type === 'image' ? media[0].url : (product.images?.[0] || '')
     if (idx >= 0) cart[idx].qty += qty
-    else cart.push({ id: product.id, name: product.name, price: product.price, image: product.images?.[0] || '', slug: product.slug, qty })
+    else cart.push({ id: product.id, name: product.name, price: product.price, image: coverImg, slug: product.slug, qty })
     localStorage.setItem('kalastree_cart', JSON.stringify(cart))
     window.dispatchEvent(new Event('cart_updated'))
     setAdded(true)
@@ -33,9 +121,15 @@ export default function ProductPage() {
   }
 
   if (loading) return <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#5C5542', fontSize: '1.1rem' }}>Loading...</div>
-  if (!product) return <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '1rem' }}><p>Product not found.</p><Link href="/shop" style={{ color: '#C94B1A' }}>← Back to Shop</Link></div>
+  if (!product) return (
+    <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '1rem' }}>
+      <p>Product not found.</p>
+      <Link href="/shop" style={{ color: '#C94B1A' }}>← Back to Shop</Link>
+    </div>
+  )
 
   const cat = CATEGORY_META[product.category]
+  const activeItem = media[activeIdx]
 
   return (
     <div style={{ background: 'var(--parchment)', minHeight: '80vh' }}>
@@ -50,26 +144,42 @@ export default function ProductPage() {
       </div>
 
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: '3rem 5%', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4rem', alignItems: 'start' }}>
-        {/* Images */}
+
+        {/* Media column */}
         <div>
-          <div style={{ borderRadius: 12, overflow: 'hidden', background: cat.bg, height: 420, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1.5px solid #D9C9A8', marginBottom: '1rem' }}>
-            {product.images?.[activeImg]
-              ? <img src={product.images[activeImg]} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              : <span style={{ fontSize: '5rem' }}>{cat.icon}</span>
-            }
+          {/* Main viewer */}
+          <div style={{ borderRadius: 12, overflow: 'hidden', background: activeItem?.type === 'video' ? '#000' : cat.bg, height: 420, border: '1.5px solid #D9C9A8', marginBottom: '0.75rem', position: 'relative' }}>
+            {activeItem ? (
+              <MediaViewer item={activeItem} productName={product.name} />
+            ) : (
+              <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <span style={{ fontSize: '5rem' }}>{cat.icon}</span>
+              </div>
+            )}
           </div>
-          {product.images?.length > 1 && (
-            <div style={{ display: 'flex', gap: 8 }}>
-              {product.images.map((img, i) => (
-                <button key={i} onClick={() => setActiveImg(i)} style={{ width: 72, height: 72, borderRadius: 8, overflow: 'hidden', border: `2px solid ${i === activeImg ? '#C94B1A' : '#D9C9A8'}`, cursor: 'pointer', background: 'none', padding: 0 }}>
-                  <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+
+          {/* Thumbnail strip */}
+          {media.length > 1 && (
+            <div style={{ display: 'flex', gap: 8, overflowX: 'auto', scrollbarWidth: 'none', paddingBottom: 4 }}>
+              {media.map((item, i) => (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveIdx(i)}
+                  style={{
+                    flexShrink: 0, width: 72, height: 72, borderRadius: 8,
+                    overflow: 'hidden', padding: 0,
+                    border: `2px solid ${i === activeIdx ? '#C94B1A' : '#D9C9A8'}`,
+                    cursor: 'pointer', background: 'none',
+                  }}
+                >
+                  <MediaThumbnail item={item} />
                 </button>
               ))}
             </div>
           )}
         </div>
 
-        {/* Details */}
+        {/* Details column */}
         <div>
           <div style={{ display: 'flex', gap: 8, marginBottom: '1rem', flexWrap: 'wrap' }}>
             <span className="gi-badge">✦ {product.gi_tag || 'GI Tagged'}</span>
@@ -85,8 +195,7 @@ export default function ProductPage() {
               <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#F2E8D5', border: '2px solid #B8860B', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                 {product.artisan.photo_url
                   ? <img src={product.artisan.photo_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  : <span>👩‍🎨</span>
-                }
+                  : <span>👩‍🎨</span>}
               </div>
               <div>
                 <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#1B2E4A' }}>by {product.artisan.name}</div>
@@ -144,7 +253,9 @@ export default function ProductPage() {
       <style>{`
         @media(max-width: 768px) {
           div[style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: 1fr !important; }
+          div[style*="gap: 4rem"] { gap: 2rem !important; }
         }
+        div[style*="overflow-x: auto"]::-webkit-scrollbar { display: none; }
       `}</style>
     </div>
   )
