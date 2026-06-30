@@ -7,8 +7,9 @@ interface HeroCarouselProps {
 }
 
 // All images are 1536×1024 (3:2 landscape). Card dimensions match that ratio.
-const CARD_H = 320
-const CARD_W = Math.round(CARD_H * (3 / 2)) // 480
+// JS uses desktop sizes for duration math; CSS overrides for mobile via .ks-card class.
+const CARD_H = 300
+const CARD_W = Math.round(CARD_H * (3 / 2)) // 450
 
 export default function HeroCarousel({ images }: HeroCarouselProps) {
   const [paused, setPaused] = useState(false)
@@ -69,6 +70,7 @@ export default function HeroCarousel({ images }: HeroCarouselProps) {
         {track.map((src, i) => (
           <div
             key={i}
+            className="ks-card"
             style={{
               flexShrink: 0,
               width: CARD_W,
@@ -96,6 +98,12 @@ export default function HeroCarousel({ images }: HeroCarouselProps) {
         @keyframes ksScroll {
           from { transform: translateX(0); }
           to   { transform: translateX(-50%); }
+        }
+        @media (max-width: 640px) {
+          .ks-card { width: 240px !important; height: 160px !important; border-radius: 10px !important; }
+        }
+        @media (min-width: 641px) and (max-width: 1024px) {
+          .ks-card { width: 320px !important; height: 213px !important; }
         }
       `}</style>
     </div>

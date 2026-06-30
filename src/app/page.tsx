@@ -38,61 +38,61 @@ export default async function HomePage() {
   return (
     <>
       {/* HERO */}
-      <section className="hero-section" style={{ minHeight: '88vh', display: 'grid', gridTemplateColumns: '1fr 1fr', alignItems: 'center', padding: '0 5%', background: 'var(--parchment)', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(ellipse 60% 80% at 20% 60%, rgba(201,75,26,0.06) 0%, transparent 60%), radial-gradient(ellipse 80% 60% at 80% 40%, rgba(59,90,47,0.05) 0%, transparent 70%)', pointerEvents: 'none' }} />
+      <section style={{ background: 'var(--parchment)', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(ellipse 70% 50% at 50% 30%, rgba(201,75,26,0.06) 0%, transparent 60%), radial-gradient(ellipse 60% 60% at 80% 80%, rgba(59,90,47,0.05) 0%, transparent 70%)', pointerEvents: 'none' }} />
 
-        <div style={{ position: 'relative', zIndex: 2, paddingTop: '4rem', paddingBottom: '4rem' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#E8F0E4', border: '1px solid #3B5A2F', borderRadius: 30, padding: '6px 16px', fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#3B5A2F', marginBottom: '1.5rem' }}>
+        {/* ── Text block – full width, centred ── */}
+        <div style={{ maxWidth: 860, margin: '0 auto', padding: '3.5rem 5% 2.5rem', textAlign: 'center', position: 'relative', zIndex: 2 }}>
+
+          <div className="hero-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#E8F0E4', border: '1px solid #3B5A2F', borderRadius: 30, padding: '6px 16px', fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#3B5A2F', marginBottom: '1.25rem' }}>
             <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#3B5A2F', animation: 'pulse 2s infinite' }} />
             478 GI Products · 16 States · 2,500 Women
           </div>
 
-          <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(2.8rem, 5vw, 4.2rem)', fontWeight: 700, color: '#C94B1A', lineHeight: 1.1, marginBottom: '0.4rem' }}>
+          <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(2.4rem, 6vw, 4.2rem)', fontWeight: 700, color: '#C94B1A', lineHeight: 1.08, marginBottom: '0.35rem' }}>
             KalaStree
           </h1>
-          <p style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.1rem, 2vw, 1.5rem)', fontStyle: 'italic', color: '#B8860B', marginBottom: '1.5rem' }}>
+          <p style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1rem, 2.5vw, 1.45rem)', fontStyle: 'italic', color: '#B8860B', marginBottom: '1.1rem' }}>
             "Heritage by Her"
           </p>
-          <p style={{ fontSize: '1.05rem', lineHeight: 1.8, color: '#5C5542', maxWidth: 500, marginBottom: '2rem' }}>
-            India's first GI-verified marketplace where every purchase goes <strong>directly to the woman who made it</strong> — no middlemen, no compromise.
+          <p className="hero-desc" style={{ fontSize: 'clamp(0.88rem, 1.8vw, 1.05rem)', lineHeight: 1.8, color: '#5C5542', maxWidth: 560, margin: '0 auto 1.75rem' }}>
+            India's first GI-verified marketplace where every purchase goes{' '}
+            <strong>directly to the woman who made it</strong> — no middlemen, no compromise.
           </p>
 
-          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '3rem' }}>
-            <Link href="/shop" style={{ background: '#C94B1A', color: '#fff', padding: '14px 30px', borderRadius: 5, fontFamily: "'Lato', sans-serif", fontSize: '0.9rem', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8, transition: 'background 0.2s' }}>
+          <div className="hero-btns" style={{ display: 'flex', gap: '0.9rem', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '2rem' }}>
+            <Link href="/shop" style={{ background: '#C94B1A', color: '#fff', padding: '12px 28px', borderRadius: 5, fontFamily: "'Lato', sans-serif", fontSize: '0.88rem', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
               Shop GI Products →
             </Link>
-            <Link href="/artisans" style={{ background: 'transparent', color: '#C94B1A', padding: '14px 30px', borderRadius: 5, border: '2px solid #C94B1A', fontFamily: "'Lato', sans-serif", fontSize: '0.9rem', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+            <Link href="/artisans" style={{ background: 'transparent', color: '#C94B1A', padding: '12px 28px', borderRadius: 5, border: '2px solid #C94B1A', fontFamily: "'Lato', sans-serif", fontSize: '0.88rem', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
               Meet the Artisans
             </Link>
           </div>
 
           {/* Stats */}
-          <div className="hero-stats" style={{ display: 'flex', gap: '2.5rem', paddingTop: '2rem', borderTop: '1.5px solid #D9C9A8' }}>
+          <div className="hero-stats" style={{ display: 'flex', gap: '2rem', justifyContent: 'center', paddingTop: '1.75rem', borderTop: '1.5px solid #D9C9A8', flexWrap: 'wrap' }}>
             {[['478', 'GI Tags'], ['2,500', 'Women Empowered'], ['16', 'States']].map(([n, l]) => (
-              <div key={l}>
-                <div style={{ fontFamily: "'EB Garamond', serif", fontSize: '2rem', fontWeight: 700, color: '#C94B1A', lineHeight: 1 }}>{n}</div>
-                <div style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#5C5542', marginTop: 4 }}>{l}</div>
+              <div key={l} style={{ textAlign: 'center' }}>
+                <div style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.5rem, 4vw, 2rem)', fontWeight: 700, color: '#C94B1A', lineHeight: 1 }}>{n}</div>
+                <div style={{ fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#5C5542', marginTop: 4 }}>{l}</div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Hero right — auto-scrolling image carousel */}
-        <div className="hero-image" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '2rem 0 2rem 1rem', animation: 'fadeInUp 0.7s ease both' }}>
+        {/* ── Carousel – full bleed below text ── */}
+        <div style={{ position: 'relative', zIndex: 2, paddingBottom: '3rem' }}>
           <HeroCarousel images={heroImages} />
         </div>
 
         <style>{`
           @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.4)} }
-          @keyframes fadeInUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
-          @keyframes cardPopIn { from{opacity:0;transform:translateY(16px) scale(0.85)} to{opacity:1;transform:translateY(0) scale(1)} }
-          .craft-card { opacity: 0; }
-          @media(max-width:768px){
-            .hero-section { grid-template-columns:1fr !important; padding: 2rem 5% !important; min-height: auto !important; }
-            .hero-image { padding: 0 !important; }
-            .hero-image img { max-width: 100% !important; border-radius: 12px !important; }
-            .hero-section > div:first-child { padding-top: 2rem !important; padding-bottom: 1rem !important; }
-            .hero-stats { flex-direction: row !important; gap: 1.5rem !important; flex-wrap: wrap !important; }
+          @media(max-width:480px){
+            .hero-badge { font-size:0.62rem !important; padding:5px 12px !important; }
+            .hero-desc  { margin-bottom:1.25rem !important; }
+            .hero-btns a { padding:10px 18px !important; font-size:0.8rem !important; width:100%; justify-content:center; }
+            .hero-btns  { flex-direction:column !important; align-items:stretch !important; gap:0.6rem !important; }
+            .hero-stats { gap:1.25rem !important; padding-top:1.25rem !important; }
           }
         `}</style>
       </section>
