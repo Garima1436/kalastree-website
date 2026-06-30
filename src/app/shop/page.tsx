@@ -6,17 +6,18 @@ import Link from 'next/link'
 
 export const revalidate = 60
 
-async function getProducts(category?: string, state?: string) {
+async function getProducts(category?: string, state?: string, q?: string) {
   let query = supabase.from('products').select('*, artisan:artisans(*)').order('created_at', { ascending: false })
   if (category) query = query.eq('category', category)
   if (state) query = query.eq('state', state)
+  if (q) query = query.or(`name.ilike.%${q}%,description.ilike.%${q}%,state.ilike.%${q}%,gi_tag.ilike.%${q}%,category.ilike.%${q}%`)
   const { data } = await query
   return (data ?? []) as Product[]
 }
 
-export default async function ShopPage({ searchParams }: { searchParams: Promise<{ category?: string; state?: string }> }) {
+export default async function ShopPage({ searchParams }: { searchParams: Promise<{ category?: string; state?: string; q?: string }> }) {
   const params = await searchParams
-  const products = await getProducts(params.category, params.state)
+  const products = await getProducts(params.category, params.state, params.q)
   const activeCategory = params.category as Category | undefined
 
   return (
@@ -29,10 +30,10 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
             <Link href="/" style={{ color: '#B8860B', textDecoration: 'none' }}>Home</Link> / Shop
           </p>
           <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 700, color: '#fff' }}>
-            {activeCategory ? CATEGORY_META[activeCategory].label : 'All GI Products'}
+            {params.q ? <>Results for "<span style={{ color: '#B8860B' }}>{params.q}</span>"</> : activeCategory ? CATEGORY_META[activeCategory].label : 'All GI Products'}
           </h1>
           <p style={{ color: 'rgba(255,255,255,0.65)', marginTop: 8, fontSize: '1rem' }}>
-            {products.length} product{products.length !== 1 ? 's' : ''} · All GI-verified · Direct from artisans
+            {products.length} product{products.length !== 1 ? 's' : ''}{params.q ? '' : ' · All GI-verified · Direct from artisans'}
           </p>
         </div>
       </div>

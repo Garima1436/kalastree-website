@@ -3,6 +3,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useState, useEffect, useRef } from 'react'
 import CartIcon from './CartIcon'
+import NavSearch from './NavSearch'
 import { createClient } from '@/lib/supabase-browser'
 
 const NAV_LINKS = [
@@ -36,6 +37,7 @@ export default function Navbar() {
   const [shopDropdown, setShopDropdown] = useState(false)
   const [mobileShopOpen, setMobileShopOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
   const [user, setUser] = useState<any>(null)
   const [isAdmin, setIsAdmin] = useState(false)
   const dropdownRef = useRef<HTMLLIElement>(null)
@@ -167,7 +169,17 @@ export default function Navbar() {
               </li>
             ))}
             <li><Link href="/about#contact" className="nav-cta">Contact</Link></li>
-            <li style={{ marginLeft: '0.5rem' }}><CartIcon /></li>
+            <li style={{ marginLeft: '0.25rem' }}>
+              <button onClick={() => setSearchOpen(true)} aria-label="Search"
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 36, height: 36, background: 'none', border: '1.5px solid #D9C9A8', borderRadius: 8, cursor: 'pointer', color: '#5C5542', transition: 'all 0.15s' }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = '#C94B1A'; e.currentTarget.style.color = '#C94B1A' }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = '#D9C9A8'; e.currentTarget.style.color = '#5C5542' }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+              </button>
+            </li>
+            <li style={{ marginLeft: '0.25rem' }}><CartIcon /></li>
 
             {user ? (
               <li style={{ position: 'relative' }} ref={dropdownRef}>
@@ -229,7 +241,13 @@ export default function Navbar() {
           </ul>
 
           {/* Mobile right */}
-          <div className="nav-mobile-right" style={{ display: 'none', alignItems: 'center', gap: 12 }}>
+          <div className="nav-mobile-right" style={{ display: 'none', alignItems: 'center', gap: 10 }}>
+            <button onClick={() => setSearchOpen(true)} aria-label="Search"
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 34, height: 34, background: 'none', border: 'none', cursor: 'pointer', color: '#5C5542' }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+            </button>
             <CartIcon />
             <button onClick={() => setMenuOpen(!menuOpen)} style={{ display: 'flex', flexDirection: 'column', gap: 5, background: 'none', border: 'none', cursor: 'pointer', padding: 4 }} aria-label="Menu">
               {[0, 1, 2].map(i => <span key={i} style={{ display: 'block', width: 24, height: 2, background: '#C94B1A', borderRadius: 2 }} />)}
@@ -352,6 +370,8 @@ export default function Navbar() {
         @keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
         @media(max-width:768px) { .nav-desktop{display:none!important;} .nav-mobile-right{display:flex!important;} }
       `}</style>
+
+      {searchOpen && <NavSearch onClose={() => setSearchOpen(false)} />}
     </>
   )
 }
