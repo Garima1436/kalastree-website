@@ -16,10 +16,9 @@ frontend:
         - echo "NEXT_PUBLIC_RAZORPAY_KEY_ID=$RAZORPAY_KEY_ID" >> .env.production
         - npm run build
   artifacts:
-    baseDirectory: .
+    baseDirectory: .next
     files:
-      - .next/**/*
-      - .env.production
+      - '**/*'
   cache:
     paths:
       - node_modules/**/*
