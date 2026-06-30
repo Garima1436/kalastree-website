@@ -8,7 +8,7 @@ export default function ComingSoonRibbon({ text = 'Coming Soon' }: ComingSoonRib
   return (
     <div style={{
       position: 'fixed',
-      top: '50%',
+      top: 'calc(50% + 96px)',
       left: 0,
       right: 0,
       transform: 'translateY(-50%)',
