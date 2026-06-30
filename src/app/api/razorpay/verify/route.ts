@@ -53,7 +53,8 @@ export async function POST(req: NextRequest) {
           </tr>
         `).join('')
 
-        await resend.emails.send({
+        await Promise.all([
+        resend.emails.send({
           from: 'KalaStree <team@kalastree.com>',
           to: order.user_email,
           subject: `Order Confirmed #${shortId} — KalaStree`,
@@ -96,7 +97,51 @@ export async function POST(req: NextRequest) {
               <p style="color:#A07840;font-size:12px;text-align:center;">KalaStree · India's first GI-verified marketplace for women artisans<br/><em>"Heritage by Her"</em></p>
             </div>
           `,
-        })
+        }),
+        resend.emails.send({
+          from: 'KalaStree Orders <team@kalastree.com>',
+          to: ['garima@kalastree.com', 'iammishu1436@gmail.com'],
+          cc: 'ashishkumar19975@gmail.com',
+          subject: `New Order #${shortId} — ₹${Number(order.total).toLocaleString('en-IN')}`,
+          html: `
+            <div style="font-family:Georgia,serif;max-width:600px;margin:0 auto;padding:32px;background:#1B2E4A;border-radius:10px;">
+              <h2 style="color:#D4A000;margin-top:0;">New Order Received 🛍️</h2>
+              <table style="width:100%;border-collapse:collapse;margin-bottom:16px;">
+                ${[
+                  ['Order ID', `#${shortId}`],
+                  ['Customer', order.user_name],
+                  ['Email', order.user_email],
+                  ['Total', `₹${Number(order.total).toLocaleString('en-IN')}`],
+                  ...(order.city ? [['Ship to', `${order.city}, ${order.state} — ${order.pincode}`]] : []),
+                ].map(([k, v]: any) => `
+                  <tr>
+                    <td style="color:#D4A000;padding:8px 12px;font-size:13px;font-weight:bold;width:100px;vertical-align:top;">${k}</td>
+                    <td style="color:#fff;padding:8px 12px;font-size:14px;">${v}</td>
+                  </tr>
+                `).join('')}
+              </table>
+              <table style="width:100%;border-collapse:collapse;background:rgba(255,255,255,0.05);border-radius:6px;">
+                <thead>
+                  <tr>
+                    <th style="padding:10px 12px;text-align:left;color:#D4A000;font-size:12px;">Item</th>
+                    <th style="padding:10px 12px;text-align:center;color:#D4A000;font-size:12px;">Qty</th>
+                    <th style="padding:10px 12px;text-align:right;color:#D4A000;font-size:12px;">Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${items.map((item: any) => `
+                    <tr>
+                      <td style="padding:8px 12px;color:#fff;font-size:13px;">${item.product_name}</td>
+                      <td style="padding:8px 12px;color:#fff;font-size:13px;text-align:center;">×${item.quantity}</td>
+                      <td style="padding:8px 12px;color:#fff;font-size:13px;text-align:right;">₹${(Number(item.price) * item.quantity).toLocaleString('en-IN')}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          `,
+        }),
+        ])
       }
     } catch (emailErr) {
       console.error('Order confirmation email failed:', emailErr)
