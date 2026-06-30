@@ -117,7 +117,7 @@ export default function ProductForm({ artisans, initialData, mode = 'new' }: Pro
 
       <div style={{ background: '#FFFEF9', border: '1.5px solid #D9C9A8', borderRadius: 12, padding: '2rem', maxWidth: 760 }}>
         {mode === 'new' && <p style={{ fontSize: '0.8rem', color: '#9A8E7A', background: '#F8F2E8', borderRadius: 6, padding: '8px 12px', marginBottom: '1.25rem' }}>💡 After saving, you'll be taken to the edit page where you can upload images and videos.</p>}
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+        <form id="product-form" onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           {error && (
             <div style={{ background: '#FEE2E2', border: '1px solid #EF4444', borderRadius: 6, padding: '10px 14px', color: '#B91C1C', fontSize: '0.85rem' }}>
               {error}
@@ -221,26 +221,27 @@ export default function ProductForm({ artisans, initialData, mode = 'new' }: Pro
             Feature this product on the homepage
           </label>
 
-          <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
-            <button type="submit" disabled={loading} style={{
-              background: '#C94B1A', color: '#fff', padding: '12px 28px',
-              border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '0.95rem',
-              cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1,
-            }}>
-              {loading ? 'Saving…' : mode === 'edit' ? 'Save Changes →' : 'Save & Add Media →'}
-            </button>
-            <button type="button" onClick={() => router.push('/admin/products')} style={{
-              background: 'none', color: '#5C5542', padding: '12px 20px',
-              border: '1.5px solid #D9C9A8', borderRadius: 6, fontWeight: 700, cursor: 'pointer',
-            }}>
-              Cancel
-            </button>
-          </div>
         </form>
 
         {mode === 'edit' && initialData?.id && (
           <ProductMediaManager productId={initialData.id} />
         )}
+
+        <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem', paddingTop: '1.5rem', borderTop: '2px solid #D9C9A8' }}>
+          <button type="submit" form="product-form" disabled={loading} style={{
+            background: '#C94B1A', color: '#fff', padding: '12px 28px',
+            border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '0.95rem',
+            cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1,
+          }}>
+            {loading ? 'Saving…' : mode === 'edit' ? 'Save Changes →' : 'Save & Add Media →'}
+          </button>
+          <button type="button" onClick={() => router.push('/admin/products')} style={{
+            background: 'none', color: '#5C5542', padding: '12px 20px',
+            border: '1.5px solid #D9C9A8', borderRadius: 6, fontWeight: 700, cursor: 'pointer',
+          }}>
+            Cancel
+          </button>
+        </div>
       </div>
     </div>
   )

@@ -83,22 +83,22 @@ export default function ProductPage() {
         .select('*, artisan:artisans(*)')
         .eq('slug', slug)
         .single()
-      setProduct(prod as unknown as Product)
+      const typedProd = prod as unknown as Product
+      setProduct(typedProd)
 
-      if (prod) {
+      if (typedProd) {
         const { data: mediaData } = await supabase
           .from('product_media')
           .select('*')
-          .eq('product_id', prod.id)
+          .eq('product_id', typedProd.id)
           .order('sort_order', { ascending: true })
           .order('created_at', { ascending: true })
 
         if (mediaData && mediaData.length > 0) {
           setMedia(mediaData as MediaItem[])
-        } else if (prod.images?.length > 0) {
-          // Fallback to images[] array for backward compat
-          setMedia(prod.images.map((url: string, i: number) => ({
-            id: `legacy-${i}`, url, type: 'image', source: 'upload', sort_order: i,
+        } else if (typedProd.images?.length > 0) {
+          setMedia(typedProd.images.map((url: string, i: number) => ({
+            id: `legacy-${i}`, url, type: 'image' as const, source: 'upload' as const, sort_order: i,
           })))
         }
       }
