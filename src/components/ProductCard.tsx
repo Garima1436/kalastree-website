@@ -9,25 +9,25 @@ export default function ProductCard({ product }: { product: Product }) {
   return (
     <Link href={`/shop/${product.slug}`} style={{ textDecoration: 'none' }}>
       <div style={{
-        background: '#FFFEF9', border: '1.5px solid #D9C9A8', borderRadius: 10,
+        background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 10,
         overflow: 'hidden', transition: 'transform 0.25s, box-shadow 0.25s, border-color 0.25s',
         cursor: 'pointer',
       }}
         onMouseEnter={e => {
           const el = e.currentTarget as HTMLElement
           el.style.transform = 'translateY(-6px)'
-          el.style.boxShadow = '0 16px 40px rgba(201,75,26,0.12)'
-          el.style.borderColor = '#C94B1A'
+          el.style.boxShadow = '0 16px 40px rgba(232,56,10,0.12)'
+          el.style.borderColor = '#E8380A'
         }}
         onMouseLeave={e => {
           const el = e.currentTarget as HTMLElement
           el.style.transform = 'translateY(0)'
           el.style.boxShadow = 'none'
-          el.style.borderColor = '#D9C9A8'
+          el.style.borderColor = '#DDB840'
         }}
       >
         {/* Image */}
-        <div style={{ height: 200, background: `linear-gradient(135deg, ${cat.bg}, #FDF6E3)`, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ height: 200, background: `linear-gradient(135deg, ${cat.bg}, #FFF8EE)`, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
           {product.images?.[0] ? (
             <img src={product.images[0]} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           ) : (
@@ -49,15 +49,15 @@ export default function ProductCard({ product }: { product: Product }) {
             {product.name}
           </div>
           {product.artisan && (
-            <div style={{ fontSize: '0.78rem', color: '#5C5542', marginBottom: 8 }}>
+            <div style={{ fontSize: '0.78rem', color: '#6B4820', marginBottom: 8 }}>
               by {product.artisan.name} · {product.state}
             </div>
           )}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 8 }}>
-            <span style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.3rem', fontWeight: 700, color: '#C94B1A' }}>
+            <span style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.3rem', fontWeight: 700, color: '#E8380A' }}>
               ₹{product.price.toLocaleString('en-IN')}
             </span>
-            <span style={{ fontSize: '0.72rem', color: product.stock > 0 ? '#3B5A2F' : '#C94B1A', fontWeight: 700 }}>
+            <span style={{ fontSize: '0.72rem', color: product.stock > 0 ? '#1A7A32' : '#E8380A', fontWeight: 700 }}>
               {product.stock > 0 ? `${product.stock} left` : 'Out of stock'}
             </span>
           </div>

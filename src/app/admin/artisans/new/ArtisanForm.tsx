@@ -88,18 +88,18 @@ export default function ArtisanForm({ initialData, mode = 'new' }: Props) {
   }
 
   const inputStyle: React.CSSProperties = {
-    width: '100%', padding: '10px 14px', border: '1.5px solid #D9C9A8',
-    borderRadius: 6, fontSize: '0.92rem', background: '#FDF6E3', outline: 'none', boxSizing: 'border-box',
+    width: '100%', padding: '10px 14px', border: '1.5px solid #DDB840',
+    borderRadius: 6, fontSize: '0.92rem', background: '#FFF8EE', outline: 'none', boxSizing: 'border-box',
   }
   const labelStyle: React.CSSProperties = {
     display: 'block', fontSize: '0.72rem', fontWeight: 700,
-    letterSpacing: '0.08em', textTransform: 'uppercase', color: '#5C5542', marginBottom: 5,
+    letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B4820', marginBottom: 5,
   }
 
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
-        <button onClick={() => router.push('/admin/artisans')} style={{ background: 'none', border: 'none', color: '#5C5542', cursor: 'pointer', fontSize: '0.88rem' }}>
+        <button onClick={() => router.push('/admin/artisans')} style={{ background: 'none', border: 'none', color: '#6B4820', cursor: 'pointer', fontSize: '0.88rem' }}>
           ← Artisans
         </button>
         <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: '2rem', fontWeight: 700, color: '#1B2E4A' }}>
@@ -107,7 +107,7 @@ export default function ArtisanForm({ initialData, mode = 'new' }: Props) {
         </h1>
       </div>
 
-      <div style={{ background: '#FFFEF9', border: '1.5px solid #D9C9A8', borderRadius: 12, padding: '2rem', maxWidth: 760 }}>
+      <div style={{ background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 12, padding: '2rem', maxWidth: 760 }}>
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           {error && (
             <div style={{ background: '#FEE2E2', border: '1px solid #EF4444', borderRadius: 6, padding: '10px 14px', color: '#B91C1C', fontSize: '0.85rem' }}>
@@ -153,7 +153,7 @@ export default function ArtisanForm({ initialData, mode = 'new' }: Props) {
             <label style={labelStyle}>Photo</label>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               {/* Preview */}
-              <div style={{ width: 72, height: 72, borderRadius: '50%', background: '#F2E8D5', border: '2px solid #D9C9A8', overflow: 'hidden', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ width: 72, height: 72, borderRadius: '50%', background: '#FFE8A8', border: '2px solid #DDB840', overflow: 'hidden', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 {form.photo_url
                   ? <img src={form.photo_url} alt="preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   : <span style={{ fontSize: '2rem' }}>👩‍🎨</span>}
@@ -163,10 +163,10 @@ export default function ArtisanForm({ initialData, mode = 'new' }: Props) {
                 <input ref={fileInputRef} type="file" accept="image/*" onChange={handlePhotoUpload}
                   style={{ display: 'none' }} />
                 <button type="button" onClick={() => fileInputRef.current?.click()} disabled={uploading}
-                  style={{ background: uploading ? '#9A8E7A' : '#1B2E4A', color: '#fff', padding: '9px 20px', border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '0.85rem', cursor: uploading ? 'not-allowed' : 'pointer', marginBottom: 8 }}>
+                  style={{ background: uploading ? '#A07840' : '#1B2E4A', color: '#fff', padding: '9px 20px', border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '0.85rem', cursor: uploading ? 'not-allowed' : 'pointer', marginBottom: 8 }}>
                   {uploading ? 'Uploading…' : '📷 Upload from Computer'}
                 </button>
-                <div style={{ fontSize: '0.75rem', color: '#9A8E7A' }}>JPG, PNG, WebP · Max 5MB · Auto-saves to Supabase Storage</div>
+                <div style={{ fontSize: '0.75rem', color: '#A07840' }}>JPG, PNG, WebP · Max 5MB · Auto-saves to Supabase Storage</div>
                 {/* Or paste URL */}
                 <input style={{ ...inputStyle, marginTop: 8, fontSize: '0.8rem' }} value={form.photo_url}
                   onChange={e => set('photo_url', e.target.value)} placeholder="Or paste image URL directly" />
@@ -190,21 +190,21 @@ export default function ArtisanForm({ initialData, mode = 'new' }: Props) {
 
           <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', fontSize: '0.9rem', color: '#1B2E4A', fontWeight: 600 }}>
             <input type="checkbox" checked={form.is_verified} onChange={e => set('is_verified', e.target.checked)}
-              style={{ width: 17, height: 17, accentColor: '#3B5A2F' }} />
+              style={{ width: 17, height: 17, accentColor: '#1A7A32' }} />
             Mark as GI Verified Artisan
           </label>
 
           <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
             <button type="submit" disabled={loading} style={{
-              background: '#C94B1A', color: '#fff', padding: '12px 28px',
+              background: '#E8380A', color: '#fff', padding: '12px 28px',
               border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '0.95rem',
               cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1,
             }}>
               {loading ? 'Saving…' : mode === 'edit' ? 'Save Changes →' : 'Add Artisan →'}
             </button>
             <button type="button" onClick={() => router.push('/admin/artisans')} style={{
-              background: 'none', color: '#5C5542', padding: '12px 20px',
-              border: '1.5px solid #D9C9A8', borderRadius: 6, fontWeight: 700, cursor: 'pointer',
+              background: 'none', color: '#6B4820', padding: '12px 20px',
+              border: '1.5px solid #DDB840', borderRadius: 6, fontWeight: 700, cursor: 'pointer',
             }}>
               Cancel
             </button>

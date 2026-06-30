@@ -66,10 +66,10 @@ export type Database = {
 }
 
 export const CATEGORY_META: Record<Category, { label: string; icon: string; color: string; bg: string }> = {
-  textile:    { label: 'Textiles & Silk',  icon: '🧵', color: '#1B2E4A', bg: '#E8ECF2' },
-  handicraft: { label: 'Handicrafts',      icon: '🏺', color: '#C94B1A', bg: '#F5E8E0' },
-  agricultural:{ label: 'Agricultural',    icon: '🌾', color: '#3B5A2F', bg: '#E8F0E4' },
-  food:       { label: 'Food & Natural',   icon: '🍵', color: '#7A3B52', bg: '#F5EBF0' },
+  textile:    { label: 'Textiles & Silk',  icon: '🧵', color: '#1B2E4A', bg: '#E0EAFF' },
+  handicraft: { label: 'Handicrafts',      icon: '🏺', color: '#E8380A', bg: '#FFE8DC' },
+  agricultural:{ label: 'Agricultural',    icon: '🌾', color: '#1A7A32', bg: '#C8F5D8' },
+  food:       { label: 'Food & Natural',   icon: '🍵', color: '#C21859', bg: '#FFD6E8' },
 }
 
 export const STATE_EMOJI: Record<string, string> = {

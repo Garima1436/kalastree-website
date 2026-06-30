@@ -120,11 +120,11 @@ export default function ProductPage() {
     setTimeout(() => setAdded(false), 2000)
   }
 
-  if (loading) return <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#5C5542', fontSize: '1.1rem' }}>Loading...</div>
+  if (loading) return <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6B4820', fontSize: '1.1rem' }}>Loading...</div>
   if (!product) return (
     <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '1rem' }}>
       <p>Product not found.</p>
-      <Link href="/shop" style={{ color: '#C94B1A' }}>← Back to Shop</Link>
+      <Link href="/shop" style={{ color: '#E8380A' }}>← Back to Shop</Link>
     </div>
   )
 
@@ -134,11 +134,11 @@ export default function ProductPage() {
   return (
     <div style={{ background: 'var(--parchment)', minHeight: '80vh' }}>
       {/* Breadcrumb */}
-      <div style={{ background: '#F2E8D5', padding: '0.75rem 5%', fontSize: '0.78rem', color: '#5C5542' }}>
+      <div style={{ background: '#FFE8A8', padding: '0.75rem 5%', fontSize: '0.78rem', color: '#6B4820' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-          <Link href="/" style={{ color: '#5C5542', textDecoration: 'none' }}>Home</Link> {' / '}
-          <Link href="/shop" style={{ color: '#5C5542', textDecoration: 'none' }}>Shop</Link> {' / '}
-          <Link href={`/shop?category=${product.category}`} style={{ color: '#5C5542', textDecoration: 'none' }}>{cat.label}</Link> {' / '}
+          <Link href="/" style={{ color: '#6B4820', textDecoration: 'none' }}>Home</Link> {' / '}
+          <Link href="/shop" style={{ color: '#6B4820', textDecoration: 'none' }}>Shop</Link> {' / '}
+          <Link href={`/shop?category=${product.category}`} style={{ color: '#6B4820', textDecoration: 'none' }}>{cat.label}</Link> {' / '}
           <span style={{ color: '#1B2E4A', fontWeight: 600 }}>{product.name}</span>
         </div>
       </div>
@@ -148,7 +148,7 @@ export default function ProductPage() {
         {/* Media column */}
         <div>
           {/* Main viewer */}
-          <div style={{ borderRadius: 12, overflow: 'hidden', background: activeItem?.type === 'video' ? '#000' : cat.bg, height: 420, border: '1.5px solid #D9C9A8', marginBottom: '0.75rem', position: 'relative' }}>
+          <div style={{ borderRadius: 12, overflow: 'hidden', background: activeItem?.type === 'video' ? '#000' : cat.bg, height: 420, border: '1.5px solid #DDB840', marginBottom: '0.75rem', position: 'relative' }}>
             {activeItem ? (
               <MediaViewer item={activeItem} productName={product.name} />
             ) : (
@@ -168,7 +168,7 @@ export default function ProductPage() {
                   style={{
                     flexShrink: 0, width: 72, height: 72, borderRadius: 8,
                     overflow: 'hidden', padding: 0,
-                    border: `2px solid ${i === activeIdx ? '#C94B1A' : '#D9C9A8'}`,
+                    border: `2px solid ${i === activeIdx ? '#E8380A' : '#DDB840'}`,
                     cursor: 'pointer', background: 'none',
                   }}
                 >
@@ -192,39 +192,39 @@ export default function ProductPage() {
 
           {product.artisan && (
             <Link href={`/artisans/${product.artisan.slug}`} style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', marginBottom: '1.5rem' }}>
-              <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#F2E8D5', border: '2px solid #B8860B', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#FFE8A8', border: '2px solid #D4A000', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                 {product.artisan.photo_url
                   ? <img src={product.artisan.photo_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   : <span>👩‍🎨</span>}
               </div>
               <div>
                 <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#1B2E4A' }}>by {product.artisan.name}</div>
-                <div style={{ fontSize: '0.75rem', color: '#5C5542' }}>{product.artisan.craft} · {product.artisan.state}</div>
+                <div style={{ fontSize: '0.75rem', color: '#6B4820' }}>{product.artisan.craft} · {product.artisan.state}</div>
               </div>
-              <span style={{ marginLeft: 'auto', fontSize: '0.75rem', color: '#C94B1A' }}>View profile →</span>
+              <span style={{ marginLeft: 'auto', fontSize: '0.75rem', color: '#E8380A' }}>View profile →</span>
             </Link>
           )}
 
-          <div style={{ fontFamily: "'EB Garamond', serif", fontSize: '2.2rem', fontWeight: 700, color: '#C94B1A', marginBottom: '0.5rem' }}>
+          <div style={{ fontFamily: "'EB Garamond', serif", fontSize: '2.2rem', fontWeight: 700, color: '#E8380A', marginBottom: '0.5rem' }}>
             ₹{product.price.toLocaleString('en-IN')}
           </div>
-          <p style={{ fontSize: '0.8rem', color: '#3B5A2F', fontWeight: 700, marginBottom: '1.5rem' }}>
+          <p style={{ fontSize: '0.8rem', color: '#1A7A32', fontWeight: 700, marginBottom: '1.5rem' }}>
             {product.stock > 0 ? `✓ ${product.stock} in stock · Ships directly from artisan` : '✗ Out of stock'}
           </p>
 
           {product.description && (
-            <p style={{ fontSize: '0.95rem', lineHeight: 1.8, color: '#5C5542', marginBottom: '1.5rem' }}>{product.description}</p>
+            <p style={{ fontSize: '0.95rem', lineHeight: 1.8, color: '#6B4820', marginBottom: '1.5rem' }}>{product.description}</p>
           )}
 
           {/* Qty + Add to Cart */}
           {product.stock > 0 && (
             <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
-              <div style={{ display: 'flex', alignItems: 'center', border: '1.5px solid #D9C9A8', borderRadius: 6, overflow: 'hidden' }}>
-                <button onClick={() => setQty(Math.max(1, qty - 1))} style={{ padding: '10px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.1rem', color: '#5C5542' }}>−</button>
+              <div style={{ display: 'flex', alignItems: 'center', border: '1.5px solid #DDB840', borderRadius: 6, overflow: 'hidden' }}>
+                <button onClick={() => setQty(Math.max(1, qty - 1))} style={{ padding: '10px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.1rem', color: '#6B4820' }}>−</button>
                 <span style={{ padding: '0 16px', fontWeight: 700, color: '#1B2E4A', minWidth: 40, textAlign: 'center' }}>{qty}</span>
-                <button onClick={() => setQty(Math.min(product.stock, qty + 1))} style={{ padding: '10px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.1rem', color: '#5C5542' }}>+</button>
+                <button onClick={() => setQty(Math.min(product.stock, qty + 1))} style={{ padding: '10px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.1rem', color: '#6B4820' }}>+</button>
               </div>
-              <button onClick={addToCart} style={{ flex: 1, background: added ? '#3B5A2F' : '#C94B1A', color: '#fff', padding: '12px 24px', border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '1rem', cursor: 'pointer', transition: 'background 0.2s', minWidth: 180 }}>
+              <button onClick={addToCart} style={{ flex: 1, background: added ? '#1A7A32' : '#E8380A', color: '#fff', padding: '12px 24px', border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '1rem', cursor: 'pointer', transition: 'background 0.2s', minWidth: 180 }}>
                 {added ? '✓ Added to Cart!' : 'Add to Cart'}
               </button>
             </div>
@@ -235,14 +235,14 @@ export default function ProductPage() {
           </button>
 
           {/* Trust signals */}
-          <div style={{ borderTop: '1.5px solid #D9C9A8', paddingTop: '1.5rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+          <div style={{ borderTop: '1.5px solid #DDB840', paddingTop: '1.5rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             {[
               { icon: '✅', text: 'GI Registry Verified' },
               { icon: '💳', text: 'Direct to Artisan Payment' },
               { icon: '📦', text: 'Handmade & Authentic' },
               { icon: '🔄', text: '7-day Easy Returns' },
             ].map(({ icon, text }) => (
-              <div key={text} style={{ fontSize: '0.8rem', color: '#5C5542', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <div key={text} style={{ fontSize: '0.8rem', color: '#6B4820', display: 'flex', alignItems: 'center', gap: 6 }}>
                 <span>{icon}</span> {text}
               </div>
             ))}

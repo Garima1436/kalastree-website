@@ -6,19 +6,19 @@ export default function Footer() {
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 5% 2rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '2.5rem' }}>
         {/* Brand */}
         <div>
-          <div style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.8rem', fontWeight: 700, color: '#C94B1A', marginBottom: 4 }}>KalaStree</div>
-          <div style={{ fontStyle: 'italic', color: '#B8860B', marginBottom: '1rem', fontSize: '0.95rem' }}>"Heritage by Her"</div>
+          <div style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.8rem', fontWeight: 700, color: '#E8380A', marginBottom: 4 }}>KalaStree</div>
+          <div style={{ fontStyle: 'italic', color: '#D4A000', marginBottom: '1rem', fontSize: '0.95rem' }}>"Heritage by Her"</div>
           <p style={{ fontSize: '0.85rem', lineHeight: 1.75, color: 'rgba(255,255,255,0.5)', marginBottom: '1rem' }}>
             India's first GI-native, women-first marketplace. Every purchase directly empowers a woman artisan.
           </p>
-          <p style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.3)', borderTop: '1px solid rgba(184,134,11,0.2)', paddingTop: '1rem', lineHeight: 1.7 }}>
-            🪔 <em>Dedicated to the memory of <strong style={{ color: '#B8860B' }}>Late Shri S.B. Sharma</strong></em>
+          <p style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.3)', borderTop: '1px solid rgba(212,160,0,0.2)', paddingTop: '1rem', lineHeight: 1.7 }}>
+            🪔 <em>Dedicated to the memory of <strong style={{ color: '#D4A000' }}>Late Shri S.B. Sharma</strong></em>
           </p>
         </div>
 
         {/* Shop */}
         <div>
-          <div style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#B8860B', marginBottom: '1rem' }}>Shop</div>
+          <div style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#D4A000', marginBottom: '1rem' }}>Shop</div>
           <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 8 }}>
             {[
               { href: '/shop?category=textile', label: 'Textiles & Silk' },
@@ -36,7 +36,7 @@ export default function Footer() {
 
         {/* About */}
         <div>
-          <div style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#B8860B', marginBottom: '1rem' }}>About</div>
+          <div style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#D4A000', marginBottom: '1rem' }}>About</div>
           <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 8 }}>
             {[
               { href: '/about', label: 'Our Mission' },
@@ -53,11 +53,11 @@ export default function Footer() {
 
         {/* Contact */}
         <div>
-          <div style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#B8860B', marginBottom: '1rem' }}>Contact</div>
+          <div style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#D4A000', marginBottom: '1rem' }}>Contact</div>
           <div style={{ fontSize: '0.88rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.8 }}>
-            <p>✉️ <a href="mailto:garima@kalastree.com" style={{ color: '#B8860B', textDecoration: 'none' }}>garima@kalastree.com</a></p>
+            <p>✉️ <a href="mailto:garima@kalastree.com" style={{ color: '#D4A000', textDecoration: 'none' }}>garima@kalastree.com</a></p>
             <p>🏛️ IIT Patna, CSE Dept.</p>
-            <p>🔗 <a href="https://www.linkedin.com/in/iammishu" target="_blank" rel="noopener" style={{ color: '#B8860B', textDecoration: 'none' }}>LinkedIn</a></p>
+            <p>🔗 <a href="https://www.linkedin.com/in/iammishu" target="_blank" rel="noopener" style={{ color: '#D4A000', textDecoration: 'none' }}>LinkedIn</a></p>
           </div>
         </div>
       </div>
@@ -68,7 +68,7 @@ export default function Footer() {
       </div>
 
       {/* Folk bottom band */}
-      <div style={{ height: 6, background: 'linear-gradient(90deg, #C94B1A, #B8860B, #3B5A2F, #7A3B52, #C94B1A)' }} />
+      <div style={{ height: 6, background: 'linear-gradient(90deg, #E8380A, #D4A000, #1A7A32, #C21859, #E8380A)' }} />
       <style>{`
         @media(max-width:600px){
           .footer-bottom { flex-direction:column !important; align-items:center !important; text-align:center !important; }

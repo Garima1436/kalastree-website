@@ -79,7 +79,7 @@ export default function CheckoutPage() {
       image: '/gi-logo.png',
       order_id: razorpayOrderId,
       prefill: { name: form.name, email: form.email, contact: form.phone },
-      theme: { color: '#C94B1A' },
+      theme: { color: '#E8380A' },
       handler: async (response: any) => {
         const verifyRes = await fetch('/api/razorpay/verify', {
           method: 'POST',
@@ -126,19 +126,19 @@ export default function CheckoutPage() {
   }
 
   const inputStyle: React.CSSProperties = {
-    width: '100%', padding: '10px 14px', border: '1.5px solid #D9C9A8',
-    borderRadius: 6, fontSize: '0.9rem', background: '#FDF6E3', outline: 'none',
+    width: '100%', padding: '10px 14px', border: '1.5px solid #DDB840',
+    borderRadius: 6, fontSize: '0.9rem', background: '#FFF8EE', outline: 'none',
   }
   const labelStyle: React.CSSProperties = {
     display: 'block', fontSize: '0.72rem', fontWeight: 700,
-    letterSpacing: '0.08em', textTransform: 'uppercase', color: '#5C5542', marginBottom: 5,
+    letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B4820', marginBottom: 5,
   }
 
   if (cart.length === 0) return (
-    <div style={{ minHeight: '60vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1rem', color: '#5C5542', background: 'var(--parchment)' }}>
+    <div style={{ minHeight: '60vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1rem', color: '#6B4820', background: 'var(--parchment)' }}>
       <div style={{ fontSize: '3rem' }}>🛒</div>
       <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.3rem' }}>Your cart is empty.</p>
-      <Link href="/shop" style={{ color: '#C94B1A', fontWeight: 700, textDecoration: 'none' }}>Browse products →</Link>
+      <Link href="/shop" style={{ color: '#E8380A', fontWeight: 700, textDecoration: 'none' }}>Browse products →</Link>
     </div>
   )
 
@@ -153,7 +153,7 @@ export default function CheckoutPage() {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: '2rem', alignItems: 'start' }}>
 
             {/* Shipping form */}
-            <div style={{ background: '#FFFEF9', border: '1.5px solid #D9C9A8', borderRadius: 12, padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div style={{ background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 12, padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.4rem', fontWeight: 600, color: '#1B2E4A' }}>
                 Shipping Details
               </h2>
@@ -192,23 +192,23 @@ export default function CheckoutPage() {
             </div>
 
             {/* Order summary */}
-            <div style={{ background: '#FFFEF9', border: '1.5px solid #D9C9A8', borderRadius: 12, padding: '1.75rem', position: 'sticky', top: 90 }}>
+            <div style={{ background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 12, padding: '1.75rem', position: 'sticky', top: 90 }}>
               <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.4rem', fontWeight: 600, color: '#1B2E4A', marginBottom: '1.25rem' }}>
                 Order Summary
               </h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: '1.25rem' }}>
                 {cart.map(item => (
                   <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.88rem' }}>
-                    <span style={{ color: '#5C5542' }}>{item.name} ×{item.qty}</span>
+                    <span style={{ color: '#6B4820' }}>{item.name} ×{item.qty}</span>
                     <span style={{ fontWeight: 700, color: '#1B2E4A' }}>₹{(item.price * item.qty).toLocaleString('en-IN')}</span>
                   </div>
                 ))}
               </div>
-              <div style={{ borderTop: '1.5px solid #D9C9A8', paddingTop: '1rem', display: 'flex', justifyContent: 'space-between', fontFamily: "'EB Garamond', serif", fontSize: '1.4rem', fontWeight: 700 }}>
+              <div style={{ borderTop: '1.5px solid #DDB840', paddingTop: '1rem', display: 'flex', justifyContent: 'space-between', fontFamily: "'EB Garamond', serif", fontSize: '1.4rem', fontWeight: 700 }}>
                 <span>Total</span>
-                <span style={{ color: '#C94B1A' }}>₹{total.toLocaleString('en-IN')}</span>
+                <span style={{ color: '#E8380A' }}>₹{total.toLocaleString('en-IN')}</span>
               </div>
-              <div style={{ marginTop: '0.75rem', padding: '0.75rem', background: '#E8F0E4', borderRadius: 6, fontSize: '0.75rem', color: '#3B5A2F', lineHeight: 1.6 }}>
+              <div style={{ marginTop: '0.75rem', padding: '0.75rem', background: '#C8F5D8', borderRadius: 6, fontSize: '0.75rem', color: '#1A7A32', lineHeight: 1.6 }}>
                 🚚 Free shipping &nbsp;·&nbsp; 🔒 Secured payment &nbsp;·&nbsp; ✅ GI Verified
               </div>
 
@@ -247,7 +247,7 @@ export default function CheckoutPage() {
                   <><span>🌍</span><span>Pay with Card</span><span style={{ fontSize: '0.75rem', opacity: 0.75 }}>International · Visa · Mastercard</span></>
                 )}
               </button>
-              <Link href="/cart" style={{ display: 'block', textAlign: 'center', marginTop: '0.75rem', fontSize: '0.82rem', color: '#5C5542', textDecoration: 'none' }}>
+              <Link href="/cart" style={{ display: 'block', textAlign: 'center', marginTop: '0.75rem', fontSize: '0.82rem', color: '#6B4820', textDecoration: 'none' }}>
                 ← Edit cart
               </Link>
             </div>

@@ -19,19 +19,19 @@ export default async function AdminUsersPage() {
           <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: '2rem', fontWeight: 700, color: '#1B2E4A', margin: 0 }}>
             Users
           </h1>
-          <p style={{ color: '#5C5542', fontSize: '0.85rem', marginTop: 4 }}>
+          <p style={{ color: '#6B4820', fontSize: '0.85rem', marginTop: 4 }}>
             {total} total &nbsp;·&nbsp; {admins} admin{admins !== 1 ? 's' : ''} &nbsp;·&nbsp; {users} customer{users !== 1 ? 's' : ''}
           </p>
         </div>
       </div>
 
-      <div style={{ background: '#FFFEF9', border: '1.5px solid #D9C9A8', borderRadius: 10, overflow: 'hidden' }}>
+      <div style={{ background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 10, overflow: 'hidden' }}>
         {profiles && profiles.length > 0 ? (
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
-            <thead style={{ background: '#F2E8D5' }}>
+            <thead style={{ background: '#FFE8A8' }}>
               <tr>
                 {['User', 'Email', 'Phone', 'Location', 'Role', 'Joined', 'Actions'].map(h => (
-                  <th key={h} style={{ padding: '10px 16px', textAlign: 'left', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#5C5542', fontSize: '0.7rem', whiteSpace: 'nowrap' }}>
+                  <th key={h} style={{ padding: '10px 16px', textAlign: 'left', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6B4820', fontSize: '0.7rem', whiteSpace: 'nowrap' }}>
                     {h}
                   </th>
                 ))}
@@ -43,29 +43,29 @@ export default async function AdminUsersPage() {
                   .split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2)
                 const isAdmin = profile.role === 'admin'
                 return (
-                  <tr key={profile.id} style={{ borderTop: '1px solid #F2E8D5' }}>
+                  <tr key={profile.id} style={{ borderTop: '1px solid #FFE8A8' }}>
 
                     {/* User */}
                     <td style={{ padding: '12px 16px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                        <div style={{ width: 36, height: 36, borderRadius: '50%', flexShrink: 0, background: isAdmin ? 'linear-gradient(135deg,#B8860B,#C94B1A)' : 'linear-gradient(135deg,#1B2E4A,#3B5A2F)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 700, color: '#fff' }}>
+                        <div style={{ width: 36, height: 36, borderRadius: '50%', flexShrink: 0, background: isAdmin ? 'linear-gradient(135deg,#D4A000,#E8380A)' : 'linear-gradient(135deg,#1B2E4A,#1A7A32)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 700, color: '#fff' }}>
                           {initials}
                         </div>
                         <div>
                           <div style={{ fontWeight: 700, color: '#1B2E4A' }}>{profile.full_name || '—'}</div>
-                          <div style={{ fontSize: '0.68rem', color: '#9A8E7A', fontFamily: 'monospace' }}>{profile.id.slice(0, 12)}…</div>
+                          <div style={{ fontSize: '0.68rem', color: '#A07840', fontFamily: 'monospace' }}>{profile.id.slice(0, 12)}…</div>
                         </div>
                       </div>
                     </td>
 
                     {/* Email */}
-                    <td style={{ padding: '12px 16px', color: '#5C5542', fontSize: '0.83rem' }}>{profile.email || '—'}</td>
+                    <td style={{ padding: '12px 16px', color: '#6B4820', fontSize: '0.83rem' }}>{profile.email || '—'}</td>
 
                     {/* Phone */}
-                    <td style={{ padding: '12px 16px', color: '#5C5542', fontSize: '0.83rem' }}>{profile.phone || '—'}</td>
+                    <td style={{ padding: '12px 16px', color: '#6B4820', fontSize: '0.83rem' }}>{profile.phone || '—'}</td>
 
                     {/* Location */}
-                    <td style={{ padding: '12px 16px', color: '#5C5542', fontSize: '0.83rem' }}>
+                    <td style={{ padding: '12px 16px', color: '#6B4820', fontSize: '0.83rem' }}>
                       {[profile.city, profile.state].filter(Boolean).join(', ') || '—'}
                     </td>
 
@@ -73,16 +73,16 @@ export default async function AdminUsersPage() {
                     <td style={{ padding: '12px 16px' }}>
                       <span style={{
                         padding: '3px 10px', borderRadius: 20, fontSize: '0.7rem', fontWeight: 700,
-                        background: isAdmin ? '#FFF0C0' : '#F2E8D5',
-                        color: isAdmin ? '#B8860B' : '#5C5542',
-                        border: isAdmin ? '1px solid #B8860B40' : '1px solid #D9C9A8',
+                        background: isAdmin ? '#FFF0C0' : '#FFE8A8',
+                        color: isAdmin ? '#D4A000' : '#6B4820',
+                        border: isAdmin ? '1px solid #D4A00040' : '1px solid #DDB840',
                       }}>
                         {isAdmin ? '⚙️ Admin' : '👤 User'}
                       </span>
                     </td>
 
                     {/* Joined */}
-                    <td style={{ padding: '12px 16px', color: '#9A8E7A', fontSize: '0.8rem', whiteSpace: 'nowrap' }}>
+                    <td style={{ padding: '12px 16px', color: '#A07840', fontSize: '0.8rem', whiteSpace: 'nowrap' }}>
                       {profile.created_at ? new Date(profile.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}
                     </td>
 
@@ -96,7 +96,7 @@ export default async function AdminUsersPage() {
             </tbody>
           </table>
         ) : (
-          <div style={{ padding: '4rem', textAlign: 'center', color: '#5C5542' }}>
+          <div style={{ padding: '4rem', textAlign: 'center', color: '#6B4820' }}>
             <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>👥</div>
             <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.3rem' }}>No users yet.</p>
           </div>

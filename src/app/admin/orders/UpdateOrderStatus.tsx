@@ -15,12 +15,12 @@ export default function UpdateOrderStatus({ id, currentStatus }: { id: string; c
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-      <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#5C5542', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+      <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#6B4820', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
         Status:
       </span>
       <select value={currentStatus} onChange={e => update(e.target.value)} style={{
-        padding: '6px 12px', border: '1.5px solid #D9C9A8',
-        borderRadius: 6, fontSize: '0.85rem', background: '#FDF6E3', cursor: 'pointer',
+        padding: '6px 12px', border: '1.5px solid #DDB840',
+        borderRadius: 6, fontSize: '0.85rem', background: '#FFF8EE', cursor: 'pointer',
       }}>
         {STATUSES.map(s => <option key={s} value={s}>{s.toUpperCase()}</option>)}
       </select>

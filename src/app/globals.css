@@ -2,42 +2,42 @@
 @import "tailwindcss";
 
 :root {
-  --saffron: #C94B1A;
-  --saffron-light: #F5E8E0;
-  --saffron-dark: #8B3010;
-  --gold: #B8860B;
-  --gold-light: #F9F0D0;
-  --forest: #3B5A2F;
-  --forest-light: #E8F0E4;
-  --parchment: #FDF6E3;
-  --parchment-dark: #F2E8D5;
+  --saffron: #E8380A;
+  --saffron-light: #FFE8DC;
+  --saffron-dark: #C12808;
+  --gold: #D4A000;
+  --gold-light: #FFF3A8;
+  --forest: #1A7A32;
+  --forest-light: #C8F5D8;
+  --parchment: #FFF8EE;
+  --parchment-dark: #FFE8A8;
   --navy: #1B2E4A;
-  --navy-light: #E8ECF2;
-  --mauve: #7A3B52;
-  --mauve-light: #F5EBF0;
-  --cream: #FFFEF9;
+  --navy-light: #E0EAFF;
+  --mauve: #C21859;
+  --mauve-light: #FFD6E8;
+  --cream: #FFFFFF;
   --text: #1A1A1A;
-  --text-muted: #5C5542;
-  --border: #D9C9A8;
+  --text-muted: #6B4820;
+  --border: #DDB840;
 }
 
 @theme inline {
-  --color-saffron: #C94B1A;
-  --color-saffron-light: #F5E8E0;
-  --color-saffron-dark: #8B3010;
-  --color-gold: #B8860B;
-  --color-gold-light: #F9F0D0;
-  --color-forest: #3B5A2F;
-  --color-forest-light: #E8F0E4;
-  --color-parchment: #FDF6E3;
-  --color-parchment-dark: #F2E8D5;
+  --color-saffron: #E8380A;
+  --color-saffron-light: #FFE8DC;
+  --color-saffron-dark: #C12808;
+  --color-gold: #D4A000;
+  --color-gold-light: #FFF3A8;
+  --color-forest: #1A7A32;
+  --color-forest-light: #C8F5D8;
+  --color-parchment: #FFF8EE;
+  --color-parchment-dark: #FFE8A8;
   --color-navy: #1B2E4A;
-  --color-navy-light: #E8ECF2;
-  --color-mauve: #7A3B52;
-  --color-mauve-light: #F5EBF0;
-  --color-cream: #FFFEF9;
-  --color-text-muted: #5C5542;
-  --color-border: #D9C9A8;
+  --color-navy-light: #E0EAFF;
+  --color-mauve: #C21859;
+  --color-mauve-light: #FFD6E8;
+  --color-cream: #FFFFFF;
+  --color-text-muted: #6B4820;
+  --color-border: #DDB840;
   --font-sans: 'Lato', sans-serif;
   --font-serif: 'EB Garamond', serif;
 }

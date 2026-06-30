@@ -13,7 +13,7 @@ export default function CategoryGrid() {
           >
             <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>{meta.icon}</div>
             <div style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.2rem', fontWeight: 600, color: meta.color, marginBottom: 4 }}>{meta.label}</div>
-            <div style={{ fontSize: '0.78rem', color: '#5C5542' }}>Shop collection →</div>
+            <div style={{ fontSize: '0.78rem', color: '#6B4820' }}>Shop collection →</div>
           </div>
         </Link>
       ))}

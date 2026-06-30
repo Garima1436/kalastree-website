@@ -65,14 +65,14 @@ export default function ChatWidget() {
         <div className="chat-panel" style={{
           position: 'fixed', bottom: 88, right: 24, zIndex: 1000,
           width: 360, height: 520,
-          background: '#FFFEF9', border: '1.5px solid #D9C9A8',
+          background: '#FFFFFF', border: '1.5px solid #DDB840',
           borderRadius: 16, boxShadow: '0 16px 60px rgba(26,10,0,0.18)',
           display: 'flex', flexDirection: 'column', overflow: 'hidden',
           animation: 'chatSlideUp 0.22s ease',
         }}>
           {/* Header */}
           <div style={{ background: '#1B2E4A', padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
-            <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'linear-gradient(135deg, #C94B1A, #B8860B)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', flexShrink: 0 }}>
+            <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'linear-gradient(135deg, #E8380A, #D4A000)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', flexShrink: 0 }}>
               🌾
             </div>
             <div style={{ flex: 1 }}>
@@ -91,15 +91,15 @@ export default function ChatWidget() {
               <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: msg.role === 'user' ? 'flex-end' : 'flex-start' }}>
                 <div style={{
                   maxWidth: '82%', padding: '9px 13px', borderRadius: msg.role === 'user' ? '14px 14px 2px 14px' : '14px 14px 14px 2px',
-                  background: msg.role === 'user' ? '#C94B1A' : '#F2E8D5',
+                  background: msg.role === 'user' ? '#E8380A' : '#FFE8A8',
                   color: msg.role === 'user' ? '#fff' : '#1B2E4A',
                   fontSize: '0.85rem', lineHeight: 1.55, fontFamily: "'Lato', sans-serif",
                 }} className="chat-bubble">
                   {msg.role === 'ai' ? <ReactMarkdown>{msg.text}</ReactMarkdown> : msg.text}
                 </div>
                 {msg.sources && msg.sources.length > 0 && (
-                  <div style={{ fontSize: '0.68rem', color: '#9A8E7A', marginTop: 3, paddingLeft: 4 }}>
-                    <span style={{ color: '#B8860B', fontWeight: 700 }}>Sources:</span> {msg.sources.join(', ')}
+                  <div style={{ fontSize: '0.68rem', color: '#A07840', marginTop: 3, paddingLeft: 4 }}>
+                    <span style={{ color: '#D4A000', fontWeight: 700 }}>Sources:</span> {msg.sources.join(', ')}
                   </div>
                 )}
               </div>
@@ -107,9 +107,9 @@ export default function ChatWidget() {
 
             {loading && (
               <div style={{ display: 'flex', alignItems: 'flex-start' }}>
-                <div style={{ background: '#F2E8D5', padding: '10px 14px', borderRadius: '14px 14px 14px 2px', display: 'flex', gap: 5, alignItems: 'center' }}>
+                <div style={{ background: '#FFE8A8', padding: '10px 14px', borderRadius: '14px 14px 14px 2px', display: 'flex', gap: 5, alignItems: 'center' }}>
                   {[0,1,2].map(i => (
-                    <span key={i} style={{ width: 6, height: 6, borderRadius: '50%', background: '#B8860B', display: 'block', animation: `bounce 1.2s ease-in-out ${i * 0.2}s infinite` }} />
+                    <span key={i} style={{ width: 6, height: 6, borderRadius: '50%', background: '#D4A000', display: 'block', animation: `bounce 1.2s ease-in-out ${i * 0.2}s infinite` }} />
                   ))}
                 </div>
               </div>
@@ -120,7 +120,7 @@ export default function ChatWidget() {
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 4 }}>
                 {SUGGESTED.map(q => (
                   <button key={q} onClick={() => { setInput(q); inputRef.current?.focus() }}
-                    style={{ background: '#fff', border: '1px solid #D9C9A8', borderRadius: 14, padding: '5px 11px', fontSize: '0.75rem', color: '#5C5542', cursor: 'pointer', fontFamily: "'Lato', sans-serif", textAlign: 'left', lineHeight: 1.3 }}>
+                    style={{ background: '#fff', border: '1px solid #DDB840', borderRadius: 14, padding: '5px 11px', fontSize: '0.75rem', color: '#6B4820', cursor: 'pointer', fontFamily: "'Lato', sans-serif", textAlign: 'left', lineHeight: 1.3 }}>
                     {q}
                   </button>
                 ))}
@@ -131,7 +131,7 @@ export default function ChatWidget() {
           </div>
 
           {/* Input */}
-          <div style={{ borderTop: '1px solid #EDE0C8', padding: '10px 12px', background: '#FFFEF9', flexShrink: 0 }}>
+          <div style={{ borderTop: '1px solid #EDD060', padding: '10px 12px', background: '#FFFFFF', flexShrink: 0 }}>
             <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>
               <textarea
                 ref={inputRef}
@@ -141,16 +141,16 @@ export default function ChatWidget() {
                 placeholder="Ask about GI products…"
                 rows={1}
                 style={{
-                  flex: 1, resize: 'none', border: '1.5px solid #D9C9A8', borderRadius: 10,
+                  flex: 1, resize: 'none', border: '1.5px solid #DDB840', borderRadius: 10,
                   padding: '9px 12px', fontFamily: "'Lato', sans-serif", fontSize: '0.85rem',
-                  background: '#FDF6E3', outline: 'none', color: '#1B2E4A', lineHeight: 1.4,
+                  background: '#FFF8EE', outline: 'none', color: '#1B2E4A', lineHeight: 1.4,
                   maxHeight: 80, overflowY: 'auto',
                 }}
               />
               <button onClick={send} disabled={loading || !input.trim()}
                 style={{
                   width: 38, height: 38, borderRadius: '50%', border: 'none', flexShrink: 0,
-                  background: loading || !input.trim() ? '#D9C9A8' : '#C94B1A',
+                  background: loading || !input.trim() ? '#DDB840' : '#E8380A',
                   color: '#fff', cursor: loading || !input.trim() ? 'not-allowed' : 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem',
                   transition: 'background 0.2s',
@@ -158,7 +158,7 @@ export default function ChatWidget() {
                 ↑
               </button>
             </div>
-            <div style={{ fontSize: '0.65rem', color: '#B8B0A0', marginTop: 6, textAlign: 'center', fontFamily: "'Lato', sans-serif" }}>
+            <div style={{ fontSize: '0.65rem', color: '#C0A050', marginTop: 6, textAlign: 'center', fontFamily: "'Lato', sans-serif" }}>
               Powered by Gemini 2.5 Flash · KalaStree PhD Research
             </div>
           </div>
@@ -173,9 +173,9 @@ export default function ChatWidget() {
         style={{
           position: 'fixed', bottom: 24, right: 24, zIndex: 1000,
           width: 56, height: 56, borderRadius: '50%', border: 'none',
-          background: open ? '#1B2E4A' : 'linear-gradient(135deg, #C94B1A 0%, #B8860B 100%)',
+          background: open ? '#1B2E4A' : 'linear-gradient(135deg, #E8380A 0%, #D4A000 100%)',
           color: '#fff', cursor: 'pointer', fontSize: '1.4rem',
-          boxShadow: '0 4px 20px rgba(201,75,26,0.4)',
+          boxShadow: '0 4px 20px rgba(232,56,10,0.4)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           transition: 'background 0.2s, transform 0.2s',
           transform: open ? 'rotate(0deg)' : 'scale(1)',

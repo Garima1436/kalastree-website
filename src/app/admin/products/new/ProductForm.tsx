@@ -96,18 +96,18 @@ export default function ProductForm({ artisans, initialData, mode = 'new' }: Pro
   }
 
   const inputStyle: React.CSSProperties = {
-    width: '100%', padding: '10px 14px', border: '1.5px solid #D9C9A8',
-    borderRadius: 6, fontSize: '0.92rem', background: '#FDF6E3', outline: 'none',
+    width: '100%', padding: '10px 14px', border: '1.5px solid #DDB840',
+    borderRadius: 6, fontSize: '0.92rem', background: '#FFF8EE', outline: 'none',
   }
   const labelStyle: React.CSSProperties = {
     display: 'block', fontSize: '0.72rem', fontWeight: 700,
-    letterSpacing: '0.08em', textTransform: 'uppercase', color: '#5C5542', marginBottom: 5,
+    letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B4820', marginBottom: 5,
   }
 
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
-        <button onClick={() => router.push('/admin/products')} style={{ background: 'none', border: 'none', color: '#5C5542', cursor: 'pointer', fontSize: '0.88rem' }}>
+        <button onClick={() => router.push('/admin/products')} style={{ background: 'none', border: 'none', color: '#6B4820', cursor: 'pointer', fontSize: '0.88rem' }}>
           ← Products
         </button>
         <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: '2rem', fontWeight: 700, color: '#1B2E4A' }}>
@@ -115,8 +115,8 @@ export default function ProductForm({ artisans, initialData, mode = 'new' }: Pro
         </h1>
       </div>
 
-      <div style={{ background: '#FFFEF9', border: '1.5px solid #D9C9A8', borderRadius: 12, padding: '2rem', maxWidth: 760 }}>
-        {mode === 'new' && <p style={{ fontSize: '0.8rem', color: '#9A8E7A', background: '#F8F2E8', borderRadius: 6, padding: '8px 12px', marginBottom: '1.25rem' }}>💡 After saving, you'll be taken to the edit page where you can upload images and videos.</p>}
+      <div style={{ background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 12, padding: '2rem', maxWidth: 760 }}>
+        {mode === 'new' && <p style={{ fontSize: '0.8rem', color: '#A07840', background: '#FFF5E0', borderRadius: 6, padding: '8px 12px', marginBottom: '1.25rem' }}>💡 After saving, you'll be taken to the edit page where you can upload images and videos.</p>}
         <form id="product-form" onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           {error && (
             <div style={{ background: '#FEE2E2', border: '1px solid #EF4444', borderRadius: 6, padding: '10px 14px', color: '#B91C1C', fontSize: '0.85rem' }}>
@@ -188,8 +188,8 @@ export default function ProductForm({ artisans, initialData, mode = 'new' }: Pro
               ))}
             </select>
             {artisans.length === 0 && (
-              <p style={{ fontSize: '0.75rem', color: '#C94B1A', marginTop: 4 }}>
-                No artisans found. <a href="/admin/artisans/new" style={{ color: '#C94B1A', fontWeight: 700 }}>Add an artisan first →</a>
+              <p style={{ fontSize: '0.75rem', color: '#E8380A', marginTop: 4 }}>
+                No artisans found. <a href="/admin/artisans/new" style={{ color: '#E8380A', fontWeight: 700 }}>Add an artisan first →</a>
               </p>
             )}
           </div>
@@ -197,7 +197,7 @@ export default function ProductForm({ artisans, initialData, mode = 'new' }: Pro
           <div>
             <label style={labelStyle}>Product Image</label>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <div style={{ width: 80, height: 80, borderRadius: 8, background: '#F2E8D5', border: '2px solid #D9C9A8', overflow: 'hidden', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ width: 80, height: 80, borderRadius: 8, background: '#FFE8A8', border: '2px solid #DDB840', overflow: 'hidden', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 {form.image_url
                   ? <img src={form.image_url} alt="preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   : <span style={{ fontSize: '2rem' }}>🏺</span>}
@@ -205,10 +205,10 @@ export default function ProductForm({ artisans, initialData, mode = 'new' }: Pro
               <div style={{ flex: 1 }}>
                 <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageUpload} style={{ display: 'none' }} />
                 <button type="button" onClick={() => fileInputRef.current?.click()} disabled={uploading}
-                  style={{ background: uploading ? '#9A8E7A' : '#1B2E4A', color: '#fff', padding: '9px 20px', border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '0.85rem', cursor: uploading ? 'not-allowed' : 'pointer', marginBottom: 8, display: 'block' }}>
+                  style={{ background: uploading ? '#A07840' : '#1B2E4A', color: '#fff', padding: '9px 20px', border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '0.85rem', cursor: uploading ? 'not-allowed' : 'pointer', marginBottom: 8, display: 'block' }}>
                   {uploading ? 'Uploading…' : '📷 Upload from Computer'}
                 </button>
-                <div style={{ fontSize: '0.75rem', color: '#9A8E7A', marginBottom: 6 }}>JPG, PNG, WebP · Max 5MB · Auto-saves to Supabase Storage</div>
+                <div style={{ fontSize: '0.75rem', color: '#A07840', marginBottom: 6 }}>JPG, PNG, WebP · Max 5MB · Auto-saves to Supabase Storage</div>
                 <input style={{ ...inputStyle, fontSize: '0.8rem' }} value={form.image_url}
                   onChange={e => set('image_url', e.target.value)} placeholder="Or paste image URL directly" />
               </div>
@@ -217,7 +217,7 @@ export default function ProductForm({ artisans, initialData, mode = 'new' }: Pro
 
           <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', fontSize: '0.9rem', color: '#1B2E4A', fontWeight: 600 }}>
             <input type="checkbox" checked={form.is_featured} onChange={e => set('is_featured', e.target.checked)}
-              style={{ width: 17, height: 17, accentColor: '#C94B1A' }} />
+              style={{ width: 17, height: 17, accentColor: '#E8380A' }} />
             Feature this product on the homepage
           </label>
 
@@ -227,17 +227,17 @@ export default function ProductForm({ artisans, initialData, mode = 'new' }: Pro
           <ProductMediaManager productId={initialData.id} />
         )}
 
-        <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem', paddingTop: '1.5rem', borderTop: '2px solid #D9C9A8' }}>
+        <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem', paddingTop: '1.5rem', borderTop: '2px solid #DDB840' }}>
           <button type="submit" form="product-form" disabled={loading} style={{
-            background: '#C94B1A', color: '#fff', padding: '12px 28px',
+            background: '#E8380A', color: '#fff', padding: '12px 28px',
             border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '0.95rem',
             cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1,
           }}>
             {loading ? 'Saving…' : mode === 'edit' ? 'Save Changes →' : 'Save & Add Media →'}
           </button>
           <button type="button" onClick={() => router.push('/admin/products')} style={{
-            background: 'none', color: '#5C5542', padding: '12px 20px',
-            border: '1.5px solid #D9C9A8', borderRadius: 6, fontWeight: 700, cursor: 'pointer',
+            background: 'none', color: '#6B4820', padding: '12px 20px',
+            border: '1.5px solid #DDB840', borderRadius: 6, fontWeight: 700, cursor: 'pointer',
           }}>
             Cancel
           </button>

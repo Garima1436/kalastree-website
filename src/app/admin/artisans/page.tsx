@@ -16,20 +16,20 @@ export default async function AdminArtisansPage() {
           <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: '2rem', fontWeight: 700, color: '#1B2E4A', margin: 0 }}>
             Artisans
           </h1>
-          <p style={{ color: '#5C5542', fontSize: '0.85rem', marginTop: 4 }}>{artisans?.length ?? 0} artisans registered</p>
+          <p style={{ color: '#6B4820', fontSize: '0.85rem', marginTop: 4 }}>{artisans?.length ?? 0} artisans registered</p>
         </div>
-        <Link href="/admin/artisans/new" style={{ background: '#C94B1A', color: '#fff', padding: '10px 20px', borderRadius: 6, fontWeight: 700, fontSize: '0.88rem', textDecoration: 'none' }}>
+        <Link href="/admin/artisans/new" style={{ background: '#E8380A', color: '#fff', padding: '10px 20px', borderRadius: 6, fontWeight: 700, fontSize: '0.88rem', textDecoration: 'none' }}>
           + Add Artisan
         </Link>
       </div>
 
-      <div style={{ background: '#FFFEF9', border: '1.5px solid #D9C9A8', borderRadius: 10, overflow: 'hidden' }}>
+      <div style={{ background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 10, overflow: 'hidden' }}>
         {artisans && artisans.length > 0 ? (
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
-            <thead style={{ background: '#F2E8D5' }}>
+            <thead style={{ background: '#FFE8A8' }}>
               <tr>
                 {['Photo', 'Name', 'State', 'Craft', 'GI Product', 'Verified', 'Actions'].map(h => (
-                  <th key={h} style={{ padding: '10px 16px', textAlign: 'left', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#5C5542', fontSize: '0.7rem' }}>
+                  <th key={h} style={{ padding: '10px 16px', textAlign: 'left', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6B4820', fontSize: '0.7rem' }}>
                     {h}
                   </th>
                 ))}
@@ -37,9 +37,9 @@ export default async function AdminArtisansPage() {
             </thead>
             <tbody>
               {artisans.map((artisan: any) => (
-                <tr key={artisan.id} style={{ borderTop: '1px solid #F2E8D5' }}>
+                <tr key={artisan.id} style={{ borderTop: '1px solid #FFE8A8' }}>
                   <td style={{ padding: '12px 16px' }}>
-                    <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#F2E8D5', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#FFE8A8', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       {artisan.photo_url
                         ? <img src={artisan.photo_url} alt={artisan.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         : <span style={{ fontSize: '1.2rem' }}>👩‍🎨</span>}
@@ -47,14 +47,14 @@ export default async function AdminArtisansPage() {
                   </td>
                   <td style={{ padding: '12px 16px' }}>
                     <div style={{ fontWeight: 700, color: '#1B2E4A' }}>{artisan.name}</div>
-                    <div style={{ fontSize: '0.7rem', color: '#C94B1A', fontFamily: 'monospace', fontWeight: 700, marginTop: 2 }}>
+                    <div style={{ fontSize: '0.7rem', color: '#E8380A', fontFamily: 'monospace', fontWeight: 700, marginTop: 2 }}>
                       ART-{String(artisan.serial_no ?? 0).padStart(3, '0')}
                     </div>
-                    <div style={{ fontSize: '0.67rem', color: '#B8B0A0', fontFamily: 'monospace' }}>/{artisan.slug}</div>
+                    <div style={{ fontSize: '0.67rem', color: '#C0A050', fontFamily: 'monospace' }}>/{artisan.slug}</div>
                   </td>
-                  <td style={{ padding: '12px 16px', color: '#5C5542' }}>{artisan.state}</td>
-                  <td style={{ padding: '12px 16px', color: '#5C5542' }}>{artisan.craft}</td>
-                  <td style={{ padding: '12px 16px', color: '#5C5542', maxWidth: 180 }}>
+                  <td style={{ padding: '12px 16px', color: '#6B4820' }}>{artisan.state}</td>
+                  <td style={{ padding: '12px 16px', color: '#6B4820' }}>{artisan.craft}</td>
+                  <td style={{ padding: '12px 16px', color: '#6B4820', maxWidth: 180 }}>
                     <span style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                       {artisan.gi_product ?? '—'}
                     </span>
@@ -62,15 +62,15 @@ export default async function AdminArtisansPage() {
                   <td style={{ padding: '12px 16px' }}>
                     <span style={{
                       padding: '3px 10px', borderRadius: 20, fontSize: '0.7rem', fontWeight: 700,
-                      background: artisan.is_verified ? '#E8F0E4' : '#F2E8D5',
-                      color: artisan.is_verified ? '#3B5A2F' : '#9A8E7A',
+                      background: artisan.is_verified ? '#C8F5D8' : '#FFE8A8',
+                      color: artisan.is_verified ? '#1A7A32' : '#A07840',
                     }}>
                       {artisan.is_verified ? '✓ Verified' : 'Pending'}
                     </span>
                   </td>
                   <td style={{ padding: '12px 16px' }}>
                     <div style={{ display: 'flex', gap: 8 }}>
-                      <Link href={`/admin/artisans/${artisan.id}/edit`} style={{ fontSize: '0.78rem', color: '#1B2E4A', fontWeight: 700, border: '1px solid #D9C9A8', padding: '4px 10px', borderRadius: 4, textDecoration: 'none' }}>
+                      <Link href={`/admin/artisans/${artisan.id}/edit`} style={{ fontSize: '0.78rem', color: '#1B2E4A', fontWeight: 700, border: '1px solid #DDB840', padding: '4px 10px', borderRadius: 4, textDecoration: 'none' }}>
                         Edit
                       </Link>
                       <DeleteArtisanButton id={artisan.id} name={artisan.name} />
@@ -81,10 +81,10 @@ export default async function AdminArtisansPage() {
             </tbody>
           </table>
         ) : (
-          <div style={{ padding: '4rem', textAlign: 'center', color: '#5C5542' }}>
+          <div style={{ padding: '4rem', textAlign: 'center', color: '#6B4820' }}>
             <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>👩‍🎨</div>
             <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.3rem', marginBottom: '1.5rem' }}>No artisans yet.</p>
-            <Link href="/admin/artisans/new" style={{ background: '#C94B1A', color: '#fff', padding: '10px 24px', borderRadius: 6, fontWeight: 700, textDecoration: 'none' }}>
+            <Link href="/admin/artisans/new" style={{ background: '#E8380A', color: '#fff', padding: '10px 24px', borderRadius: 6, fontWeight: 700, textDecoration: 'none' }}>
               Add First Artisan →
             </Link>
           </div>

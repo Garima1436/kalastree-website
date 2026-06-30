@@ -21,7 +21,7 @@ export interface GIProduct {
 }
 
 const CATEGORY_COLORS: Record<string, string> = {
-  textile: '#1B2E4A', handicraft: '#C94B1A', agricultural: '#3B5A2F', food: '#7A3B52',
+  textile: '#1B2E4A', handicraft: '#E8380A', agricultural: '#1A7A32', food: '#C21859',
 }
 const CATEGORY_LABELS: Record<string, string> = {
   textile: 'Textile', handicraft: 'Handicraft', agricultural: 'Agricultural', food: 'Food & Natural',
@@ -42,7 +42,7 @@ function CardVisual({ product }: { product: GIProduct }) {
       <div style={{ position: 'absolute', top: 10, left: 10, background: CATEGORY_COLORS[product.category], color: '#fff', fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', padding: '3px 8px', borderRadius: 4, fontFamily: "'Lato', sans-serif" }}>
         {CATEGORY_LABELS[product.category]}
       </div>
-      <div style={{ position: 'absolute', top: 10, right: 10, background: '#B8860B', color: '#fff', fontSize: '0.6rem', fontWeight: 700, padding: '3px 8px', borderRadius: 4, fontFamily: "'Lato', sans-serif" }}>
+      <div style={{ position: 'absolute', top: 10, right: 10, background: '#D4A000', color: '#fff', fontSize: '0.6rem', fontWeight: 700, padding: '3px 8px', borderRadius: 4, fontFamily: "'Lato', sans-serif" }}>
         GI CERTIFIED
       </div>
     </div>
@@ -52,7 +52,7 @@ function CardVisual({ product }: { product: GIProduct }) {
 function ProductModal({ product, onClose }: { product: GIProduct; onClose: () => void }) {
   return (
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(10,5,0,0.65)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-      <div onClick={e => e.stopPropagation()} style={{ background: '#FFFEF9', borderRadius: 16, maxWidth: 720, width: '100%', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 24px 80px rgba(0,0,0,0.3)', border: '1.5px solid #D9C9A8' }}>
+      <div onClick={e => e.stopPropagation()} style={{ background: '#FFFFFF', borderRadius: 16, maxWidth: 720, width: '100%', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 24px 80px rgba(0,0,0,0.3)', border: '1.5px solid #DDB840' }}>
         {/* Header */}
         <div style={{ height: 200, background: `linear-gradient(135deg, ${product.accent}25, ${product.accent}45)`, borderRadius: '14px 14px 0 0', display: 'flex', alignItems: 'flex-end', gap: '1.5rem', padding: '0 2rem 1.25rem', position: 'relative', overflow: 'hidden' }}>
           {product.image_url && (
@@ -66,7 +66,7 @@ function ProductModal({ product, onClose }: { product: GIProduct; onClose: () =>
             <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.4rem, 3vw, 2rem)', fontWeight: 700, color: '#fff', margin: 0, textShadow: '0 1px 4px rgba(0,0,0,0.4)' }}>{product.name}</h2>
             <div style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.72rem', color: 'rgba(255,255,255,0.7)', marginTop: 4 }}>{product.gi_tag}</div>
           </div>
-          <button onClick={onClose} style={{ position: 'absolute', top: 14, right: 14, zIndex: 2, background: 'rgba(255,255,255,0.85)', border: 'none', borderRadius: '50%', width: 34, height: 34, cursor: 'pointer', fontSize: '1.1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#5C5542', fontWeight: 700 }}>✕</button>
+          <button onClick={onClose} style={{ position: 'absolute', top: 14, right: 14, zIndex: 2, background: 'rgba(255,255,255,0.85)', border: 'none', borderRadius: '50%', width: 34, height: 34, cursor: 'pointer', fontSize: '1.1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6B4820', fontWeight: 700 }}>✕</button>
         </div>
 
         <div style={{ padding: '2rem' }}>
@@ -77,34 +77,34 @@ function ProductModal({ product, onClose }: { product: GIProduct; onClose: () =>
               <span style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: product.accent }}>Women & Heritage</span>
               <span style={{ background: product.accent, color: '#fff', fontSize: '0.65rem', fontWeight: 700, padding: '2px 8px', borderRadius: 20, fontFamily: "'Lato', sans-serif" }}>{product.women_percent}% Women</span>
             </div>
-            <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.05rem', lineHeight: 1.8, color: '#3A2E22', margin: 0 }}>{product.women_role}</p>
+            <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.05rem', lineHeight: 1.8, color: '#3A1C08', margin: 0 }}>{product.women_role}</p>
           </div>
 
           {/* History */}
           <div style={{ marginBottom: '1.5rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: '0.75rem' }}>
               <span style={{ fontSize: '1rem' }}>📜</span>
-              <span style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#5C5542' }}>History & Heritage</span>
+              <span style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#6B4820' }}>History & Heritage</span>
             </div>
-            <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.05rem', lineHeight: 1.85, color: '#3A2E22', margin: 0 }}>{product.history}</p>
+            <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.05rem', lineHeight: 1.85, color: '#3A1C08', margin: 0 }}>{product.history}</p>
           </div>
 
           {/* Details */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-            <div style={{ background: '#F8F2E8', borderRadius: 8, padding: '1rem' }}>
-              <div style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#9A8E7A', marginBottom: 6 }}>Materials</div>
-              <p style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.88rem', color: '#3A2E22', lineHeight: 1.6, margin: 0 }}>{product.materials}</p>
+            <div style={{ background: '#FFF5E0', borderRadius: 8, padding: '1rem' }}>
+              <div style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#A07840', marginBottom: 6 }}>Materials</div>
+              <p style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.88rem', color: '#3A1C08', lineHeight: 1.6, margin: 0 }}>{product.materials}</p>
             </div>
-            <div style={{ background: '#F8F2E8', borderRadius: 8, padding: '1rem' }}>
-              <div style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#9A8E7A', marginBottom: 6 }}>Districts</div>
-              <p style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.88rem', color: '#3A2E22', lineHeight: 1.6, margin: 0 }}>{product.district}</p>
+            <div style={{ background: '#FFF5E0', borderRadius: 8, padding: '1rem' }}>
+              <div style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#A07840', marginBottom: 6 }}>Districts</div>
+              <p style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.88rem', color: '#3A1C08', lineHeight: 1.6, margin: 0 }}>{product.district}</p>
             </div>
           </div>
 
           {/* Footer */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1px solid #EDE0C8' }}>
-            <div style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.8rem', color: '#9A8E7A' }}>{product.gi_tag} · Certified {product.year}</div>
-            <Link href={`/shop?state=${encodeURIComponent(product.state)}`} style={{ background: '#C94B1A', color: '#fff', fontFamily: "'Lato', sans-serif", fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', padding: '8px 18px', borderRadius: 6, textDecoration: 'none' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1px solid #EDD060' }}>
+            <div style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.8rem', color: '#A07840' }}>{product.gi_tag} · Certified {product.year}</div>
+            <Link href={`/shop?state=${encodeURIComponent(product.state)}`} style={{ background: '#E8380A', color: '#fff', fontFamily: "'Lato', sans-serif", fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', padding: '8px 18px', borderRadius: 6, textDecoration: 'none' }}>
               Shop {product.state} Products →
             </Link>
           </div>
@@ -137,22 +137,22 @@ export default function GIProductsClient({ products }: { products: GIProduct[] }
       <div style={{ background: 'linear-gradient(160deg, #1B2E4A 0%, #0D1E33 100%)', padding: '4rem 5% 5rem', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', right: '5%', top: '50%', transform: 'translateY(-50%)', opacity: 0.06, pointerEvents: 'none' }}>
           <svg width="420" height="420" viewBox="0 0 420 420" fill="none">
-            <circle cx="210" cy="210" r="200" stroke="#B8860B" strokeWidth="1" />
-            <circle cx="210" cy="210" r="160" stroke="#B8860B" strokeWidth="1" />
-            <circle cx="210" cy="210" r="120" stroke="#B8860B" strokeWidth="1" />
-            <circle cx="210" cy="210" r="80" stroke="#B8860B" strokeWidth="1" />
+            <circle cx="210" cy="210" r="200" stroke="#D4A000" strokeWidth="1" />
+            <circle cx="210" cy="210" r="160" stroke="#D4A000" strokeWidth="1" />
+            <circle cx="210" cy="210" r="120" stroke="#D4A000" strokeWidth="1" />
+            <circle cx="210" cy="210" r="80" stroke="#D4A000" strokeWidth="1" />
             {[0,30,60,90,120,150,180,210,240,270,300,330].map(angle => (
-              <line key={angle} x1="210" y1="10" x2="210" y2="210" stroke="#B8860B" strokeWidth="0.5" transform={`rotate(${angle} 210 210)`} />
+              <line key={angle} x1="210" y1="10" x2="210" y2="210" stroke="#D4A000" strokeWidth="0.5" transform={`rotate(${angle} 210 210)`} />
             ))}
           </svg>
         </div>
         <div style={{ maxWidth: 900, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <p style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.25em', textTransform: 'uppercase', color: '#B8860B', marginBottom: '0.75rem' }}>
-            <Link href="/" style={{ color: '#B8860B', textDecoration: 'none' }}>Home</Link>
+          <p style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.25em', textTransform: 'uppercase', color: '#D4A000', marginBottom: '0.75rem' }}>
+            <Link href="/" style={{ color: '#D4A000', textDecoration: 'none' }}>Home</Link>
             <span style={{ margin: '0 0.5rem', opacity: 0.6 }}>/</span>GI Products
           </p>
           <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(2.4rem, 5vw, 3.8rem)', fontWeight: 700, color: '#fff', lineHeight: 1.15, marginBottom: '1rem' }}>
-            Heritage <span style={{ color: '#B8860B', fontStyle: 'italic' }}>by Her</span>
+            Heritage <span style={{ color: '#D4A000', fontStyle: 'italic' }}>by Her</span>
           </h1>
           <p style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1rem, 2vw, 1.25rem)', color: 'rgba(255,255,255,0.75)', lineHeight: 1.85, maxWidth: 640, marginBottom: '2rem' }}>
             India has 478 Geographical Indication (GI) certified products — each carrying centuries of women's knowledge, craft, and identity.
@@ -160,7 +160,7 @@ export default function GIProductsClient({ products }: { products: GIProduct[] }
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem' }}>
             {[{ n: '478', l: 'GI Tags in India' }, { n: String(products.length), l: 'Products Profiled' }, { n: '16', l: 'States Covered' }, { n: '2,500+', l: 'Women Voices' }].map(({ n, l }) => (
               <div key={l}>
-                <div style={{ fontFamily: "'EB Garamond', serif", fontSize: '2rem', fontWeight: 700, color: '#B8860B', lineHeight: 1 }}>{n}</div>
+                <div style={{ fontFamily: "'EB Garamond', serif", fontSize: '2rem', fontWeight: 700, color: '#D4A000', lineHeight: 1 }}>{n}</div>
                 <div style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.55)', marginTop: 4 }}>{l}</div>
               </div>
             ))}
@@ -169,24 +169,24 @@ export default function GIProductsClient({ products }: { products: GIProduct[] }
       </div>
 
       {/* Controls */}
-      <div style={{ background: '#fff', borderBottom: '1.5px solid #D9C9A8', position: 'sticky', top: 64, zIndex: 50 }}>
+      <div style={{ background: '#fff', borderBottom: '1.5px solid #DDB840', position: 'sticky', top: 64, zIndex: 50 }}>
         <div style={{ maxWidth: 1300, margin: '0 auto', padding: '0 4%' }}>
           <div style={{ overflowX: 'auto', display: 'flex', gap: '0.15rem', padding: '0.75rem 0', scrollbarWidth: 'none' }}>
             {allStates.map(state => {
               const active = state === activeState
               return (
-                <button key={state} onClick={() => setActiveState(state)} style={{ flexShrink: 0, fontFamily: "'Lato', sans-serif", fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.05em', padding: '7px 14px', borderRadius: 6, border: active ? '1.5px solid #C94B1A' : '1.5px solid transparent', background: active ? '#C94B1A' : 'transparent', color: active ? '#fff' : '#5C5542', cursor: 'pointer', transition: 'all 0.15s', whiteSpace: 'nowrap' }}>
+                <button key={state} onClick={() => setActiveState(state)} style={{ flexShrink: 0, fontFamily: "'Lato', sans-serif", fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.05em', padding: '7px 14px', borderRadius: 6, border: active ? '1.5px solid #E8380A' : '1.5px solid transparent', background: active ? '#E8380A' : 'transparent', color: active ? '#fff' : '#6B4820', cursor: 'pointer', transition: 'all 0.15s', whiteSpace: 'nowrap' }}>
                   {state}
-                  <span style={{ marginLeft: 6, background: active ? 'rgba(255,255,255,0.25)' : '#EDE0C8', color: active ? '#fff' : '#7A6A5A', borderRadius: 10, padding: '1px 7px', fontSize: '0.65rem', fontWeight: 700 }}>
+                  <span style={{ marginLeft: 6, background: active ? 'rgba(255,255,255,0.25)' : '#EDD060', color: active ? '#fff' : '#9B6820', borderRadius: 10, padding: '1px 7px', fontSize: '0.65rem', fontWeight: 700 }}>
                     {stateCount(state)}
                   </span>
                 </button>
               )
             })}
           </div>
-          <div style={{ padding: '0.6rem 0', borderTop: '1px solid #EDE0C8' }}>
+          <div style={{ padding: '0.6rem 0', borderTop: '1px solid #EDD060' }}>
             <input type="text" placeholder="Search by product name, state, or craft type..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
-              style={{ width: '100%', maxWidth: 480, fontFamily: "'Lato', sans-serif", fontSize: '0.88rem', padding: '8px 14px', border: '1.5px solid #D9C9A8', borderRadius: 8, background: '#FFFEF9', color: '#1B2E4A', outline: 'none', boxSizing: 'border-box' }} />
+              style={{ width: '100%', maxWidth: 480, fontFamily: "'Lato', sans-serif", fontSize: '0.88rem', padding: '8px 14px', border: '1.5px solid #DDB840', borderRadius: 8, background: '#FFFFFF', color: '#1B2E4A', outline: 'none', boxSizing: 'border-box' }} />
           </div>
         </div>
       </div>
@@ -194,9 +194,9 @@ export default function GIProductsClient({ products }: { products: GIProduct[] }
       {/* Grid */}
       <div style={{ maxWidth: 1300, margin: '0 auto', padding: '2.5rem 4%' }}>
         <div style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
-          <p style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.85rem', color: '#7A6A5A', margin: 0 }}>
+          <p style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.85rem', color: '#9B6820', margin: 0 }}>
             Showing <strong style={{ color: '#1B2E4A' }}>{filtered.length}</strong> GI certified product{filtered.length !== 1 ? 's' : ''}
-            {activeState !== 'All States' && <> from <strong style={{ color: '#C94B1A' }}>{activeState}</strong></>}
+            {activeState !== 'All States' && <> from <strong style={{ color: '#E8380A' }}>{activeState}</strong></>}
           </p>
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
             {Object.entries(CATEGORY_LABELS).map(([key, label]) => (
@@ -210,29 +210,29 @@ export default function GIProductsClient({ products }: { products: GIProduct[] }
         {filtered.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '5rem 0' }}>
             <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔍</div>
-            <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.4rem', color: '#5C5542' }}>No products found.</p>
-            <button onClick={() => { setSearchQuery(''); setActiveState('All States') }} style={{ marginTop: '1rem', background: '#C94B1A', color: '#fff', border: 'none', borderRadius: 6, padding: '8px 20px', cursor: 'pointer', fontFamily: "'Lato', sans-serif", fontWeight: 700 }}>Clear filters</button>
+            <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.4rem', color: '#6B4820' }}>No products found.</p>
+            <button onClick={() => { setSearchQuery(''); setActiveState('All States') }} style={{ marginTop: '1rem', background: '#E8380A', color: '#fff', border: 'none', borderRadius: 6, padding: '8px 20px', cursor: 'pointer', fontFamily: "'Lato', sans-serif", fontWeight: 700 }}>Clear filters</button>
           </div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
             {filtered.map(product => (
               <div key={product.id} onClick={() => setSelectedProduct(product)}
-                style={{ background: '#FFFEF9', border: '1.5px solid #D9C9A8', borderRadius: 12, overflow: 'hidden', cursor: 'pointer', transition: 'transform 0.18s, box-shadow 0.18s', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}
+                style={{ background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 12, overflow: 'hidden', cursor: 'pointer', transition: 'transform 0.18s, box-shadow 0.18s', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}
                 onMouseEnter={e => { const el = e.currentTarget as HTMLDivElement; el.style.transform = 'translateY(-4px)'; el.style.boxShadow = '0 12px 32px rgba(0,0,0,0.12)' }}
                 onMouseLeave={e => { const el = e.currentTarget as HTMLDivElement; el.style.transform = 'translateY(0)'; el.style.boxShadow = '0 2px 8px rgba(0,0,0,0.04)' }}
               >
                 <CardVisual product={product} />
                 <div style={{ padding: '1.25rem' }}>
-                  <div style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#9A8E7A', marginBottom: '0.35rem' }}>{product.state}</div>
+                  <div style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A07840', marginBottom: '0.35rem' }}>{product.state}</div>
                   <h3 style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.2rem', fontWeight: 700, color: '#1B2E4A', margin: '0 0 0.5rem' }}>{product.name}</h3>
-                  <p style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.82rem', color: '#5C5542', lineHeight: 1.6, margin: '0 0 1rem' }}>{product.tagline}</p>
+                  <p style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.82rem', color: '#6B4820', lineHeight: 1.6, margin: '0 0 1rem' }}>{product.tagline}</p>
                   <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: `${product.accent}12`, border: `1px solid ${product.accent}35`, borderRadius: 20, padding: '4px 10px', marginBottom: '1rem' }}>
                     <span style={{ fontSize: '0.75rem' }}>👩‍🎨</span>
                     <span style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.7rem', fontWeight: 700, color: product.accent }}>{product.women_percent}% women artisans</span>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.75rem', borderTop: '1px solid #EDE0C8' }}>
-                    <span style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.68rem', color: '#B8860B', fontWeight: 700 }}>{product.gi_tag}</span>
-                    <span style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.72rem', fontWeight: 700, color: '#C94B1A', letterSpacing: '0.05em' }}>Learn more →</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.75rem', borderTop: '1px solid #EDD060' }}>
+                    <span style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.68rem', color: '#D4A000', fontWeight: 700 }}>{product.gi_tag}</span>
+                    <span style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.72rem', fontWeight: 700, color: '#E8380A', letterSpacing: '0.05em' }}>Learn more →</span>
                   </div>
                 </div>
               </div>
@@ -244,14 +244,14 @@ export default function GIProductsClient({ products }: { products: GIProduct[] }
       {/* Knowledge Banner */}
       <div style={{ background: '#1B2E4A', padding: '4rem 5%', marginTop: '2rem' }}>
         <div style={{ maxWidth: 1000, margin: '0 auto', textAlign: 'center' }}>
-          <p style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#B8860B', marginBottom: '1rem' }}>AI-Powered Knowledge</p>
+          <p style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#D4A000', marginBottom: '1rem' }}>AI-Powered Knowledge</p>
           <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.8rem, 3.5vw, 2.6rem)', fontWeight: 700, color: '#fff', marginBottom: '1rem' }}>Ask our chatbot anything about GI heritage</h2>
           <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.1rem', color: 'rgba(255,255,255,0.7)', lineHeight: 1.8, maxWidth: 600, margin: '0 auto 2rem' }}>
             Trained on 478 GI products and 2,500 women artisan survey responses — our AI can answer questions about craft history, women's involvement, market access, and more.
           </p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link href="/chatbot" style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.85rem', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', background: '#C94B1A', color: '#fff', padding: '12px 28px', borderRadius: 6, textDecoration: 'none' }}>Chat with KalaStree AI</Link>
-            <Link href="/shop" style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.85rem', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', background: 'transparent', color: '#B8860B', border: '1.5px solid #B8860B', padding: '12px 28px', borderRadius: 6, textDecoration: 'none' }}>Shop GI Products</Link>
+            <Link href="/chatbot" style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.85rem', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', background: '#E8380A', color: '#fff', padding: '12px 28px', borderRadius: 6, textDecoration: 'none' }}>Chat with KalaStree AI</Link>
+            <Link href="/shop" style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.85rem', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', background: 'transparent', color: '#D4A000', border: '1.5px solid #D4A000', padding: '12px 28px', borderRadius: 6, textDecoration: 'none' }}>Shop GI Products</Link>
           </div>
         </div>
       </div>
@@ -259,8 +259,8 @@ export default function GIProductsClient({ products }: { products: GIProduct[] }
       {selectedProduct && <ProductModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />}
 
       <style>{`
-        input::placeholder { color: #9A8E7A; }
-        input:focus { border-color: #C94B1A !important; box-shadow: 0 0 0 3px rgba(201,75,26,0.12); }
+        input::placeholder { color: #A07840; }
+        input:focus { border-color: #E8380A !important; box-shadow: 0 0 0 3px rgba(232,56,10,0.12); }
         @media (max-width: 640px) {
           div[style*="repeat(auto-fill, minmax(280px"] { grid-template-columns: 1fr !important; }
           div[style*="1fr 1fr"] { grid-template-columns: 1fr !important; }

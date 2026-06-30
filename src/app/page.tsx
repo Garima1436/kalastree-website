@@ -39,42 +39,42 @@ export default async function HomePage() {
     <>
       {/* HERO */}
       <section style={{ background: 'var(--parchment)', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(ellipse 70% 50% at 50% 30%, rgba(201,75,26,0.06) 0%, transparent 60%), radial-gradient(ellipse 60% 60% at 80% 80%, rgba(59,90,47,0.05) 0%, transparent 70%)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(ellipse 70% 50% at 50% 30%, rgba(232,56,10,0.06) 0%, transparent 60%), radial-gradient(ellipse 60% 60% at 80% 80%, rgba(26,122,50,0.05) 0%, transparent 70%)', pointerEvents: 'none' }} />
 
         {/* ── Text block – full width, centred ── */}
         <div style={{ maxWidth: 860, margin: '0 auto', padding: '3.5rem 5% 2.5rem', textAlign: 'center', position: 'relative', zIndex: 2 }}>
 
-          <div className="hero-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#E8F0E4', border: '1px solid #3B5A2F', borderRadius: 30, padding: '6px 16px', fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#3B5A2F', marginBottom: '1.25rem' }}>
-            <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#3B5A2F', animation: 'pulse 2s infinite' }} />
+          <div className="hero-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#C8F5D8', border: '1px solid #1A7A32', borderRadius: 30, padding: '6px 16px', fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#1A7A32', marginBottom: '1.25rem' }}>
+            <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#1A7A32', animation: 'pulse 2s infinite' }} />
             478 GI Products · 16 States · 2,500 Women
           </div>
 
-          <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(2.4rem, 6vw, 4.2rem)', fontWeight: 700, color: '#C94B1A', lineHeight: 1.08, marginBottom: '0.35rem' }}>
+          <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(2.4rem, 6vw, 4.2rem)', fontWeight: 700, color: '#E8380A', lineHeight: 1.08, marginBottom: '0.35rem' }}>
             KalaStree
           </h1>
-          <p style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1rem, 2.5vw, 1.45rem)', fontStyle: 'italic', color: '#B8860B', marginBottom: '1.1rem' }}>
+          <p style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1rem, 2.5vw, 1.45rem)', fontStyle: 'italic', color: '#D4A000', marginBottom: '1.1rem' }}>
             "Heritage by Her"
           </p>
-          <p className="hero-desc" style={{ fontSize: 'clamp(0.88rem, 1.8vw, 1.05rem)', lineHeight: 1.8, color: '#5C5542', maxWidth: 560, margin: '0 auto 1.75rem' }}>
+          <p className="hero-desc" style={{ fontSize: 'clamp(0.88rem, 1.8vw, 1.05rem)', lineHeight: 1.8, color: '#6B4820', maxWidth: 560, margin: '0 auto 1.75rem' }}>
             India's first GI-verified marketplace where every purchase goes{' '}
             <strong>directly to the woman who made it</strong> — no middlemen, no compromise.
           </p>
 
           <div className="hero-btns" style={{ display: 'flex', gap: '0.9rem', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '2rem' }}>
-            <Link href="/shop" style={{ background: '#C94B1A', color: '#fff', padding: '12px 28px', borderRadius: 5, fontFamily: "'Lato', sans-serif", fontSize: '0.88rem', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+            <Link href="/shop" style={{ background: '#E8380A', color: '#fff', padding: '12px 28px', borderRadius: 5, fontFamily: "'Lato', sans-serif", fontSize: '0.88rem', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
               Shop GI Products →
             </Link>
-            <Link href="/artisans" style={{ background: 'transparent', color: '#C94B1A', padding: '12px 28px', borderRadius: 5, border: '2px solid #C94B1A', fontFamily: "'Lato', sans-serif", fontSize: '0.88rem', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+            <Link href="/artisans" style={{ background: 'transparent', color: '#E8380A', padding: '12px 28px', borderRadius: 5, border: '2px solid #E8380A', fontFamily: "'Lato', sans-serif", fontSize: '0.88rem', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
               Meet the Artisans
             </Link>
           </div>
 
           {/* Stats */}
-          <div className="hero-stats" style={{ display: 'flex', gap: '2rem', justifyContent: 'center', paddingTop: '1.75rem', borderTop: '1.5px solid #D9C9A8', flexWrap: 'wrap' }}>
+          <div className="hero-stats" style={{ display: 'flex', gap: '2rem', justifyContent: 'center', paddingTop: '1.75rem', borderTop: '1.5px solid #DDB840', flexWrap: 'wrap' }}>
             {[['478', 'GI Tags'], ['2,500', 'Women Empowered'], ['16', 'States']].map(([n, l]) => (
               <div key={l} style={{ textAlign: 'center' }}>
-                <div style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.5rem, 4vw, 2rem)', fontWeight: 700, color: '#C94B1A', lineHeight: 1 }}>{n}</div>
-                <div style={{ fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#5C5542', marginTop: 4 }}>{l}</div>
+                <div style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.5rem, 4vw, 2rem)', fontWeight: 700, color: '#E8380A', lineHeight: 1 }}>{n}</div>
+                <div style={{ fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B4820', marginTop: 4 }}>{l}</div>
               </div>
             ))}
           </div>
@@ -98,12 +98,12 @@ export default async function HomePage() {
       </section>
 
       {/* GI CATEGORIES */}
-      <section style={{ padding: '5rem 5%', background: '#F2E8D5' }}>
+      <section style={{ padding: '5rem 5%', background: '#FFE8A8' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <div className="folk-divider"><span>✦ ✧ ✦</span></div>
-          <p style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#3B5A2F', textAlign: 'center', marginBottom: '0.6rem' }}>Browse by Category</p>
+          <p style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#1A7A32', textAlign: 'center', marginBottom: '0.6rem' }}>Browse by Category</p>
           <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.8rem, 3vw, 2.6rem)', fontWeight: 700, color: '#1B2E4A', textAlign: 'center', marginBottom: '3rem' }}>
-            Four Pillars of India's <span style={{ color: '#C94B1A' }}>GI Heritage</span>
+            Four Pillars of India's <span style={{ color: '#E8380A' }}>GI Heritage</span>
           </h2>
           <CategoryGrid />
         </div>
@@ -114,20 +114,20 @@ export default async function HomePage() {
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '3rem', flexWrap: 'wrap', gap: '1rem' }}>
             <div>
-              <p style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#3B5A2F', marginBottom: '0.4rem' }}>Handpicked for You</p>
+              <p style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#1A7A32', marginBottom: '0.4rem' }}>Handpicked for You</p>
               <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.8rem, 3vw, 2.6rem)', fontWeight: 700, color: '#1B2E4A' }}>
-                Featured <span style={{ color: '#C94B1A' }}>GI Products</span>
+                Featured <span style={{ color: '#E8380A' }}>GI Products</span>
               </h2>
             </div>
-            <Link href="/shop" style={{ fontSize: '0.88rem', fontWeight: 700, color: '#C94B1A', textDecoration: 'none', border: '1.5px solid #C94B1A', padding: '8px 20px', borderRadius: 4 }}>
+            <Link href="/shop" style={{ fontSize: '0.88rem', fontWeight: 700, color: '#E8380A', textDecoration: 'none', border: '1.5px solid #E8380A', padding: '8px 20px', borderRadius: 4 }}>
               View All Products →
             </Link>
           </div>
 
           {products.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '4rem', color: '#5C5542' }}>
+            <div style={{ textAlign: 'center', padding: '4rem', color: '#6B4820' }}>
               <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🌾</div>
-              <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.3rem' }}>Products coming soon. <Link href="/join" style={{ color: '#C94B1A' }}>Join as an artisan →</Link></p>
+              <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.3rem' }}>Products coming soon. <Link href="/join" style={{ color: '#E8380A' }}>Join as an artisan →</Link></p>
             </div>
           ) : (
             <ProductCarousel products={products} />
@@ -155,19 +155,19 @@ export default async function HomePage() {
 
       {/* ARTISANS */}
       {artisans.length > 0 && (
-        <section style={{ padding: '5rem 5%', background: '#F2E8D5' }}>
+        <section style={{ padding: '5rem 5%', background: '#FFE8A8' }}>
           <div style={{ maxWidth: 1280, margin: '0 auto' }}>
             <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-              <p style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#3B5A2F', marginBottom: '0.4rem' }}>The Hands Behind the Craft</p>
+              <p style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#1A7A32', marginBottom: '0.4rem' }}>The Hands Behind the Craft</p>
               <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.8rem, 3vw, 2.6rem)', fontWeight: 700, color: '#1B2E4A' }}>
-                Meet Our <span style={{ color: '#C94B1A' }}>Artisans</span>
+                Meet Our <span style={{ color: '#E8380A' }}>Artisans</span>
               </h2>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1.25rem', marginBottom: '2.5rem' }}>
               {artisans.map(a => <ArtisanCard key={a.id} artisan={a} />)}
             </div>
             <div style={{ textAlign: 'center' }}>
-              <Link href="/artisans" style={{ background: '#C94B1A', color: '#fff', padding: '12px 28px', borderRadius: 5, fontWeight: 700, textDecoration: 'none', fontSize: '0.9rem' }}>
+              <Link href="/artisans" style={{ background: '#E8380A', color: '#fff', padding: '12px 28px', borderRadius: 5, fontWeight: 700, textDecoration: 'none', fontSize: '0.9rem' }}>
                 View All Artisans →
               </Link>
             </div>
@@ -176,16 +176,16 @@ export default async function HomePage() {
       )}
 
       {/* CTA — Join as Artisan */}
-      <section style={{ padding: '5rem 5%', background: '#E8F0E4' }}>
+      <section style={{ padding: '5rem 5%', background: '#C8F5D8' }}>
         <div style={{ maxWidth: 720, margin: '0 auto', textAlign: 'center' }}>
           <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🧵</div>
-          <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.8rem, 3vw, 2.4rem)', fontWeight: 700, color: '#3B5A2F', marginBottom: '1rem' }}>
+          <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.8rem, 3vw, 2.4rem)', fontWeight: 700, color: '#1A7A32', marginBottom: '1rem' }}>
             Are You a Woman Artisan?
           </h2>
-          <p style={{ fontSize: '1rem', lineHeight: 1.8, color: '#5C5542', marginBottom: '2rem' }}>
+          <p style={{ fontSize: '1rem', lineHeight: 1.8, color: '#6B4820', marginBottom: '2rem' }}>
             Join KalaStree and sell your GI-tagged craft directly to buyers across India and the world. Get paid directly. No middlemen. Your story, your price, your income.
           </p>
-          <Link href="/join" style={{ background: '#3B5A2F', color: '#fff', padding: '14px 32px', borderRadius: 5, fontWeight: 700, textDecoration: 'none', fontSize: '1rem', display: 'inline-block' }}>
+          <Link href="/join" style={{ background: '#1A7A32', color: '#fff', padding: '14px 32px', borderRadius: 5, fontWeight: 700, textDecoration: 'none', fontSize: '1rem', display: 'inline-block' }}>
             Apply to Sell on KalaStree →
           </Link>
         </div>

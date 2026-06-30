@@ -28,8 +28,8 @@ export default function RoleToggle({ userId, currentRole }: { userId: string; cu
   return (
     <button onClick={toggle} disabled={loading} style={{
       fontSize: '0.75rem', fontWeight: 700, padding: '4px 12px', borderRadius: 20, border: 'none', cursor: loading ? 'not-allowed' : 'pointer',
-      background: isAdmin ? '#FEE2E2' : '#E8F0E4',
-      color: isAdmin ? '#B91C1C' : '#3B5A2F',
+      background: isAdmin ? '#FEE2E2' : '#C8F5D8',
+      color: isAdmin ? '#B91C1C' : '#1A7A32',
       opacity: loading ? 0.6 : 1,
     }}>
       {loading ? '…' : isAdmin ? 'Remove Admin' : 'Make Admin'}

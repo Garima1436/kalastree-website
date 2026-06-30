@@ -139,11 +139,11 @@ export default function ProductMediaManager({ productId }: { productId: string }
     ])
   }
 
-  const labelStyle: React.CSSProperties = { fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#5C5542', display: 'block', marginBottom: 6 }
+  const labelStyle: React.CSSProperties = { fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B4820', display: 'block', marginBottom: 6 }
   const btnStyle = (color = '#1B2E4A'): React.CSSProperties => ({ background: color, color: '#fff', padding: '9px 18px', border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '0.82rem', cursor: 'pointer', whiteSpace: 'nowrap' as const })
 
   return (
-    <div style={{ marginTop: '2rem', borderTop: '2px solid #D9C9A8', paddingTop: '1.75rem' }}>
+    <div style={{ marginTop: '2rem', borderTop: '2px solid #DDB840', paddingTop: '1.75rem' }}>
       <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.4rem', fontWeight: 700, color: '#1B2E4A', marginBottom: '1.25rem' }}>
         Product Media
       </h2>
@@ -154,7 +154,7 @@ export default function ProductMediaManager({ productId }: { productId: string }
       {media.length > 0 && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '0.75rem', marginBottom: '1.5rem' }}>
           {media.map((item, idx) => (
-            <div key={item.id} style={{ position: 'relative', borderRadius: 8, overflow: 'hidden', border: '1.5px solid #D9C9A8', background: '#F2E8D5', aspectRatio: '4/3' }}>
+            <div key={item.id} style={{ position: 'relative', borderRadius: 8, overflow: 'hidden', border: '1.5px solid #DDB840', background: '#FFE8A8', aspectRatio: '4/3' }}>
               {/* Thumbnail */}
               <div style={{ width: '100%', height: '100%' }}>
                 {item.type === 'image' && <img src={item.url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
@@ -168,7 +168,7 @@ export default function ProductMediaManager({ productId }: { productId: string }
               </div>
 
               {/* Type badge */}
-              <div style={{ position: 'absolute', top: 5, left: 5, background: item.type === 'video' ? '#C94B1A' : '#1B2E4A', color: '#fff', fontSize: '0.55rem', fontWeight: 700, padding: '2px 6px', borderRadius: 3, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              <div style={{ position: 'absolute', top: 5, left: 5, background: item.type === 'video' ? '#E8380A' : '#1B2E4A', color: '#fff', fontSize: '0.55rem', fontWeight: 700, padding: '2px 6px', borderRadius: 3, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 {item.type === 'video' ? (item.source === 'youtube' ? 'YT' : 'MP4') : 'IMG'}
               </div>
 
@@ -184,61 +184,61 @@ export default function ProductMediaManager({ productId }: { productId: string }
                   style={{ width: 22, height: 22, borderRadius: 4, background: '#EF4444', border: 'none', cursor: 'pointer', fontSize: '0.7rem', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>✕</button>
               </div>
 
-              {idx === 0 && <div style={{ position: 'absolute', top: 5, right: 5, background: '#B8860B', color: '#fff', fontSize: '0.5rem', fontWeight: 700, padding: '2px 5px', borderRadius: 3 }}>COVER</div>}
+              {idx === 0 && <div style={{ position: 'absolute', top: 5, right: 5, background: '#D4A000', color: '#fff', fontSize: '0.5rem', fontWeight: 700, padding: '2px 5px', borderRadius: 3 }}>COVER</div>}
             </div>
           ))}
         </div>
       )}
 
       {media.length === 0 && (
-        <p style={{ color: '#9A8E7A', fontSize: '0.85rem', marginBottom: '1.25rem', fontStyle: 'italic' }}>No media added yet. Upload images or videos below.</p>
+        <p style={{ color: '#A07840', fontSize: '0.85rem', marginBottom: '1.25rem', fontStyle: 'italic' }}>No media added yet. Upload images or videos below.</p>
       )}
 
       {/* Upload section */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
         {/* Images */}
-        <div style={{ background: '#F8F2E8', border: '1.5px solid #D9C9A8', borderRadius: 8, padding: '1.25rem' }}>
+        <div style={{ background: '#FFF5E0', border: '1.5px solid #DDB840', borderRadius: 8, padding: '1.25rem' }}>
           <label style={labelStyle}>📷 Add Images</label>
-          <p style={{ fontSize: '0.75rem', color: '#9A8E7A', marginBottom: '0.75rem' }}>Select multiple at once · JPG, PNG, WebP · Max 10MB each</p>
+          <p style={{ fontSize: '0.75rem', color: '#A07840', marginBottom: '0.75rem' }}>Select multiple at once · JPG, PNG, WebP · Max 10MB each</p>
           <input ref={imgInputRef} type="file" accept="image/*" multiple onChange={uploadImages} style={{ display: 'none' }} />
-          <button type="button" onClick={() => imgInputRef.current?.click()} disabled={uploading} style={btnStyle(uploading ? '#9A8E7A' : '#1B2E4A')}>
+          <button type="button" onClick={() => imgInputRef.current?.click()} disabled={uploading} style={btnStyle(uploading ? '#A07840' : '#1B2E4A')}>
             {uploading ? 'Uploading…' : '+ Upload Images'}
           </button>
         </div>
 
         {/* Videos */}
-        <div style={{ background: '#F8F2E8', border: '1.5px solid #D9C9A8', borderRadius: 8, padding: '1.25rem' }}>
+        <div style={{ background: '#FFF5E0', border: '1.5px solid #DDB840', borderRadius: 8, padding: '1.25rem' }}>
           <label style={labelStyle}>🎥 Add Video</label>
 
           {/* Upload video */}
           <div style={{ marginBottom: '0.75rem' }}>
             <input ref={vidInputRef} type="file" accept="video/*" onChange={uploadVideo} style={{ display: 'none' }} />
-            <button type="button" onClick={() => vidInputRef.current?.click()} disabled={uploadingVideo} style={{ ...btnStyle(uploadingVideo ? '#9A8E7A' : '#C94B1A'), marginBottom: 6, display: 'block' }}>
+            <button type="button" onClick={() => vidInputRef.current?.click()} disabled={uploadingVideo} style={{ ...btnStyle(uploadingVideo ? '#A07840' : '#E8380A'), marginBottom: 6, display: 'block' }}>
               {uploadingVideo ? 'Uploading…' : '⬆ Upload Video File'}
             </button>
-            <div style={{ fontSize: '0.7rem', color: '#9A8E7A' }}>MP4, MOV, WebM · Max 200MB</div>
+            <div style={{ fontSize: '0.7rem', color: '#A07840' }}>MP4, MOV, WebM · Max 200MB</div>
           </div>
 
           {/* YouTube URL */}
-          <div style={{ borderTop: '1px solid #D9C9A8', paddingTop: '0.75rem' }}>
-            <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#5C5542', marginBottom: 5 }}>OR paste YouTube URL</div>
+          <div style={{ borderTop: '1px solid #DDB840', paddingTop: '0.75rem' }}>
+            <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#6B4820', marginBottom: 5 }}>OR paste YouTube URL</div>
             <div style={{ display: 'flex', gap: 6 }}>
               <input
                 type="text"
                 value={ytUrl}
                 onChange={e => { setYtUrl(e.target.value); setYtError('') }}
                 placeholder="https://youtube.com/watch?v=..."
-                style={{ flex: 1, padding: '7px 10px', border: `1.5px solid ${ytError ? '#EF4444' : '#D9C9A8'}`, borderRadius: 6, fontSize: '0.78rem', background: '#FFFEF9', outline: 'none' }}
+                style={{ flex: 1, padding: '7px 10px', border: `1.5px solid ${ytError ? '#EF4444' : '#DDB840'}`, borderRadius: 6, fontSize: '0.78rem', background: '#FFFFFF', outline: 'none' }}
                 onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addYouTube() } }}
               />
-              <button type="button" onClick={addYouTube} style={btnStyle('#B8860B')}>Add</button>
+              <button type="button" onClick={addYouTube} style={btnStyle('#D4A000')}>Add</button>
             </div>
             {ytError && <div style={{ fontSize: '0.7rem', color: '#EF4444', marginTop: 4 }}>{ytError}</div>}
           </div>
         </div>
       </div>
 
-      <p style={{ fontSize: '0.72rem', color: '#9A8E7A', marginTop: '0.75rem' }}>
+      <p style={{ fontSize: '0.72rem', color: '#A07840', marginTop: '0.75rem' }}>
         First item is shown as the cover image on product cards. Use ◀ ▶ to reorder.
       </p>
     </div>

@@ -32,7 +32,7 @@ export default function GIProductForm({ initialData, mode = 'new' }: Props) {
     gi_tag: initialData?.gi_tag ?? '',
     year: initialData?.year ?? '',
     emoji: initialData?.emoji ?? '',
-    accent: initialData?.accent ?? '#C94B1A',
+    accent: initialData?.accent ?? '#E8380A',
     women_percent: initialData?.women_percent?.toString() ?? '',
     tagline: initialData?.tagline ?? '',
     women_role: initialData?.women_role ?? '',
@@ -100,18 +100,18 @@ export default function GIProductForm({ initialData, mode = 'new' }: Props) {
   }
 
   const inputStyle: React.CSSProperties = {
-    width: '100%', padding: '10px 14px', border: '1.5px solid #D9C9A8',
-    borderRadius: 6, fontSize: '0.92rem', background: '#FDF6E3', outline: 'none',
+    width: '100%', padding: '10px 14px', border: '1.5px solid #DDB840',
+    borderRadius: 6, fontSize: '0.92rem', background: '#FFF8EE', outline: 'none',
   }
   const labelStyle: React.CSSProperties = {
     display: 'block', fontSize: '0.72rem', fontWeight: 700,
-    letterSpacing: '0.08em', textTransform: 'uppercase', color: '#5C5542', marginBottom: 5,
+    letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B4820', marginBottom: 5,
   }
 
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
-        <button onClick={() => router.push('/admin/gi-products')} style={{ background: 'none', border: 'none', color: '#5C5542', cursor: 'pointer', fontSize: '0.88rem' }}>
+        <button onClick={() => router.push('/admin/gi-products')} style={{ background: 'none', border: 'none', color: '#6B4820', cursor: 'pointer', fontSize: '0.88rem' }}>
           ← GI Products
         </button>
         <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: '2rem', fontWeight: 700, color: '#1B2E4A' }}>
@@ -119,7 +119,7 @@ export default function GIProductForm({ initialData, mode = 'new' }: Props) {
         </h1>
       </div>
 
-      <div style={{ background: '#FFFEF9', border: '1.5px solid #D9C9A8', borderRadius: 12, padding: '2rem', maxWidth: 800 }}>
+      <div style={{ background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 12, padding: '2rem', maxWidth: 800 }}>
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           {error && (
             <div style={{ background: '#FEE2E2', border: '1px solid #EF4444', borderRadius: 6, padding: '10px 14px', color: '#B91C1C', fontSize: '0.85rem' }}>
@@ -175,9 +175,9 @@ export default function GIProductForm({ initialData, mode = 'new' }: Props) {
               <label style={labelStyle}>Accent Color</label>
               <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                 <input type="color" value={form.accent} onChange={e => set('accent', e.target.value)}
-                  style={{ width: 44, height: 40, border: '1.5px solid #D9C9A8', borderRadius: 6, padding: 2, cursor: 'pointer', background: '#FDF6E3' }} />
+                  style={{ width: 44, height: 40, border: '1.5px solid #DDB840', borderRadius: 6, padding: 2, cursor: 'pointer', background: '#FFF8EE' }} />
                 <input style={{ ...inputStyle, flex: 1 }} value={form.accent} onChange={e => set('accent', e.target.value)}
-                  placeholder="#C94B1A" maxLength={7} />
+                  placeholder="#E8380A" maxLength={7} />
               </div>
             </div>
             <div>
@@ -230,7 +230,7 @@ export default function GIProductForm({ initialData, mode = 'new' }: Props) {
           <div>
             <label style={labelStyle}>Image</label>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <div style={{ width: 80, height: 80, borderRadius: 8, background: '#F2E8D5', border: '2px solid #D9C9A8', overflow: 'hidden', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ width: 80, height: 80, borderRadius: 8, background: '#FFE8A8', border: '2px solid #DDB840', overflow: 'hidden', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 {form.image_url
                   ? <img src={form.image_url} alt="preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   : <span style={{ fontSize: '2rem' }}>{form.emoji || '🗺️'}</span>}
@@ -238,10 +238,10 @@ export default function GIProductForm({ initialData, mode = 'new' }: Props) {
               <div style={{ flex: 1 }}>
                 <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageUpload} style={{ display: 'none' }} />
                 <button type="button" onClick={() => fileInputRef.current?.click()} disabled={uploading}
-                  style={{ background: uploading ? '#9A8E7A' : '#1B2E4A', color: '#fff', padding: '9px 20px', border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '0.85rem', cursor: uploading ? 'not-allowed' : 'pointer', marginBottom: 8, display: 'block' }}>
+                  style={{ background: uploading ? '#A07840' : '#1B2E4A', color: '#fff', padding: '9px 20px', border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '0.85rem', cursor: uploading ? 'not-allowed' : 'pointer', marginBottom: 8, display: 'block' }}>
                   {uploading ? 'Uploading…' : '📷 Upload from Computer'}
                 </button>
-                <div style={{ fontSize: '0.75rem', color: '#9A8E7A', marginBottom: 6 }}>JPG, PNG, WebP · Max 5MB · Auto-saves to Supabase Storage</div>
+                <div style={{ fontSize: '0.75rem', color: '#A07840', marginBottom: 6 }}>JPG, PNG, WebP · Max 5MB · Auto-saves to Supabase Storage</div>
                 <input style={{ ...inputStyle, fontSize: '0.8rem' }} value={form.image_url}
                   onChange={e => set('image_url', e.target.value)} placeholder="Or paste image URL directly" />
               </div>
@@ -250,15 +250,15 @@ export default function GIProductForm({ initialData, mode = 'new' }: Props) {
 
           <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
             <button type="submit" disabled={loading} style={{
-              background: '#C94B1A', color: '#fff', padding: '12px 28px',
+              background: '#E8380A', color: '#fff', padding: '12px 28px',
               border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '0.95rem',
               cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1,
             }}>
               {loading ? 'Saving…' : mode === 'edit' ? 'Save Changes →' : 'Add GI Product →'}
             </button>
             <button type="button" onClick={() => router.push('/admin/gi-products')} style={{
-              background: 'none', color: '#5C5542', padding: '12px 20px',
-              border: '1.5px solid #D9C9A8', borderRadius: 6, fontWeight: 700, cursor: 'pointer',
+              background: 'none', color: '#6B4820', padding: '12px 20px',
+              border: '1.5px solid #DDB840', borderRadius: 6, fontWeight: 700, cursor: 'pointer',
             }}>
               Cancel
             </button>

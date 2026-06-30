@@ -27,7 +27,7 @@ export default function CartIcon() {
       {count > 0 && (
         <span style={{
           position: 'absolute', top: -8, right: -8,
-          background: '#C94B1A', color: '#fff',
+          background: '#E8380A', color: '#fff',
           fontSize: '0.65rem', fontWeight: 700,
           width: 18, height: 18, borderRadius: '50%',
           display: 'flex', alignItems: 'center', justifyContent: 'center',

@@ -15,7 +15,7 @@ export default function ProductCarousel({ products }: { products: Product[] }) {
     <div style={{ position: 'relative' }}>
       {/* Left arrow */}
       <button onClick={() => scroll('left')} aria-label="Scroll left"
-        style={{ position: 'absolute', left: -18, top: '50%', transform: 'translateY(-50%)', zIndex: 2, width: 36, height: 36, borderRadius: '50%', border: '1.5px solid #D9C9A8', background: '#FFFEF9', cursor: 'pointer', boxShadow: '0 2px 10px rgba(0,0,0,0.1)', color: '#5C5542', fontSize: '1.1rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        style={{ position: 'absolute', left: -18, top: '50%', transform: 'translateY(-50%)', zIndex: 2, width: 36, height: 36, borderRadius: '50%', border: '1.5px solid #DDB840', background: '#FFFFFF', cursor: 'pointer', boxShadow: '0 2px 10px rgba(0,0,0,0.1)', color: '#6B4820', fontSize: '1.1rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         ‹
       </button>
 
@@ -31,7 +31,7 @@ export default function ProductCarousel({ products }: { products: Product[] }) {
 
       {/* Right arrow */}
       <button onClick={() => scroll('right')} aria-label="Scroll right"
-        style={{ position: 'absolute', right: -18, top: '50%', transform: 'translateY(-50%)', zIndex: 2, width: 36, height: 36, borderRadius: '50%', border: '1.5px solid #D9C9A8', background: '#FFFEF9', cursor: 'pointer', boxShadow: '0 2px 10px rgba(0,0,0,0.1)', color: '#5C5542', fontSize: '1.1rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        style={{ position: 'absolute', right: -18, top: '50%', transform: 'translateY(-50%)', zIndex: 2, width: 36, height: 36, borderRadius: '50%', border: '1.5px solid #DDB840', background: '#FFFFFF', cursor: 'pointer', boxShadow: '0 2px 10px rgba(0,0,0,0.1)', color: '#6B4820', fontSize: '1.1rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         ›
       </button>
     </div>

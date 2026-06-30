@@ -18,14 +18,14 @@ export default function HeroCarousel({ images }: HeroCarouselProps) {
     return (
       <div style={{
         width: '100%', height: CARD_H, borderRadius: 16,
-        background: 'linear-gradient(135deg, #F2E8D5, #EDE0C8)',
-        border: '2px dashed #D9C9A8',
+        background: 'linear-gradient(135deg, #FFE8A8, #EDD060)',
+        border: '2px dashed #DDB840',
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-        gap: 10, color: '#9A8E7A',
+        gap: 10, color: '#A07840',
       }}>
         <span style={{ fontSize: '2rem' }}>🖼️</span>
         <p style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.82rem', fontWeight: 700, textAlign: 'center' }}>
-          Add images to <code style={{ background: '#EDE0C8', padding: '2px 5px', borderRadius: 3 }}>public/hero/</code>
+          Add images to <code style={{ background: '#EDD060', padding: '2px 5px', borderRadius: 3 }}>public/hero/</code>
         </p>
       </div>
     )
@@ -79,7 +79,7 @@ export default function HeroCarousel({ images }: HeroCarouselProps) {
               overflow: 'hidden',
               boxShadow: '0 6px 24px rgba(26,10,0,0.16)',
               position: 'relative',
-              border: '2px solid rgba(184,134,11,0.18)',
+              border: '2px solid rgba(212,160,0,0.18)',
             }}
           >
             <Image
