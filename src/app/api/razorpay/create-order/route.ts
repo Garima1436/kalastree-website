@@ -3,16 +3,18 @@ import Razorpay from 'razorpay'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { supabaseAdmin } from '@/lib/supabase-admin'
+import { getSecret } from '@/lib/secrets'
 
 export async function POST(req: NextRequest) {
-  if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
-    console.error('Razorpay env missing — KEY_ID present:', !!process.env.RAZORPAY_KEY_ID)
+  const [keyId, keySecret] = await Promise.all([
+    getSecret('RAZORPAY_KEY_ID'),
+    getSecret('RAZORPAY_KEY_SECRET'),
+  ])
+  if (!keyId || !keySecret) {
+    console.error('Razorpay secrets missing from both process.env and SSM')
     return NextResponse.json({ error: 'Payment gateway not configured' }, { status: 500 })
   }
-  const razorpay = new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID,
-    key_secret: process.env.RAZORPAY_KEY_SECRET,
-  })
+  const razorpay = new Razorpay({ key_id: keyId, key_secret: keySecret })
   try {
     const body = await req.json()
     const { items, name, email, phone, address, city, state, pincode } = body

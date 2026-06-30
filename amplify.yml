@@ -6,7 +6,6 @@ frontend:
         - npm ci
     build:
       commands:
-        - echo "=== ENV CHECK === RAZORPAY_KEY_ID length=${#RAZORPAY_KEY_ID} ==="
         - rm -f .env.production
         - echo "RESEND_API_KEY=$RESEND_API_KEY" >> .env.production
         - echo "SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_ROLE_KEY" >> .env.production

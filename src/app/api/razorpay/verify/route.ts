@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
 import { supabaseAdmin } from '@/lib/supabase-admin'
+import { getSecret } from '@/lib/secrets'
 
 export async function POST(req: NextRequest) {
   try {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature, orderId } = await req.json()
 
+    const keySecret = await getSecret('RAZORPAY_KEY_SECRET')
     const expected = crypto
-      .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET!)
+      .createHmac('sha256', keySecret)
       .update(`${razorpay_order_id}|${razorpay_payment_id}`)
       .digest('hex')
 
