@@ -8,61 +8,90 @@ export default function ComingSoonRibbon({ text = 'Coming Soon' }: ComingSoonRib
   return (
     <div style={{
       position: 'fixed',
-      top: 'calc(50% + 96px)',
+      top: 'calc(50% + 192px)',
       left: 0,
       right: 0,
       transform: 'translateY(-50%)',
       zIndex: 1000,
       pointerEvents: 'none',
     }}>
-      {/* blur shadow behind */}
+      {/* drop shadow */}
       <div style={{
-        position: 'absolute', top: 8, left: 0, right: 0, height: '100%',
-        background: 'rgba(0,120,180,0.25)', filter: 'blur(10px)',
-        transform: 'scaleY(0.85) translateY(4px)',
+        position: 'absolute',
+        top: 10, left: '2%', right: '2%', height: '100%',
+        background: 'rgba(0,60,120,0.3)',
+        filter: 'blur(14px)',
+        borderRadius: 4,
       }} />
-      {/* main ribbon */}
-      <div style={{
-        background: 'linear-gradient(180deg, #6DD5FA 0%, #2980B9 45%, #1A6696 55%, #3AAFDF 100%)',
-        padding: '18px 0',
-        textAlign: 'center',
-        position: 'relative',
-        boxShadow: '0 6px 0 #0d4f75, 0 8px 16px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.45)',
-        borderTop: '1px solid rgba(255,255,255,0.3)',
-        borderBottom: '1px solid rgba(0,60,100,0.4)',
-      }}>
-        {/* left fold */}
+
+      <div style={{ position: 'relative' }}>
+        {/* left folded tail */}
         <div style={{
-          position: 'absolute', left: 0, top: 0, width: 20, height: '100%',
-          background: 'linear-gradient(90deg, #1A5276, #2980B9)',
-          boxShadow: 'inset -3px 0 6px rgba(0,0,0,0.2)',
+          position: 'absolute',
+          left: 0, top: 0, bottom: 0,
+          width: 36,
+          background: 'linear-gradient(135deg, #0a3a5c 0%, #0d4f75 60%, #0a3a5c 100%)',
+          clipPath: 'polygon(0 0, 100% 15%, 100% 85%, 0 100%)',
+          zIndex: 0,
         }} />
-        {/* right fold */}
+        {/* right folded tail */}
         <div style={{
-          position: 'absolute', right: 0, top: 0, width: 20, height: '100%',
-          background: 'linear-gradient(270deg, #1A5276, #2980B9)',
-          boxShadow: 'inset 3px 0 6px rgba(0,0,0,0.2)',
+          position: 'absolute',
+          right: 0, top: 0, bottom: 0,
+          width: 36,
+          background: 'linear-gradient(225deg, #0a3a5c 0%, #0d4f75 60%, #0a3a5c 100%)',
+          clipPath: 'polygon(100% 0, 0 15%, 0 85%, 100% 100%)',
+          zIndex: 0,
         }} />
-        <span style={{
-          fontFamily: "'EB Garamond', Georgia, serif",
-          fontSize: 'clamp(1.1rem, 2.5vw, 1.5rem)',
-          fontWeight: 700,
-          color: '#ffffff',
-          letterSpacing: '0.18em',
-          textTransform: 'uppercase',
-          textShadow: '0 1px 0 rgba(0,0,0,0.4), 0 2px 8px rgba(0,0,0,0.25)',
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '1rem',
+
+        {/* main ribbon band */}
+        <div style={{
+          position: 'relative',
+          zIndex: 1,
+          clipPath: 'polygon(28px 0%, calc(100% - 28px) 0%, 100% 50%, calc(100% - 28px) 100%, 28px 100%, 0% 50%)',
+          background: 'linear-gradient(180deg, #a8e6ff 0%, #54b8e8 12%, #2489c5 35%, #1a6ea8 50%, #1e7ab8 65%, #3aaad8 88%, #7fd4f5 100%)',
+          padding: '20px 60px',
+          textAlign: 'center',
+          boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.5), inset 0 -3px 6px rgba(0,0,0,0.3)',
         }}>
-          ✦ &nbsp; {text} &nbsp; ✦
-        </span>
+          {/* top sheen */}
+          <div style={{
+            position: 'absolute',
+            top: 0, left: '10%', right: '10%',
+            height: '40%',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 100%)',
+            borderRadius: '0 0 50% 50%',
+            pointerEvents: 'none',
+          }} />
+
+          <span style={{
+            fontFamily: "'EB Garamond', Georgia, serif",
+            fontSize: 'clamp(1.15rem, 2.8vw, 1.7rem)',
+            fontWeight: 700,
+            color: '#ffffff',
+            letterSpacing: '0.22em',
+            textTransform: 'uppercase',
+            textShadow: '0 1px 0 rgba(0,0,0,0.5), 0 0 20px rgba(0,80,160,0.6), 0 2px 10px rgba(0,0,0,0.3)',
+            position: 'relative',
+            zIndex: 2,
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '1.2rem',
+          }}>
+            ✦ &nbsp; {text} &nbsp; ✦
+          </span>
+        </div>
+
+        {/* bottom edge thickness */}
+        <div style={{
+          position: 'relative',
+          zIndex: 1,
+          clipPath: 'polygon(28px 0%, calc(100% - 28px) 0%, 100% 50%, calc(100% - 28px) 100%, 28px 100%, 0% 50%)',
+          height: 8,
+          background: 'linear-gradient(90deg, #071e30, #0d3d5c 20%, #0d4f75 50%, #0d3d5c 80%, #071e30)',
+          marginTop: -1,
+        }} />
       </div>
-      {/* bottom thickness for 3D depth */}
-      <div style={{
-        height: 6,
-        background: 'linear-gradient(90deg, #0d3d5c, #0d4f75 50%, #0d3d5c)',
-      }} />
     </div>
   )
 }
