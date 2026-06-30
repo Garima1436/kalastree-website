@@ -4,6 +4,7 @@ import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import ChatWidget from '@/components/ChatWidget'
 
+
 export const metadata: Metadata = {
   title: 'KalaStree — Heritage by Her | GI-Verified Indian Crafts',
   description: "India's first GI-native marketplace for women artisans. Buy verified Geographical Indication products — Banarasi silk, Kashmir Pashmina, Madhubani art — directly from the women who make them.",
