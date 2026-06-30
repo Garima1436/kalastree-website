@@ -5,6 +5,7 @@ import ArtisanCard from '@/components/ArtisanCard'
 import CategoryGrid from '@/components/CategoryGrid'
 import HeroCarousel from '@/components/HeroCarousel'
 import Link from 'next/link'
+import ComingSoonRibbon from '@/components/ComingSoonRibbon'
 import fs from 'fs'
 import path from 'path'
 
@@ -107,6 +108,8 @@ export default async function HomePage() {
           GI VERIFIED ARTISANS &nbsp;◆&nbsp; DIRECT FROM MAKER TO YOU &nbsp;◆&nbsp; FREE SHIPPING ABOVE ₹1499
         </p>
       </div>
+
+      <ComingSoonRibbon />
 
       {/* GI CATEGORIES */}
       <section style={{ padding: '5rem 5%', background: '#FFE8A8' }}>
