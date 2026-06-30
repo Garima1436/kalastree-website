@@ -1,5 +1,6 @@
 'use client'
 import { useState, useRef, useEffect } from 'react'
+import ReactMarkdown from 'react-markdown'
 
 interface Message {
   role: 'user' | 'ai'
@@ -93,8 +94,8 @@ export default function ChatWidget() {
                   background: msg.role === 'user' ? '#C94B1A' : '#F2E8D5',
                   color: msg.role === 'user' ? '#fff' : '#1B2E4A',
                   fontSize: '0.85rem', lineHeight: 1.55, fontFamily: "'Lato', sans-serif",
-                }}>
-                  {msg.text}
+                }} className="chat-bubble">
+                  {msg.role === 'ai' ? <ReactMarkdown>{msg.text}</ReactMarkdown> : msg.text}
                 </div>
                 {msg.sources && msg.sources.length > 0 && (
                   <div style={{ fontSize: '0.68rem', color: '#9A8E7A', marginTop: 3, paddingLeft: 4 }}>

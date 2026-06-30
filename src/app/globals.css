@@ -102,6 +102,15 @@ body {
   transform: translateY(0);
 }
 
+/* Markdown inside chat bubbles */
+.chat-bubble p { margin: 0 0 0.5em; }
+.chat-bubble p:last-child { margin-bottom: 0; }
+.chat-bubble ul, .chat-bubble ol { margin: 0.25em 0 0.5em 1.2em; }
+.chat-bubble li { margin-bottom: 0.2em; }
+.chat-bubble strong { font-weight: 700; }
+.chat-bubble em { font-style: italic; }
+.chat-bubble code { font-family: monospace; font-size: 0.88em; background: rgba(0,0,0,0.15); padding: 1px 4px; border-radius: 3px; }
+
 /* Folk divider */
 .folk-divider {
   display: flex;

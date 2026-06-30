@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import ReactMarkdown from 'react-markdown'
 
 interface Turn {
   role: 'user' | 'ai'
@@ -101,9 +102,8 @@ export default function ChatbotPage() {
                     border: turn.role === 'ai' ? '1px solid rgba(184,134,11,0.2)' : 'none',
                     fontSize: '0.9rem', lineHeight: 1.7,
                     color: 'rgba(255,255,255,0.9)',
-                    whiteSpace: 'pre-wrap',
-                  }}>
-                    {turn.text}
+                  }} className="chat-bubble">
+                    {turn.role === 'ai' ? <ReactMarkdown>{turn.text}</ReactMarkdown> : turn.text}
                   </div>
                   {turn.sources && turn.sources.length > 0 && (
                     <div style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.4)', marginTop: 3, paddingLeft: 4 }}>
