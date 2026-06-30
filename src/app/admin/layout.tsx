@@ -6,6 +6,7 @@ const LINKS = [
   { href: '/admin', label: '📊 Dashboard' },
   { href: '/admin/products', label: '🏺 Products' },
   { href: '/admin/artisans', label: '👩‍🎨 Artisans' },
+  { href: '/admin/gi-products', label: '🗺️ GI Products' },
   { href: '/admin/orders', label: '📦 Orders' },
   { href: '/admin/users', label: '👥 Users' },
 ]

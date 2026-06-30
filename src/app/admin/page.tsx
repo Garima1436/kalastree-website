@@ -8,18 +8,21 @@ export default async function AdminDashboard() {
     { count: artisanCount },
     { count: orderCount },
     { count: userCount },
+    { count: giProductCount },
     { data: recentOrders },
   ] = await Promise.all([
     supabase.from('products').select('*', { count: 'exact', head: true }),
     supabase.from('artisans').select('*', { count: 'exact', head: true }),
     supabase.from('orders').select('*', { count: 'exact', head: true }),
     supabase.from('profiles').select('id', { count: 'exact', head: true }),
+    supabase.from('gi_products').select('*', { count: 'exact', head: true }),
     supabase.from('orders').select('*').order('created_at', { ascending: false }).limit(5),
   ])
 
   const stats = [
     { label: 'Products', value: productCount ?? 0, color: '#C94B1A', icon: '🏺', href: '/admin/products' },
     { label: 'Artisans', value: artisanCount ?? 0, color: '#3B5A2F', icon: '👩‍🎨', href: '/admin/artisans' },
+    { label: 'GI Products', value: giProductCount ?? 0, color: '#B8860B', icon: '🗺️', href: '/admin/gi-products' },
     { label: 'Orders', value: orderCount ?? 0, color: '#B8860B', icon: '📦', href: '/admin/orders' },
     { label: 'Users', value: userCount ?? 0, color: '#1B2E4A', icon: '👥', href: '/admin/users' },
   ]
@@ -45,7 +48,7 @@ export default async function AdminDashboard() {
       </div>
 
       {/* Stat cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '1.25rem', marginBottom: '2.5rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: '1.25rem', marginBottom: '2.5rem' }}>
         {stats.map(({ label, value, color, icon, href }) => (
           <Link key={label} href={href} style={{ textDecoration: 'none' }}>
             <div style={{ background: '#FFFEF9', border: '1.5px solid #D9C9A8', borderRadius: 10, padding: '1.5rem', borderLeft: `4px solid ${color}`, cursor: 'pointer' }}>
