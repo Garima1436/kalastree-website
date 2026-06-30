@@ -26,15 +26,19 @@ function LoginForm() {
       const userId = data.user?.id
       if (userId) {
         const userCartKey = `kalastree_cart_${userId}`
+        const currentOwner = localStorage.getItem('kalastree_cart_owner')
         const savedCart = localStorage.getItem(userCartKey)
         if (savedCart) {
-          // Restore this user's own cart from backup
+          // Restore this user's previously saved cart
           localStorage.setItem('kalastree_cart', savedCart)
           localStorage.removeItem(userCartKey)
-        } else {
-          // No backup — start fresh (clear any other user's leftover cart)
+        } else if (currentOwner && currentOwner !== userId) {
+          // Cart belongs to a different logged-in user — back it up and start fresh
+          const existing = localStorage.getItem('kalastree_cart')
+          if (existing) localStorage.setItem(`kalastree_cart_${currentOwner}`, existing)
           localStorage.removeItem('kalastree_cart')
         }
+        // Guest cart (no owner) → keep it as-is so items carry over after login
         localStorage.setItem('kalastree_cart_owner', userId)
         window.dispatchEvent(new Event('cart_updated'))
       }
