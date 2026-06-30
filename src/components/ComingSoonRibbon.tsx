@@ -6,13 +6,20 @@ interface ComingSoonRibbonProps {
 
 export default function ComingSoonRibbon({ text = 'Coming Soon' }: ComingSoonRibbonProps) {
   return (
-    <div style={{ position: 'relative', overflow: 'visible', zIndex: 10 }}>
+    <div style={{
+      position: 'fixed',
+      top: '50%',
+      left: 0,
+      right: 0,
+      transform: 'translateY(-50%)',
+      zIndex: 1000,
+      pointerEvents: 'none',
+    }}>
       {/* blur shadow behind */}
       <div style={{
         position: 'absolute', top: 8, left: 0, right: 0, height: '100%',
         background: 'rgba(0,120,180,0.25)', filter: 'blur(10px)',
         transform: 'scaleY(0.85) translateY(4px)',
-        pointerEvents: 'none',
       }} />
       {/* main ribbon */}
       <div style={{
