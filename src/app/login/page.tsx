@@ -38,8 +38,7 @@ function LoginForm() {
         localStorage.setItem('kalastree_cart_owner', userId)
         window.dispatchEvent(new Event('cart_updated'))
       }
-      router.push(redirect)
-      router.refresh()
+      window.location.href = redirect
     }
   }
 

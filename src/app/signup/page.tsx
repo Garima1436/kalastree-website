@@ -28,8 +28,7 @@ function SignupForm() {
       setError(error.message)
       setLoading(false)
     } else {
-      router.push(redirect)
-      router.refresh()
+      window.location.href = redirect
     }
   }
 
