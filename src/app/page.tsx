@@ -37,65 +37,76 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* HERO */}
-      <section style={{ background: 'var(--parchment)', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(ellipse 70% 50% at 50% 30%, rgba(232,56,10,0.06) 0%, transparent 60%), radial-gradient(ellipse 60% 60% at 80% 80%, rgba(26,122,50,0.05) 0%, transparent 70%)', pointerEvents: 'none' }} />
+      {/* HERO — sunset rose & marigold */}
+      <section style={{ background: 'linear-gradient(160deg, #6B1018 0%, #8C1A22 55%, #A02030 100%)', position: 'relative', overflow: 'hidden' }}>
 
-        {/* ── Text block – full width, centred ── */}
+        {/* Decorative circles — top right, like the mockup */}
+        <div style={{ position: 'absolute', top: '-15%', right: '-8%', width: '55%', paddingBottom: '55%', borderRadius: '50%', background: 'rgba(255,255,255,0.05)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', top: '0%', right: '4%', width: '38%', paddingBottom: '38%', borderRadius: '50%', border: '1.5px solid rgba(212,160,0,0.25)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', top: '8%', right: '12%', width: '22%', paddingBottom: '22%', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.1)', pointerEvents: 'none' }} />
+
+        {/* ── Text block ── */}
         <div style={{ maxWidth: 860, margin: '0 auto', padding: '3.5rem 5% 2.5rem', textAlign: 'center', position: 'relative', zIndex: 2 }}>
 
-          <div className="hero-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#C8F5D8', border: '1px solid #1A7A32', borderRadius: 30, padding: '6px 16px', fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#1A7A32', marginBottom: '1.25rem' }}>
-            <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#1A7A32', animation: 'pulse 2s infinite' }} />
-            478 GI Products · 16 States · 2,500 Women
+          <div className="hero-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.35)', borderRadius: 30, padding: '6px 16px', fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#fff', marginBottom: '1.25rem', backdropFilter: 'blur(4px)' }}>
+            <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#D4A000', animation: 'pulse 2s infinite' }} />
+            AS SEEN IN IIT PATNA RESEARCH · 478 GI PRODUCTS
           </div>
 
-          <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(2.4rem, 6vw, 4.2rem)', fontWeight: 700, color: '#E8380A', lineHeight: 1.08, marginBottom: '0.35rem' }}>
-            KalaStree
+          <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(2.6rem, 6.5vw, 4.4rem)', fontWeight: 700, color: '#FFFFFF', lineHeight: 1.08, marginBottom: '0.35rem' }}>
+            Kala<span style={{ color: '#D4A000', fontStyle: 'italic' }}>Stree</span>
           </h1>
-          <p style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1rem, 2.5vw, 1.45rem)', fontStyle: 'italic', color: '#D4A000', marginBottom: '1.1rem' }}>
+          <p style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.05rem, 2.5vw, 1.5rem)', fontStyle: 'italic', color: '#D4A000', marginBottom: '1.1rem' }}>
             "Heritage by Her"
           </p>
-          <p className="hero-desc" style={{ fontSize: 'clamp(0.88rem, 1.8vw, 1.05rem)', lineHeight: 1.8, color: '#6B4820', maxWidth: 560, margin: '0 auto 1.75rem' }}>
+          <p className="hero-desc" style={{ fontSize: 'clamp(0.88rem, 1.8vw, 1.05rem)', lineHeight: 1.85, color: 'rgba(255,255,255,0.82)', maxWidth: 540, margin: '0 auto 1.75rem' }}>
             India's first GI-verified marketplace where every purchase goes{' '}
-            <strong>directly to the woman who made it</strong> — no middlemen, no compromise.
+            <strong style={{ color: '#fff' }}>directly to the woman who made it</strong> — no middlemen, no compromise.
           </p>
 
-          <div className="hero-btns" style={{ display: 'flex', gap: '0.9rem', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '2rem' }}>
-            <Link href="/shop" style={{ background: '#E8380A', color: '#fff', padding: '12px 28px', borderRadius: 5, fontFamily: "'Lato', sans-serif", fontSize: '0.88rem', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-              Shop GI Products →
+          <div className="hero-btns" style={{ display: 'flex', gap: '0.9rem', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '2.25rem' }}>
+            <Link href="/shop" style={{ background: '#D4A000', color: '#1A0800', padding: '13px 30px', borderRadius: 5, fontFamily: "'Lato', sans-serif", fontSize: '0.9rem', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8, boxShadow: '0 4px 18px rgba(212,160,0,0.35)' }}>
+              Shop the Collection →
             </Link>
-            <Link href="/artisans" style={{ background: 'transparent', color: '#E8380A', padding: '12px 28px', borderRadius: 5, border: '2px solid #E8380A', fontFamily: "'Lato', sans-serif", fontSize: '0.88rem', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+            <Link href="/artisans" style={{ background: 'transparent', color: '#fff', padding: '13px 30px', borderRadius: 5, border: '2px solid rgba(255,255,255,0.55)', fontFamily: "'Lato', sans-serif", fontSize: '0.9rem', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
               Meet the Artisans
             </Link>
           </div>
 
           {/* Stats */}
-          <div className="hero-stats" style={{ display: 'flex', gap: '2rem', justifyContent: 'center', paddingTop: '1.75rem', borderTop: '1.5px solid #DDB840', flexWrap: 'wrap' }}>
-            {[['478', 'GI Tags'], ['2,500', 'Women Empowered'], ['16', 'States']].map(([n, l]) => (
+          <div className="hero-stats" style={{ display: 'flex', gap: '2.5rem', justifyContent: 'center', paddingTop: '1.75rem', borderTop: '1px solid rgba(255,255,255,0.18)', flexWrap: 'wrap' }}>
+            {[['478', 'GI Tags'], ['2,500', 'Women Artisans'], ['16', 'States']].map(([n, l]) => (
               <div key={l} style={{ textAlign: 'center' }}>
-                <div style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.5rem, 4vw, 2rem)', fontWeight: 700, color: '#E8380A', lineHeight: 1 }}>{n}</div>
-                <div style={{ fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B4820', marginTop: 4 }}>{l}</div>
+                <div style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.7rem, 4vw, 2.4rem)', fontWeight: 700, color: '#D4A000', lineHeight: 1 }}>{n}</div>
+                <div style={{ fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)', marginTop: 5 }}>{l}</div>
               </div>
             ))}
           </div>
         </div>
 
         {/* ── Carousel – full bleed below text ── */}
-        <div style={{ position: 'relative', zIndex: 2, paddingBottom: '3rem' }}>
+        <div style={{ position: 'relative', zIndex: 2, paddingBottom: '2.5rem' }}>
           <HeroCarousel images={heroImages} />
         </div>
 
         <style>{`
           @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.4)} }
           @media(max-width:480px){
-            .hero-badge { font-size:0.62rem !important; padding:5px 12px !important; }
+            .hero-badge { font-size:0.6rem !important; padding:5px 12px !important; }
             .hero-desc  { margin-bottom:1.25rem !important; }
-            .hero-btns a { padding:10px 18px !important; font-size:0.8rem !important; width:100%; justify-content:center; }
+            .hero-btns a { padding:11px 18px !important; font-size:0.82rem !important; width:100%; justify-content:center; }
             .hero-btns  { flex-direction:column !important; align-items:stretch !important; gap:0.6rem !important; }
-            .hero-stats { gap:1.25rem !important; padding-top:1.25rem !important; }
+            .hero-stats { gap:1.5rem !important; padding-top:1.25rem !important; }
           }
         `}</style>
       </section>
+
+      {/* Marigold promo strip */}
+      <div style={{ background: '#D4A000', padding: '11px 5%', textAlign: 'center', overflow: 'hidden' }}>
+        <p style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#1A0800', margin: 0 }}>
+          GI VERIFIED ARTISANS &nbsp;◆&nbsp; DIRECT FROM MAKER TO YOU &nbsp;◆&nbsp; FREE SHIPPING ABOVE ₹1499
+        </p>
+      </div>
 
       {/* GI CATEGORIES */}
       <section style={{ padding: '5rem 5%', background: '#FFE8A8' }}>
