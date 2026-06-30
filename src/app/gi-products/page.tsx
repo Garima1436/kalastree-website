@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase-server'
 import GIProductsClient from './GIProductsClient'
 import type { GIProduct } from './GIProductsClient'
 
-export const revalidate = 60
+export const revalidate = 3600
 
 export default async function GIProductsPage() {
   const supabase = await createClient()

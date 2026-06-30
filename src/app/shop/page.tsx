@@ -4,7 +4,7 @@ import { CATEGORY_META } from '@/lib/types'
 import ProductCard from '@/components/ProductCard'
 import Link from 'next/link'
 
-export const revalidate = 60
+export const revalidate = 120
 
 async function getProducts(category?: string, state?: string, q?: string) {
   let query = supabase.from('products').select('*, artisan:artisans(*)').order('created_at', { ascending: false })

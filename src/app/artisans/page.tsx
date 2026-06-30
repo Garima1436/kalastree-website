@@ -3,7 +3,7 @@ import type { Artisan } from '@/lib/types'
 import ArtisanCard from '@/components/ArtisanCard'
 import Link from 'next/link'
 
-export const revalidate = 60
+export const revalidate = 600
 
 export default async function ArtisansPage() {
   const { data } = await supabase.from('artisans').select('*').order('created_at', { ascending: false })

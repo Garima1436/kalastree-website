@@ -8,7 +8,7 @@ import Link from 'next/link'
 import fs from 'fs'
 import path from 'path'
 
-export const revalidate = 60
+export const revalidate = 300
 
 function getHeroImages(): string[] {
   try {
