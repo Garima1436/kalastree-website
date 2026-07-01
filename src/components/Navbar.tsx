@@ -40,6 +40,7 @@ export default function Navbar() {
   const [searchOpen, setSearchOpen] = useState(false)
   const [user, setUser] = useState<any>(null)
   const [isAdmin, setIsAdmin] = useState(false)
+  const [isArtisan, setIsArtisan] = useState(false)
   const dropdownRef = useRef<HTMLLIElement>(null)
   const shopRef = useRef<HTMLLIElement>(null)
 
@@ -65,10 +66,17 @@ export default function Navbar() {
   useEffect(() => {
     const supabase = createClient()
 
-    const applySession = (session: any) => {
+    const applySession = async (session: any) => {
       const u = session?.user ?? null
       setUser(u)
-      setIsAdmin(u?.user_metadata?.role === 'admin')
+      if (u?.id) {
+        const { data: profile } = await supabase.from('profiles').select('role').eq('id', u.id).single()
+        setIsAdmin(profile?.role === 'admin')
+        setIsArtisan(profile?.role === 'artisan')
+      } else {
+        setIsAdmin(false)
+        setIsArtisan(false)
+      }
     }
 
     supabase.auth.getSession().then(({ data: { session } }) => applySession(session))
@@ -211,6 +219,14 @@ export default function Navbar() {
                         <span>{icon}</span>{label}
                       </Link>
                     ))}
+                    {isArtisan && (
+                      <Link href="/artisan" onClick={() => setUserDropdown(false)}
+                        style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '11px 16px', fontFamily: "'Lato', sans-serif", fontSize: '0.88rem', fontWeight: 700, color: '#1A7A32', textDecoration: 'none', borderBottom: '1px solid #FFE8A8', background: '#F0FFF4' }}
+                        onMouseEnter={e => (e.currentTarget.style.background = '#C8F5D8')}
+                        onMouseLeave={e => (e.currentTarget.style.background = '#F0FFF4')}>
+                        <span>🎨</span>Artisan Panel
+                      </Link>
+                    )}
                     {isAdmin && (
                       <Link href="/admin" onClick={() => setUserDropdown(false)}
                         style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '11px 16px', fontFamily: "'Lato', sans-serif", fontSize: '0.88rem', fontWeight: 700, color: '#D4A000', textDecoration: 'none', borderBottom: '1px solid #FFE8A8', background: '#FFFBF0' }}
@@ -323,6 +339,12 @@ export default function Navbar() {
                   style={{ fontFamily: "'Lato', sans-serif", fontWeight: 700, color: '#1B2E4A', textDecoration: 'none', fontSize: '0.95rem', padding: '4px 0', borderBottom: '1px solid #EDD060' }}>
                   📦 My Orders
                 </Link>
+                {isArtisan && (
+                  <Link href="/artisan" onClick={() => setMenuOpen(false)}
+                    style={{ fontFamily: "'Lato', sans-serif", fontWeight: 700, color: '#1A7A32', textDecoration: 'none', fontSize: '0.95rem', padding: '4px 0', borderBottom: '1px solid #EDD060' }}>
+                    🎨 Artisan Panel
+                  </Link>
+                )}
                 {isAdmin && (
                   <Link href="/admin" onClick={() => setMenuOpen(false)}
                     style={{ fontFamily: "'Lato', sans-serif", fontWeight: 700, color: '#D4A000', textDecoration: 'none', fontSize: '0.95rem', padding: '4px 0', borderBottom: '1px solid #EDD060' }}>
