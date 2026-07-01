@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase-server'
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 
 async function requireAdmin() {
   const supabase = await createClient()
@@ -30,6 +31,8 @@ export async function PATCH(req: NextRequest) {
   if (payload.status === 'approved') payload.rejection_note = null
   const { error: dbError } = await supabase.from('products').update(payload).eq('id', id)
   if (dbError) return NextResponse.json({ error: dbError.message }, { status: 500 })
+  revalidatePath('/')
+  revalidatePath('/shop')
   return NextResponse.json({ success: true })
 }
 
@@ -41,5 +44,7 @@ export async function DELETE(req: NextRequest) {
   if (!id) return NextResponse.json({ error: 'Missing product id' }, { status: 400 })
   const { error: dbError } = await supabase.from('products').delete().eq('id', id)
   if (dbError) return NextResponse.json({ error: dbError.message }, { status: 500 })
+  revalidatePath('/')
+  revalidatePath('/shop')
   return NextResponse.json({ success: true })
 }
