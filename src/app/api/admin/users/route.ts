@@ -13,7 +13,7 @@ export async function PATCH(req: NextRequest) {
     if (profile?.role !== 'admin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
     const { userId, role } = await req.json()
-    if (!userId || !['admin', 'user'].includes(role)) {
+    if (!userId || !['admin', 'artisan', 'user'].includes(role)) {
       return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
     }
     if (userId === user.id) {
