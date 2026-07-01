@@ -10,7 +10,8 @@ export default async function AdminUsersPage() {
 
   const total = profiles?.length ?? 0
   const admins = profiles?.filter((p: any) => p.role === 'admin').length ?? 0
-  const users = total - admins
+  const artisans = profiles?.filter((p: any) => p.role === 'artisan').length ?? 0
+  const users = total - admins - artisans
 
   return (
     <div>
@@ -20,7 +21,7 @@ export default async function AdminUsersPage() {
             Users
           </h1>
           <p style={{ color: '#6B4820', fontSize: '0.85rem', marginTop: 4 }}>
-            {total} total &nbsp;·&nbsp; {admins} admin{admins !== 1 ? 's' : ''} &nbsp;·&nbsp; {users} customer{users !== 1 ? 's' : ''}
+            {total} total &nbsp;·&nbsp; {admins} admin{admins !== 1 ? 's' : ''} &nbsp;·&nbsp; {artisans} artisan{artisans !== 1 ? 's' : ''} &nbsp;·&nbsp; {users} customer{users !== 1 ? 's' : ''}
           </p>
         </div>
       </div>
@@ -41,14 +42,17 @@ export default async function AdminUsersPage() {
               {profiles.map((profile: any) => {
                 const initials = (profile.full_name || profile.email || 'U')
                   .split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2)
-                const isAdmin = profile.role === 'admin'
+                const role = profile.role ?? 'user'
+                const isAdmin = role === 'admin'
+                const isArtisan = role === 'artisan'
+                const avatarBg = isAdmin ? 'linear-gradient(135deg,#D4A000,#E8380A)' : isArtisan ? 'linear-gradient(135deg,#1A7A32,#2ECC71)' : 'linear-gradient(135deg,#1B2E4A,#1A7A32)'
                 return (
                   <tr key={profile.id} style={{ borderTop: '1px solid #FFE8A8' }}>
 
                     {/* User */}
                     <td style={{ padding: '12px 16px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                        <div style={{ width: 36, height: 36, borderRadius: '50%', flexShrink: 0, background: isAdmin ? 'linear-gradient(135deg,#D4A000,#E8380A)' : 'linear-gradient(135deg,#1B2E4A,#1A7A32)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 700, color: '#fff' }}>
+                        <div style={{ width: 36, height: 36, borderRadius: '50%', flexShrink: 0, background: avatarBg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 700, color: '#fff' }}>
                           {initials}
                         </div>
                         <div>
@@ -73,11 +77,11 @@ export default async function AdminUsersPage() {
                     <td style={{ padding: '12px 16px' }}>
                       <span style={{
                         padding: '3px 10px', borderRadius: 20, fontSize: '0.7rem', fontWeight: 700,
-                        background: isAdmin ? '#FFF0C0' : '#FFE8A8',
-                        color: isAdmin ? '#D4A000' : '#6B4820',
-                        border: isAdmin ? '1px solid #D4A00040' : '1px solid #DDB840',
+                        background: isAdmin ? '#FFF0C0' : isArtisan ? '#C8F5D8' : '#FFE8A8',
+                        color: isAdmin ? '#D4A000' : isArtisan ? '#1A7A32' : '#6B4820',
+                        border: isAdmin ? '1px solid #D4A00040' : isArtisan ? '1px solid #1A7A3240' : '1px solid #DDB840',
                       }}>
-                        {isAdmin ? '⚙️ Admin' : '👤 User'}
+                        {isAdmin ? '⚙️ Admin' : isArtisan ? '🎨 Artisan' : '👤 User'}
                       </span>
                     </td>
 
