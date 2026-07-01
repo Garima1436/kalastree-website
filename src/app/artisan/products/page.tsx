@@ -53,6 +53,11 @@ export default async function ArtisanProductsPage() {
                         <div>
                           <div style={{ fontWeight: 600, color: '#1B2E4A' }}>{p.name}</div>
                           <div style={{ fontSize: '0.7rem', color: '#6B4820' }}>{p.category}</div>
+                          {p.status === 'approved' && p.serial_no && (
+                            <div style={{ fontSize: '0.68rem', color: '#E8380A', fontFamily: 'monospace', fontWeight: 700, marginTop: 2 }}>
+                              PROD-{String(p.serial_no).padStart(3, '0')}
+                            </div>
+                          )}
                         </div>
                       </div>
                     </td>
