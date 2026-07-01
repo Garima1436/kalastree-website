@@ -26,6 +26,8 @@ export async function PATCH(req: NextRequest) {
 
   const { id, ...payload } = await req.json()
   if (!id) return NextResponse.json({ error: 'Missing product id' }, { status: 400 })
+  // Clear rejection_note when approving
+  if (payload.status === 'approved') payload.rejection_note = null
   const { error: dbError } = await supabase.from('products').update(payload).eq('id', id)
   if (dbError) return NextResponse.json({ error: dbError.message }, { status: 500 })
   return NextResponse.json({ success: true })

@@ -26,7 +26,7 @@ function getHeroImages(): string[] {
 
 async function getData() {
   const [{ data: products }, { data: artisans }] = await Promise.all([
-    supabase.from('products').select('*, artisan:artisans(*)').eq('is_featured', true).order('created_at', { ascending: false }).limit(8),
+    supabase.from('products').select('*, artisan:artisans(*)').eq('is_featured', true).eq('status', 'approved').order('created_at', { ascending: false }).limit(8),
     supabase.from('artisans').select('*').eq('is_verified', true).limit(6),
   ])
   return { products: (products ?? []) as Product[], artisans: (artisans ?? []) as Artisan[] }

@@ -49,6 +49,17 @@ export async function middleware(request: NextRequest) {
       }
     }
 
+    // Protect /artisan — artisan role only
+    if (path.startsWith('/artisan')) {
+      if (userError || !user) {
+        return NextResponse.redirect(new URL(`/login?redirect=${path}`, request.url))
+      }
+      const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+      if (!profile || (profile.role !== 'artisan' && profile.role !== 'admin')) {
+        return NextResponse.redirect(new URL('/?error=unauthorized', request.url))
+      }
+    }
+
   } catch (err) {
     // Fail-secure: if middleware crashes, block access to protected routes
     console.error('Middleware error:', err)

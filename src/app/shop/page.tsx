@@ -7,7 +7,7 @@ import Link from 'next/link'
 export const revalidate = 120
 
 async function getProducts(category?: string, state?: string, q?: string) {
-  let query = supabase.from('products').select('*, artisan:artisans(*)').order('created_at', { ascending: false })
+  let query = supabase.from('products').select('*, artisan:artisans(*)').eq('status', 'approved').order('created_at', { ascending: false })
   if (category) query = query.eq('category', category)
   if (state) query = query.eq('state', state)
   if (q) query = query.or(`name.ilike.%${q}%,description.ilike.%${q}%,state.ilike.%${q}%,gi_tag.ilike.%${q}%,category.ilike.%${q}%`)
