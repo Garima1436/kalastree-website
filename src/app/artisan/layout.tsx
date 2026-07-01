@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 
 const LINKS = [
   { href: '/artisan', label: '📊 Dashboard' },
+  { href: '/artisan/orders', label: '📦 My Orders' },
   { href: '/artisan/products', label: '🏺 My Products' },
   { href: '/artisan/products/new', label: '+ Add Product' },
 ]
