@@ -94,7 +94,7 @@ export default async function HomePage() {
           </div>
         </div>
 
-        {/* Stats bar — always horizontal, all 4 in one row */}
+        {/* Stats bar — icon left, text right, always one row */}
         <div style={{ borderTop: '1px solid rgba(212,160,0,0.25)', position: 'relative', zIndex: 2 }}>
           <div style={{ display: 'flex', width: '100%' }}>
             {[
@@ -103,11 +103,15 @@ export default async function HomePage() {
               { icon: '🗺️', num: '16', label: 'STATES', sub: 'Diverse. Rich. United.' },
               { icon: '🌐', num: 'GLOBAL', label: 'MARKETPLACE', sub: 'Bringing India to the World.' },
             ].map(({ icon, num, label, sub }, i) => (
-              <div key={label} style={{ flex: '1 1 0', minWidth: 0, padding: 'clamp(0.7rem,2vw,1.4rem) clamp(0.25rem,1vw,1rem)', textAlign: 'center', borderLeft: i > 0 ? '1px solid rgba(212,160,0,0.2)' : 'none' }}>
-                <div style={{ fontSize: 'clamp(1rem,2.5vw,1.8rem)', marginBottom: '0.35rem' }}>{icon}</div>
-                <div style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.1rem,3vw,2rem)', fontWeight: 700, color: '#D4A000', lineHeight: 1 }}>{num}</div>
-                <div style={{ fontSize: 'clamp(0.45rem,1.1vw,0.62rem)', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#fff', marginTop: 4 }}>{label}</div>
-                <div style={{ fontSize: 'clamp(0.42rem,1vw,0.62rem)', color: 'rgba(212,160,0,0.6)', marginTop: 3, fontStyle: 'italic' }}>{sub}</div>
+              <div key={label} style={{ flex: '1 1 0', minWidth: 0, display: 'flex', alignItems: 'center', gap: 'clamp(6px,1.2vw,14px)', padding: 'clamp(0.7rem,1.8vw,1.2rem) clamp(0.4rem,1.5vw,1.2rem)', borderLeft: i > 0 ? '1px solid rgba(212,160,0,0.2)' : 'none' }}>
+                {/* Icon */}
+                <div style={{ fontSize: 'clamp(1.6rem,3.5vw,2.6rem)', lineHeight: 1, flexShrink: 0, filter: 'drop-shadow(0 0 6px rgba(212,160,0,0.4))' }}>{icon}</div>
+                {/* Text */}
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.1rem,2.8vw,1.9rem)', fontWeight: 700, color: '#D4A000', lineHeight: 1, whiteSpace: 'nowrap' }}>{num}</div>
+                  <div style={{ fontSize: 'clamp(0.48rem,1.1vw,0.65rem)', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#fff', marginTop: 3 }}>{label}</div>
+                  <div style={{ fontSize: 'clamp(0.44rem,1vw,0.6rem)', color: 'rgba(212,160,0,0.65)', marginTop: 2, fontStyle: 'italic', whiteSpace: 'nowrap' }}>{sub}</div>
+                </div>
               </div>
             ))}
           </div>
