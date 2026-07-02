@@ -71,7 +71,7 @@ export default async function HomePage() {
         </svg>
 
         {/* Main content */}
-        <div style={{ maxWidth: 820, margin: '0 auto', padding: '3.5rem 5% 0', textAlign: 'center', position: 'relative', zIndex: 2 }}>
+        <div style={{ maxWidth: 820, margin: '0 auto', padding: '1rem 5% 0', textAlign: 'center', position: 'relative', zIndex: 2 }}>
 
           {/* Logo */}
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
