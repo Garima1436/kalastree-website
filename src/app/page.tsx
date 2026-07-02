@@ -76,7 +76,7 @@ export default async function HomePage() {
           {/* Logo */}
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
             <img src="/kalastree-logo.png" alt="KalaStree — Heritage by Her"
-              style={{ height: 'clamp(140px, 22vw, 240px)', width: 'auto', objectFit: 'contain', display: 'block', filter: 'drop-shadow(0 0 40px rgba(212,160,0,0.3))' }} />
+              style={{ height: 'clamp(200px, 32vw, 360px)', width: 'auto', objectFit: 'contain', display: 'block', filter: 'drop-shadow(0 0 40px rgba(212,160,0,0.3))' }} />
           </div>
 
           <p className="hero-desc" style={{ fontSize: 'clamp(0.92rem, 1.8vw, 1.1rem)', lineHeight: 1.9, color: 'rgba(255,255,255,0.85)', maxWidth: 580, margin: '0 auto 2rem' }}>
