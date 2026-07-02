@@ -55,7 +55,9 @@ export default async function HomePage() {
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.1rem' }}>
-            <img src="/kalastree-logo.png" alt="KalaStree — Heritage by Her" style={{ height: 'clamp(100px, 18vw, 180px)', width: 'auto', objectFit: 'contain' }} />
+            <div style={{ background: 'radial-gradient(ellipse at center, rgba(253,246,227,0.92) 40%, rgba(253,246,227,0.4) 70%, transparent 100%)', padding: '18px 40px', borderRadius: '50%' }}>
+              <img src="/kalastree-logo.png" alt="KalaStree — Heritage by Her" style={{ height: 'clamp(100px, 18vw, 180px)', width: 'auto', objectFit: 'contain', display: 'block' }} />
+            </div>
           </div>
           <p className="hero-desc" style={{ fontSize: 'clamp(0.88rem, 1.8vw, 1.05rem)', lineHeight: 1.85, color: 'rgba(255,255,255,0.82)', maxWidth: 540, margin: '0 auto 1.75rem' }}>
             India's first GI-verified marketplace where every purchase goes{' '}
