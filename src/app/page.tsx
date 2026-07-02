@@ -54,12 +54,9 @@ export default async function HomePage() {
             AS SEEN IN IIT PATNA RESEARCH · 478 GI PRODUCTS
           </div>
 
-          <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(2.6rem, 6.5vw, 4.4rem)', fontWeight: 700, color: '#FFFFFF', lineHeight: 1.08, marginBottom: '0.35rem' }}>
-            Kala<span style={{ color: '#D4A000', fontStyle: 'italic' }}>Stree</span>
-          </h1>
-          <p style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.05rem, 2.5vw, 1.5rem)', fontStyle: 'italic', color: '#D4A000', marginBottom: '1.1rem' }}>
-            "Heritage by Her"
-          </p>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.1rem' }}>
+            <img src="/kalastree-logo.png" alt="KalaStree — Heritage by Her" style={{ height: 'clamp(100px, 18vw, 180px)', width: 'auto', objectFit: 'contain' }} />
+          </div>
           <p className="hero-desc" style={{ fontSize: 'clamp(0.88rem, 1.8vw, 1.05rem)', lineHeight: 1.85, color: 'rgba(255,255,255,0.82)', maxWidth: 540, margin: '0 auto 1.75rem' }}>
             India's first GI-verified marketplace where every purchase goes{' '}
             <strong style={{ color: '#fff' }}>directly to the woman who made it</strong> — no middlemen, no compromise.
