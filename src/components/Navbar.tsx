@@ -118,11 +118,8 @@ export default function Navbar() {
         <div style={{ maxWidth: 1400, margin: '0 auto', padding: '0 4%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 72 }}>
 
           {/* Logo */}
-          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', flexShrink: 0 }}>
-            <Image src="/gi-logo.png" alt="KalaStree logo" width={62} height={62} style={{ objectFit: 'contain', borderRadius: 8 }} />
-            <span style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.55rem', fontWeight: 700, color: '#E8380A', letterSpacing: '-0.5px' }}>
-              Kala<span style={{ color: '#D4A000', fontStyle: 'italic' }}>Stree</span>
-            </span>
+          <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', flexShrink: 0 }}>
+            <Image src="/kalastree-logo.png" alt="KalaStree — Heritage by Her" width={180} height={60} style={{ objectFit: 'contain', height: 60, width: 'auto' }} priority />
           </Link>
 
           {/* Desktop nav */}
