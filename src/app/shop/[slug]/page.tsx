@@ -238,7 +238,6 @@ export default function ProductPage() {
           <div style={{ borderTop: '1.5px solid #DDB840', paddingTop: '1.5rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             {[
               { icon: '✅', text: 'GI Registry Verified' },
-              { icon: '💳', text: 'Direct to Artisan Payment' },
               { icon: '📦', text: 'Handmade & Authentic' },
               { icon: '🔄', text: '7-day Easy Returns' },
             ].map(({ icon, text }) => (
