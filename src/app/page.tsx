@@ -5,7 +5,6 @@ import ArtisanCard from '@/components/ArtisanCard'
 import CategoryGrid from '@/components/CategoryGrid'
 import HeroCarousel from '@/components/HeroCarousel'
 import Link from 'next/link'
-import ComingSoonRibbon from '@/components/ComingSoonRibbon'
 import fs from 'fs'
 import path from 'path'
 
@@ -38,65 +37,94 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* HERO — sunset rose & marigold */}
-      <section style={{ background: 'linear-gradient(160deg, #6B1018 0%, #8C1A22 55%, #A02030 100%)', position: 'relative', overflow: 'hidden' }}>
+      {/* HERO */}
+      <section style={{ background: '#5C0A14', position: 'relative', overflow: 'hidden' }}>
 
-        {/* Decorative circles — top right, like the mockup */}
-        <div style={{ position: 'absolute', top: '-15%', right: '-8%', width: '55%', paddingBottom: '55%', borderRadius: '50%', background: 'rgba(255,255,255,0.05)', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', top: '0%', right: '4%', width: '38%', paddingBottom: '38%', borderRadius: '50%', border: '1.5px solid rgba(212,160,0,0.25)', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', top: '8%', right: '12%', width: '22%', paddingBottom: '22%', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.1)', pointerEvents: 'none' }} />
+        {/* Subtle radial glow in centre */}
+        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 70% 60% at 50% 45%, rgba(120,20,30,0.6) 0%, transparent 100%)', pointerEvents: 'none' }} />
 
-        {/* ── Text block ── */}
-        <div style={{ maxWidth: 860, margin: '0 auto', padding: '3.5rem 5% 2.5rem', textAlign: 'center', position: 'relative', zIndex: 2 }}>
+        {/* Left folk-art SVG */}
+        <svg viewBox="0 0 220 520" style={{ position: 'absolute', left: 0, top: 0, height: '100%', width: 'auto', opacity: 0.18, pointerEvents: 'none' }} fill="none" stroke="#D4A000" strokeWidth="1.2">
+          {/* spinning wheel */}
+          <circle cx="50" cy="400" r="38" /><circle cx="50" cy="400" r="28" />
+          {[0,45,90,135,180,225,270,315].map(a => <line key={a} x1="50" y1="400" x2={50+38*Math.cos(a*Math.PI/180)} y2={400+38*Math.sin(a*Math.PI/180)} />)}
+          {/* woman silhouette */}
+          <ellipse cx="80" cy="180" rx="18" ry="22" /><line x1="80" y1="202" x2="80" y2="270" /><line x1="80" y1="220" x2="55" y2="255" /><line x1="80" y1="220" x2="105" y2="250" /><line x1="80" y1="270" x2="60" y2="320" /><line x1="80" y1="270" x2="100" y2="320" />
+          {/* flowers */}
+          {[60,90,120].map((y,i) => <g key={y}><circle cx={20+i*15} cy={y} r="6" />{[0,60,120,180,240,300].map(a=><ellipse key={a} cx={20+i*15+10*Math.cos(a*Math.PI/180)} cy={y+10*Math.sin(a*Math.PI/180)} rx="4" ry="2" transform={`rotate(${a},${20+i*15+10*Math.cos(a*Math.PI/180)},${y+10*Math.sin(a*Math.PI/180)})`} />)}</g>)}
+          {/* vines */}
+          <path d="M 10 500 Q 30 450 20 400 Q 40 350 15 300 Q 35 250 10 200" /><path d="M 10 380 Q 40 360 55 340" /><path d="M 20 300 Q 45 285 60 265" />
+          {/* peacock feather */}
+          <path d="M 160 20 Q 140 80 150 140 Q 155 200 140 260" /><ellipse cx="140" cy="270" rx="12" ry="18" /><path d="M 150 140 Q 170 120 185 130" /><path d="M 148 160 Q 168 145 180 158" /><path d="M 145 180 Q 162 170 172 183" />
+        </svg>
 
-          <div className="hero-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.35)', borderRadius: 30, padding: '6px 16px', fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#fff', marginBottom: '1.25rem', backdropFilter: 'blur(4px)' }}>
-            <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#D4A000', animation: 'pulse 2s infinite' }} />
-            AS SEEN IN IIT PATNA RESEARCH · 478 GI PRODUCTS
+        {/* Right folk-art SVG */}
+        <svg viewBox="0 0 220 520" style={{ position: 'absolute', right: 0, top: 0, height: '100%', width: 'auto', opacity: 0.18, pointerEvents: 'none', transform: 'scaleX(-1)' }} fill="none" stroke="#D4A000" strokeWidth="1.2">
+          <ellipse cx="80" cy="180" rx="18" ry="22" /><line x1="80" y1="202" x2="80" y2="270" /><line x1="80" y1="220" x2="55" y2="255" /><line x1="80" y1="220" x2="105" y2="250" /><line x1="80" y1="270" x2="60" y2="320" /><line x1="80" y1="270" x2="100" y2="320" />
+          {/* loom */}
+          <rect x="30" y="300" width="80" height="60" rx="2" /><line x1="30" y1="315" x2="110" y2="315" /><line x1="30" y1="330" x2="110" y2="330" /><line x1="30" y1="345" x2="110" y2="345" />
+          {[45,60,75,90,105].map(x => <line key={x} x1={x} y1="300" x2={x} y2="360" />)}
+          {/* flowers */}
+          {[50,85,120].map((y,i) => <g key={y}><circle cx={180-i*15} cy={y} r="6" />{[0,60,120,180,240,300].map(a=><ellipse key={a} cx={180-i*15+10*Math.cos(a*Math.PI/180)} cy={y+10*Math.sin(a*Math.PI/180)} rx="4" ry="2" transform={`rotate(${a},${180-i*15+10*Math.cos(a*Math.PI/180)},${y+10*Math.sin(a*Math.PI/180)})`} />)}</g>)}
+          <path d="M 210 500 Q 190 450 200 400 Q 180 350 205 300 Q 185 250 210 200" /><path d="M 200 380 Q 170 360 155 340" /><path d="M 195 300 Q 165 285 150 265" />
+          <path d="M 160 20 Q 140 80 150 140 Q 155 200 140 260" /><ellipse cx="140" cy="270" rx="12" ry="18" /><path d="M 150 140 Q 170 120 185 130" /><path d="M 148 160 Q 168 145 180 158" />
+        </svg>
+
+        {/* Main content */}
+        <div style={{ maxWidth: 820, margin: '0 auto', padding: '3.5rem 5% 0', textAlign: 'center', position: 'relative', zIndex: 2 }}>
+
+          {/* Logo */}
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
+            <img src="/kalastree-logo.png" alt="KalaStree — Heritage by Her"
+              style={{ height: 'clamp(140px, 22vw, 240px)', width: 'auto', objectFit: 'contain', display: 'block', filter: 'drop-shadow(0 0 40px rgba(212,160,0,0.3))' }} />
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.1rem' }}>
-            <div style={{ background: 'radial-gradient(ellipse at center, rgba(253,246,227,0.92) 40%, rgba(253,246,227,0.4) 70%, transparent 100%)', padding: '18px 40px', borderRadius: '50%' }}>
-              <img src="/kalastree-logo.png" alt="KalaStree — Heritage by Her" style={{ height: 'clamp(100px, 18vw, 180px)', width: 'auto', objectFit: 'contain', display: 'block' }} />
-            </div>
-          </div>
-          <p className="hero-desc" style={{ fontSize: 'clamp(0.88rem, 1.8vw, 1.05rem)', lineHeight: 1.85, color: 'rgba(255,255,255,0.82)', maxWidth: 540, margin: '0 auto 1.75rem' }}>
+          <p className="hero-desc" style={{ fontSize: 'clamp(0.92rem, 1.8vw, 1.1rem)', lineHeight: 1.9, color: 'rgba(255,255,255,0.85)', maxWidth: 580, margin: '0 auto 2rem' }}>
             India's first GI-verified marketplace where every purchase goes{' '}
-            <strong style={{ color: '#fff' }}>directly to the woman who made it</strong> — no middlemen, no compromise.
+            <strong style={{ color: '#D4A000' }}>directly to the woman who made it</strong> — no middlemen, no compromise.
           </p>
 
-          <div className="hero-btns" style={{ display: 'flex', gap: '0.9rem', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '2.25rem' }}>
-            <Link href="/shop" style={{ background: '#D4A000', color: '#1A0800', padding: '13px 30px', borderRadius: 5, fontFamily: "'Lato', sans-serif", fontSize: '0.9rem', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8, boxShadow: '0 4px 18px rgba(212,160,0,0.35)' }}>
+          <div className="hero-btns" style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '3rem' }}>
+            <Link href="/shop" style={{ background: '#D4A000', color: '#1A0800', padding: '14px 34px', borderRadius: 6, fontFamily: "'Lato', sans-serif", fontSize: '0.95rem', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8, boxShadow: '0 4px 24px rgba(212,160,0,0.4)' }}>
               Shop the Collection →
             </Link>
-            <Link href="/artisans" style={{ background: 'transparent', color: '#fff', padding: '13px 30px', borderRadius: 5, border: '2px solid rgba(255,255,255,0.55)', fontFamily: "'Lato', sans-serif", fontSize: '0.9rem', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+            <Link href="/artisans" style={{ background: 'transparent', color: '#fff', padding: '14px 34px', borderRadius: 6, border: '2px solid rgba(255,255,255,0.5)', fontFamily: "'Lato', sans-serif", fontSize: '0.95rem', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
               Meet the Artisans
             </Link>
           </div>
+        </div>
 
-          {/* Stats */}
-          <div className="hero-stats" style={{ display: 'flex', gap: '2.5rem', justifyContent: 'center', paddingTop: '1.75rem', borderTop: '1px solid rgba(255,255,255,0.18)', flexWrap: 'wrap' }}>
-            {[['478', 'GI Tags'], ['2,500', 'Women Artisans'], ['16', 'States']].map(([n, l]) => (
-              <div key={l} style={{ textAlign: 'center' }}>
-                <div style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.7rem, 4vw, 2.4rem)', fontWeight: 700, color: '#D4A000', lineHeight: 1 }}>{n}</div>
-                <div style={{ fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)', marginTop: 5 }}>{l}</div>
+        {/* Stats bar */}
+        <div style={{ borderTop: '1px solid rgba(212,160,0,0.25)', position: 'relative', zIndex: 2 }}>
+          <div style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', padding: '0' }}>
+            {[
+              { icon: '🏺', num: '478', label: 'GI PRODUCTS', sub: 'Authentic. Verified. Unique.' },
+              { icon: '👩‍🎨', num: '2,500+', label: 'WOMEN ARTISANS', sub: 'Empowered. Skilled. Proud.' },
+              { icon: '🗺️', num: '16', label: 'STATES', sub: 'Diverse. Rich. United.' },
+              { icon: '🌐', num: 'GLOBAL', label: 'MARKETPLACE', sub: 'Bringing India to the World.' },
+            ].map(({ icon, num, label, sub }, i) => (
+              <div key={label} style={{ padding: '1.5rem 1rem', textAlign: 'center', borderLeft: i > 0 ? '1px solid rgba(212,160,0,0.2)' : 'none' }}>
+                <div style={{ fontSize: '1.8rem', marginBottom: '0.5rem' }}>{icon}</div>
+                <div style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.4rem, 3vw, 2rem)', fontWeight: 700, color: '#D4A000', lineHeight: 1 }}>{num}</div>
+                <div style={{ fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.15em', color: '#fff', marginTop: 4 }}>{label}</div>
+                <div style={{ fontSize: '0.68rem', color: 'rgba(212,160,0,0.6)', marginTop: 3, fontStyle: 'italic' }}>{sub}</div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* ── Carousel – full bleed below text ── */}
-        <div style={{ position: 'relative', zIndex: 2, paddingBottom: '2.5rem' }}>
-          <HeroCarousel images={heroImages} />
-        </div>
+        {/* Sliding hero images — same as before */}
+        {heroImages.length > 0 && (
+          <div style={{ position: 'relative', zIndex: 2 }}>
+            <HeroCarousel images={heroImages} />
+          </div>
+        )}
 
         <style>{`
-          @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.4)} }
-          @media(max-width:480px){
-            .hero-badge { font-size:0.6rem !important; padding:5px 12px !important; }
-            .hero-desc  { margin-bottom:1.25rem !important; }
-            .hero-btns a { padding:11px 18px !important; font-size:0.82rem !important; width:100%; justify-content:center; }
-            .hero-btns  { flex-direction:column !important; align-items:stretch !important; gap:0.6rem !important; }
-            .hero-stats { gap:1.5rem !important; padding-top:1.25rem !important; }
+          @media(max-width:600px){
+            .hero-btns a { padding:12px 20px !important; font-size:0.85rem !important; width:100%; justify-content:center; }
+            .hero-btns  { flex-direction:column !important; align-items:stretch !important; }
+            div[style*="grid-template-columns: repeat(4"] { grid-template-columns: repeat(2,1fr) !important; }
           }
         `}</style>
       </section>
