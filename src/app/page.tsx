@@ -94,20 +94,20 @@ export default async function HomePage() {
           </div>
         </div>
 
-        {/* Stats bar */}
+        {/* Stats bar — always horizontal, all 4 in one row */}
         <div style={{ borderTop: '1px solid rgba(212,160,0,0.25)', position: 'relative', zIndex: 2 }}>
-          <div style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', padding: '0' }}>
+          <div style={{ display: 'flex', width: '100%' }}>
             {[
               { icon: '🏺', num: '478', label: 'GI PRODUCTS', sub: 'Authentic. Verified. Unique.' },
               { icon: '👩‍🎨', num: '2,500+', label: 'WOMEN ARTISANS', sub: 'Empowered. Skilled. Proud.' },
               { icon: '🗺️', num: '16', label: 'STATES', sub: 'Diverse. Rich. United.' },
               { icon: '🌐', num: 'GLOBAL', label: 'MARKETPLACE', sub: 'Bringing India to the World.' },
             ].map(({ icon, num, label, sub }, i) => (
-              <div key={label} style={{ padding: '1.5rem 1rem', textAlign: 'center', borderLeft: i > 0 ? '1px solid rgba(212,160,0,0.2)' : 'none' }}>
-                <div style={{ fontSize: '1.8rem', marginBottom: '0.5rem' }}>{icon}</div>
-                <div style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.4rem, 3vw, 2rem)', fontWeight: 700, color: '#D4A000', lineHeight: 1 }}>{num}</div>
-                <div style={{ fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.15em', color: '#fff', marginTop: 4 }}>{label}</div>
-                <div style={{ fontSize: '0.68rem', color: 'rgba(212,160,0,0.6)', marginTop: 3, fontStyle: 'italic' }}>{sub}</div>
+              <div key={label} style={{ flex: '1 1 0', minWidth: 0, padding: 'clamp(0.7rem,2vw,1.4rem) clamp(0.25rem,1vw,1rem)', textAlign: 'center', borderLeft: i > 0 ? '1px solid rgba(212,160,0,0.2)' : 'none' }}>
+                <div style={{ fontSize: 'clamp(1rem,2.5vw,1.8rem)', marginBottom: '0.35rem' }}>{icon}</div>
+                <div style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.1rem,3vw,2rem)', fontWeight: 700, color: '#D4A000', lineHeight: 1 }}>{num}</div>
+                <div style={{ fontSize: 'clamp(0.45rem,1.1vw,0.62rem)', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#fff', marginTop: 4 }}>{label}</div>
+                <div style={{ fontSize: 'clamp(0.42rem,1vw,0.62rem)', color: 'rgba(212,160,0,0.6)', marginTop: 3, fontStyle: 'italic' }}>{sub}</div>
               </div>
             ))}
           </div>
@@ -124,7 +124,6 @@ export default async function HomePage() {
           @media(max-width:600px){
             .hero-btns a { padding:12px 20px !important; font-size:0.85rem !important; width:100%; justify-content:center; }
             .hero-btns  { flex-direction:column !important; align-items:stretch !important; }
-            div[style*="grid-template-columns: repeat(4"] { grid-template-columns: repeat(2,1fr) !important; }
           }
         `}</style>
       </section>
