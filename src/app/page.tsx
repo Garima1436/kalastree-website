@@ -106,7 +106,7 @@ export default async function HomePage() {
         </p>
       </div>
 
-      <ComingSoonRibbon />
+      {/* <ComingSoonRibbon /> */}
 
       {/* GI CATEGORIES */}
       <section style={{ padding: '5rem 5%', background: '#FFE8A8' }}>
