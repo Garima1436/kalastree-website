@@ -118,11 +118,9 @@ export default function Navbar() {
         <div style={{ maxWidth: 1400, margin: '0 auto', padding: '0 4%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 72 }}>
 
           {/* Logo */}
-          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', flexShrink: 0 }}>
-            <Image src="/gi-logo.png" alt="KalaStree logo" width={62} height={62} style={{ objectFit: 'contain', borderRadius: 8 }} />
-            <span style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.55rem', fontWeight: 700, color: '#E8380A', letterSpacing: '-0.5px' }}>
-              Kala<span style={{ color: '#D4A000', fontStyle: 'italic' }}>Stree</span>
-            </span>
+          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none', flexShrink: 0 }}>
+            <Image src="/gi-logo.png" alt="KalaStree logo" width={52} height={52} style={{ objectFit: 'contain', borderRadius: 8 }} />
+            <Image src="/kalastree_l3.png" alt="KalaStree" width={160} height={52} style={{ objectFit: 'contain', height: 52, width: 'auto' }} priority />
           </Link>
 
           {/* Desktop nav */}
@@ -377,7 +375,7 @@ export default function Navbar() {
         <div className="ticker-track">
           {[...TICKER_ITEMS, ...TICKER_ITEMS].map((item, i) => (
             <span key={i} style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#D4A000', padding: '0 2rem', whiteSpace: 'nowrap' }}>
-              {i !== 0 ? <><span style={{ color: '#E8380A', padding: '0 0.5rem' }}>◆</span>{item}</> : item}
+              {i !== 0 ? <><img src="/gi-logo.png" alt="" style={{ width: 14, height: 14, objectFit: 'contain', verticalAlign: 'middle', margin: '0 0.5rem', display: 'inline-block' }} />{item}</> : item}
             </span>
           ))}
         </div>
