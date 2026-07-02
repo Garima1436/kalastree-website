@@ -58,6 +58,7 @@ export default function ArtisanForm({ initialData, mode = 'new' }: Props) {
     story: initialData?.story ?? '',
     photo_url: initialData?.photo_url ?? '',
     is_verified: initialData?.is_verified ?? false,
+    is_featured: initialData?.is_featured ?? false,
   })
 
   const set = (field: string, value: any) => setForm(f => ({ ...f, [field]: value }))
@@ -75,6 +76,7 @@ export default function ArtisanForm({ initialData, mode = 'new' }: Props) {
       bio: form.bio || null, story: form.story || null,
       photo_url: form.photo_url || null,
       is_verified: form.is_verified,
+      is_featured: form.is_featured,
     }
 
     const res = await fetch('/api/admin/artisans', {
@@ -191,7 +193,13 @@ export default function ArtisanForm({ initialData, mode = 'new' }: Props) {
           <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', fontSize: '0.9rem', color: '#1B2E4A', fontWeight: 600 }}>
             <input type="checkbox" checked={form.is_verified} onChange={e => set('is_verified', e.target.checked)}
               style={{ width: 17, height: 17, accentColor: '#1A7A32' }} />
-            Mark as GI Verified Artisan
+            Mark as GI Verified Artisan <span style={{ fontSize: '0.75rem', color: '#6B4820', fontWeight: 400 }}>(shows ⭐ GI badge on profile)</span>
+          </label>
+
+          <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', fontSize: '0.9rem', color: '#1B2E4A', fontWeight: 600 }}>
+            <input type="checkbox" checked={form.is_featured} onChange={e => set('is_featured', e.target.checked)}
+              style={{ width: 17, height: 17, accentColor: '#3730A3' }} />
+            Feature this Artisan on Homepage <span style={{ fontSize: '0.75rem', color: '#6B4820', fontWeight: 400 }}>(shows in homepage artisans section)</span>
           </label>
 
           <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>

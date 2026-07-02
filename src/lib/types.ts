@@ -11,6 +11,8 @@ export interface Artisan {
   story: string | null
   bio: string | null
   is_verified: boolean
+  is_featured: boolean
+  user_id: string | null
   created_at: string
 }
 

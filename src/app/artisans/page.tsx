@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase'
+import { supabaseAdmin } from '@/lib/supabase-admin'
 import type { Artisan } from '@/lib/types'
 import ArtisanCard from '@/components/ArtisanCard'
 import Link from 'next/link'
@@ -6,8 +6,22 @@ import Link from 'next/link'
 export const revalidate = 600
 
 export default async function ArtisansPage() {
-  const { data } = await supabase.from('artisans').select('*').order('created_at', { ascending: false })
-  const artisans = (data ?? []) as Artisan[]
+  // Fetch all artisans
+  const { data: allArtisans } = await supabaseAdmin
+    .from('artisans')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  // Get email-confirmed user IDs from auth
+  const { data: { users } } = await supabaseAdmin.auth.admin.listUsers({ perPage: 1000 })
+  const confirmedUserIds = new Set(users.filter(u => u.email_confirmed_at).map(u => u.id))
+
+  // Show artisans who:
+  // - have no portal login (admin-added manually) OR
+  // - have a portal login AND confirmed their email
+  const artisans = ((allArtisans ?? []) as Artisan[]).filter(a =>
+    !a.user_id || confirmedUserIds.has(a.user_id)
+  )
 
   return (
     <div style={{ background: 'var(--parchment)', minHeight: '80vh' }}>
