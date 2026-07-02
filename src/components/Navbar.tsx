@@ -8,8 +8,8 @@ import { createClient } from '@/lib/supabase-browser'
 
 const NAV_LINKS = [
   { href: '/artisans', label: 'Artisans' },
-  { href: '/about', label: 'About Us' },
   { href: '/gi-products', label: 'GI Products' },
+  { href: '/about', label: 'About Us' },
 ]
 
 const SHOP_CATEGORIES = [
