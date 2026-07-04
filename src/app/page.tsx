@@ -54,8 +54,6 @@ export default async function HomePage() {
           {[60,90,120].map((y,i) => <g key={y}><circle cx={20+i*15} cy={y} r="6" />{[0,60,120,180,240,300].map(a=><ellipse key={a} cx={20+i*15+10*Math.cos(a*Math.PI/180)} cy={y+10*Math.sin(a*Math.PI/180)} rx="4" ry="2" transform={`rotate(${a},${20+i*15+10*Math.cos(a*Math.PI/180)},${y+10*Math.sin(a*Math.PI/180)})`} />)}</g>)}
           {/* vines */}
           <path d="M 10 500 Q 30 450 20 400 Q 40 350 15 300 Q 35 250 10 200" /><path d="M 10 380 Q 40 360 55 340" /><path d="M 20 300 Q 45 285 60 265" />
-          {/* peacock feather */}
-          <path d="M 160 20 Q 140 80 150 140 Q 155 200 140 260" /><ellipse cx="140" cy="270" rx="12" ry="18" /><path d="M 150 140 Q 170 120 185 130" /><path d="M 148 160 Q 168 145 180 158" /><path d="M 145 180 Q 162 170 172 183" />
         </svg>
 
         {/* Right folk-art SVG */}
@@ -67,7 +65,6 @@ export default async function HomePage() {
           {/* flowers */}
           {[50,85,120].map((y,i) => <g key={y}><circle cx={180-i*15} cy={y} r="6" />{[0,60,120,180,240,300].map(a=><ellipse key={a} cx={180-i*15+10*Math.cos(a*Math.PI/180)} cy={y+10*Math.sin(a*Math.PI/180)} rx="4" ry="2" transform={`rotate(${a},${180-i*15+10*Math.cos(a*Math.PI/180)},${y+10*Math.sin(a*Math.PI/180)})`} />)}</g>)}
           <path d="M 210 500 Q 190 450 200 400 Q 180 350 205 300 Q 185 250 210 200" /><path d="M 200 380 Q 170 360 155 340" /><path d="M 195 300 Q 165 285 150 265" />
-          <path d="M 160 20 Q 140 80 150 140 Q 155 200 140 260" /><ellipse cx="140" cy="270" rx="12" ry="18" /><path d="M 150 140 Q 170 120 185 130" /><path d="M 148 160 Q 168 145 180 158" />
         </svg>
 
         {/* Main content */}
