@@ -78,7 +78,10 @@ function LoginForm() {
     const origin = window.location.origin
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(redirect)}` },
+      options: {
+        redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(redirect)}`,
+        queryParams: { prompt: 'select_account' },
+      },
     })
     if (error) setError(friendlyAuthError(error.message))
   }
