@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase-server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient()
@@ -47,6 +48,9 @@ export async function POST(req: NextRequest) {
     await supabaseAdmin.auth.admin.deleteUser(newUserId)
     return NextResponse.json({ error: linkError.message }, { status: 500 })
   }
+
+  revalidatePath('/artisans')
+  revalidatePath('/')
 
   return NextResponse.json({ success: true, userId: newUserId })
 }

@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase-server'
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 
 async function requireAdmin() {
   const supabase = await createClient()
@@ -10,12 +11,18 @@ async function requireAdmin() {
   return { supabase, error: null }
 }
 
+function revalidateArtisanPages() {
+  revalidatePath('/artisans')
+  revalidatePath('/')
+}
+
 export async function POST(req: NextRequest) {
   const { supabase, error } = await requireAdmin()
   if (error) return error
   const payload = await req.json()
   const { error: dbError } = await supabase.from('artisans').insert(payload)
   if (dbError) return NextResponse.json({ error: dbError.message }, { status: 500 })
+  revalidateArtisanPages()
   return NextResponse.json({ success: true })
 }
 
@@ -26,6 +33,7 @@ export async function PATCH(req: NextRequest) {
   if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 })
   const { error: dbError } = await supabase.from('artisans').update(payload).eq('id', id)
   if (dbError) return NextResponse.json({ error: dbError.message }, { status: 500 })
+  revalidateArtisanPages()
   return NextResponse.json({ success: true })
 }
 
@@ -36,5 +44,6 @@ export async function DELETE(req: NextRequest) {
   if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 })
   const { error: dbError } = await supabase.from('artisans').delete().eq('id', id)
   if (dbError) return NextResponse.json({ error: dbError.message }, { status: 500 })
+  revalidateArtisanPages()
   return NextResponse.json({ success: true })
 }
