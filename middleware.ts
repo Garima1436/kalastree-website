@@ -49,8 +49,8 @@ export async function middleware(request: NextRequest) {
       }
     }
 
-    // Protect /artisan — artisan role only
-    if (path.startsWith('/artisan')) {
+    // Protect /artisan — artisan role only (but not the public /artisans page)
+    if (path === '/artisan' || path.startsWith('/artisan/')) {
       if (userError || !user) {
         return NextResponse.redirect(new URL(`/login?redirect=${path}`, request.url))
       }
