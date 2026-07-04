@@ -16,6 +16,7 @@ function LoginForm() {
   const [loading, setLoading] = useState(false)
   const [showResend, setShowResend] = useState(false)
   const [resendState, setResendState] = useState<'idle' | 'sending' | 'sent'>('idle')
+  const [googleLoading, setGoogleLoading] = useState(false)
   const searchParams = useSearchParams()
   const redirect = searchParams.get('redirect') || '/'
 
@@ -73,7 +74,9 @@ function LoginForm() {
   }
 
   const handleGoogleLogin = async () => {
+    if (googleLoading) return
     setError('')
+    setGoogleLoading(true)
     const supabase = createClient()
     const origin = window.location.origin
     const { error } = await supabase.auth.signInWithOAuth({
@@ -83,7 +86,11 @@ function LoginForm() {
         queryParams: { prompt: 'select_account' },
       },
     })
-    if (error) setError(friendlyAuthError(error.message))
+    if (error) {
+      setError(friendlyAuthError(error.message))
+      setGoogleLoading(false)
+    }
+    // On success the browser navigates away to Google, so no need to reset loading here.
   }
 
   const inputStyle: React.CSSProperties = {
@@ -172,10 +179,11 @@ function LoginForm() {
           <div style={{ flex: 1, height: 1, background: '#DDB840', opacity: 0.4 }} />
         </div>
 
-        <button type="button" onClick={handleGoogleLogin} style={{
+        <button type="button" onClick={handleGoogleLogin} disabled={googleLoading} style={{
           width: '100%', background: '#fff', color: '#1B2E4A', padding: '12px',
           border: '1.5px solid #DDB840', borderRadius: 6, fontWeight: 700, fontSize: '0.92rem',
-          cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+          cursor: googleLoading ? 'not-allowed' : 'pointer', opacity: googleLoading ? 0.7 : 1,
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
         }}>
           <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
             <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.6-6 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l6-6C34.6 5.1 29.6 3 24 3 12.4 3 3 12.4 3 24s9.4 21 21 21 21-9.4 21-21c0-1.2-.1-2.4-.4-3.5z"/>
@@ -183,7 +191,7 @@ function LoginForm() {
             <path fill="#4CAF50" d="M24 45c5.5 0 10.4-1.9 14.2-5.1l-6.6-5.4C29.6 36.4 27 37 24 37c-5.3 0-9.7-3.4-11.3-8l-6.6 5.1C8.7 40.3 15.8 45 24 45z"/>
             <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.2 4.2-4.1 5.5l6.6 5.4C41.5 35.6 45 30.4 45 24c0-1.2-.1-2.4-.4-3.5z"/>
           </svg>
-          Continue with Google
+          {googleLoading ? 'Opening Google…' : 'Continue with Google'}
         </button>
 
         <p style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.9rem', color: '#6B4820' }}>
