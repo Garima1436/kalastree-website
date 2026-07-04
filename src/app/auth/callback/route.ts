@@ -9,8 +9,9 @@ export async function GET(request: Request) {
 
   // On some hosts (e.g. AWS Amplify's Next.js SSR compute), request.url's
   // origin can resolve to an internal/synthetic host instead of the public
-  // domain. Prefer the forwarded headers set by the actual edge/proxy.
-  const forwardedHost = request.headers.get('x-forwarded-host')
+  // domain the visitor actually used (custom domain vs. the amplifyapp.com
+  // default). Prefer whatever header actually reflects the original Host.
+  const forwardedHost = request.headers.get('x-forwarded-host') ?? request.headers.get('host')
   const forwardedProto = request.headers.get('x-forwarded-proto') ?? 'https'
   const origin = forwardedHost ? `${forwardedProto}://${forwardedHost}` : url.origin
 
