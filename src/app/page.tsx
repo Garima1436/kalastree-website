@@ -48,8 +48,6 @@ export default async function HomePage() {
           {/* spinning wheel */}
           <circle cx="50" cy="400" r="38" /><circle cx="50" cy="400" r="28" />
           {[0,45,90,135,180,225,270,315].map(a => <line key={a} x1="50" y1="400" x2={50+38*Math.cos(a*Math.PI/180)} y2={400+38*Math.sin(a*Math.PI/180)} />)}
-          {/* woman silhouette */}
-          <ellipse cx="80" cy="180" rx="18" ry="22" /><line x1="80" y1="202" x2="80" y2="270" /><line x1="80" y1="220" x2="55" y2="255" /><line x1="80" y1="220" x2="105" y2="250" /><line x1="80" y1="270" x2="60" y2="320" /><line x1="80" y1="270" x2="100" y2="320" />
           {/* flowers */}
           {[60,90,120].map((y,i) => <g key={y}><circle cx={20+i*15} cy={y} r="6" />{[0,60,120,180,240,300].map(a=><ellipse key={a} cx={20+i*15+10*Math.cos(a*Math.PI/180)} cy={y+10*Math.sin(a*Math.PI/180)} rx="4" ry="2" transform={`rotate(${a},${20+i*15+10*Math.cos(a*Math.PI/180)},${y+10*Math.sin(a*Math.PI/180)})`} />)}</g>)}
           {/* vines */}
@@ -58,7 +56,6 @@ export default async function HomePage() {
 
         {/* Right folk-art SVG */}
         <svg viewBox="0 0 220 520" style={{ position: 'absolute', right: 0, top: 0, height: '100%', width: 'auto', opacity: 0.18, pointerEvents: 'none', transform: 'scaleX(-1)' }} fill="none" stroke="#D4A000" strokeWidth="1.2">
-          <ellipse cx="80" cy="180" rx="18" ry="22" /><line x1="80" y1="202" x2="80" y2="270" /><line x1="80" y1="220" x2="55" y2="255" /><line x1="80" y1="220" x2="105" y2="250" /><line x1="80" y1="270" x2="60" y2="320" /><line x1="80" y1="270" x2="100" y2="320" />
           {/* loom */}
           <rect x="30" y="300" width="80" height="60" rx="2" /><line x1="30" y1="315" x2="110" y2="315" /><line x1="30" y1="330" x2="110" y2="330" /><line x1="30" y1="345" x2="110" y2="345" />
           {[45,60,75,90,105].map(x => <line key={x} x1={x} y1="300" x2={x} y2="360" />)}
