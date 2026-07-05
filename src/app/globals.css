@@ -111,6 +111,21 @@ body {
 .chat-bubble em { font-style: italic; }
 .chat-bubble code { font-family: monospace; font-size: 0.88em; background: rgba(0,0,0,0.15); padding: 1px 4px; border-radius: 3px; }
 
+/* Markdown inside product/artisan free-text fields (description, bio, story) */
+.rich-text p { margin: 0 0 1em; }
+.rich-text p:last-child { margin-bottom: 0; }
+.rich-text h1, .rich-text h2, .rich-text h3 { font-family: 'EB Garamond', serif; color: #1B2E4A; font-weight: 700; line-height: 1.3; margin: 1.2em 0 0.5em; }
+.rich-text h1:first-child, .rich-text h2:first-child, .rich-text h3:first-child { margin-top: 0; }
+.rich-text h1 { font-size: 1.3em; }
+.rich-text h2 { font-size: 1.15em; }
+.rich-text h3 { font-size: 1.05em; }
+.rich-text strong { color: #1B2E4A; font-weight: 700; }
+.rich-text em { font-style: italic; }
+.rich-text ul, .rich-text ol { margin: 0 0 1em 1.3em; }
+.rich-text li { margin-bottom: 0.4em; }
+.rich-text a { color: #E8380A; font-weight: 700; text-decoration: none; }
+.rich-text a:hover { text-decoration: underline; }
+
 /* Folk divider */
 .folk-divider {
   display: flex;

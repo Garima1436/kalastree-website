@@ -5,6 +5,8 @@ import { supabase } from '@/lib/supabase'
 import type { Product } from '@/lib/types'
 import { CATEGORY_META } from '@/lib/types'
 import Link from 'next/link'
+import ReactMarkdown from 'react-markdown'
+import remarkBreaks from 'remark-breaks'
 
 interface MediaItem {
   id: string
@@ -94,14 +96,12 @@ export default function ProductPage() {
           .order('sort_order', { ascending: true })
           .order('created_at', { ascending: true })
 
-        const dbMedia = (mediaData ?? []) as MediaItem[]
-        const dbUrls = new Set(dbMedia.map(m => m.url))
-        const legacyExtras = (typedProd.images ?? [])
-          .filter((url: string) => !dbUrls.has(url))
-          .map((url: string, i: number) => ({
-            id: `legacy-${i}`, url, type: 'image' as const, source: 'upload' as const, sort_order: dbMedia.length + i,
-          }))
-        setMedia([...dbMedia, ...legacyExtras])
+        const legacyImages = (typedProd.images ?? []).map((url: string, i: number) => ({
+          id: `legacy-${i}`, url, type: 'image' as const, source: 'upload' as const, sort_order: i,
+        }))
+        const legacyUrls = new Set(legacyImages.map(m => m.url))
+        const dbMedia = ((mediaData ?? []) as MediaItem[]).filter(m => !legacyUrls.has(m.url))
+        setMedia([...legacyImages, ...dbMedia])
       }
       setLoading(false)
     }
@@ -214,7 +214,9 @@ export default function ProductPage() {
           </p>
 
           {product.description && (
-            <p style={{ fontSize: '0.95rem', lineHeight: 1.8, color: '#6B4820', marginBottom: '1.5rem', whiteSpace: 'pre-wrap' }}>{product.description}</p>
+            <div className="rich-text" style={{ fontSize: '0.95rem', lineHeight: 1.8, color: '#6B4820', marginBottom: '1.5rem' }}>
+              <ReactMarkdown remarkPlugins={[remarkBreaks]}>{product.description}</ReactMarkdown>
+            </div>
           )}
 
           {/* Qty + Add to Cart */}

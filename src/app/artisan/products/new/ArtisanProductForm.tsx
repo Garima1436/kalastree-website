@@ -111,6 +111,9 @@ export default function ArtisanProductForm({ artisanId, initialData, mode = 'new
             <label style={labelStyle}>Description</label>
             <textarea style={{ ...inputStyle, minHeight: 90, resize: 'vertical' } as any} value={form.description}
               onChange={e => set('description', e.target.value)} placeholder="Describe your product, materials, size, story…" />
+            <p style={{ fontSize: '0.72rem', color: '#A07840', marginTop: 4 }}>
+              Supports **bold**, *italic*, ## headings, and - bullet lists. Each line break shows as a new line.
+            </p>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>

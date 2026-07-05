@@ -5,6 +5,8 @@ import { supabase } from '@/lib/supabase'
 import type { Artisan, Product } from '@/lib/types'
 import ProductCard from '@/components/ProductCard'
 import Link from 'next/link'
+import ReactMarkdown from 'react-markdown'
+import remarkBreaks from 'remark-breaks'
 
 export default function ArtisanProfilePage() {
   const { slug } = useParams<{ slug: string }>()
@@ -66,11 +68,15 @@ export default function ArtisanProfilePage() {
         <div style={{ background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 12, padding: '2rem', position: 'sticky', top: 90 }}>
           <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.4rem', fontWeight: 600, color: '#1B2E4A', marginBottom: '1rem' }}>Her Story</h2>
           {artisan.story
-            ? <p style={{ fontSize: '0.95rem', lineHeight: 1.85, color: '#6B4820', fontStyle: 'italic' }}>"{artisan.story}"</p>
+            ? <div className="rich-text" style={{ fontSize: '0.95rem', lineHeight: 1.85, color: '#6B4820', fontStyle: 'italic' }}>
+                <ReactMarkdown remarkPlugins={[remarkBreaks]}>{artisan.story}</ReactMarkdown>
+              </div>
             : <p style={{ fontSize: '0.9rem', color: '#6B4820' }}>This artisan's story is being collected. Every purchase helps write the next chapter.</p>
           }
           {artisan.bio && (
-            <p style={{ fontSize: '0.88rem', lineHeight: 1.75, color: '#6B4820', marginTop: '1.5rem', borderTop: '1px solid #DDB840', paddingTop: '1.5rem' }}>{artisan.bio}</p>
+            <div className="rich-text" style={{ fontSize: '0.88rem', lineHeight: 1.75, color: '#6B4820', marginTop: '1.5rem', borderTop: '1px solid #DDB840', paddingTop: '1.5rem' }}>
+              <ReactMarkdown remarkPlugins={[remarkBreaks]}>{artisan.bio}</ReactMarkdown>
+            </div>
           )}
           <div style={{ marginTop: '1.5rem', borderTop: '1px solid #DDB840', paddingTop: '1.5rem' }}>
             <div style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6B4820', marginBottom: 8 }}>Craft Details</div>

@@ -181,6 +181,9 @@ export default function ArtisanForm({ initialData, mode = 'new' }: Props) {
             <textarea style={{ ...inputStyle, minHeight: 80, resize: 'vertical' } as any} value={form.bio}
               onChange={e => set('bio', e.target.value)}
               placeholder="A brief introduction about the artisan…" />
+            <p style={{ fontSize: '0.72rem', color: '#A07840', marginTop: 4 }}>
+              Supports **bold**, *italic*, ## headings, and - bullet lists. Each line break shows as a new line.
+            </p>
           </div>
 
           <div>
@@ -188,6 +191,9 @@ export default function ArtisanForm({ initialData, mode = 'new' }: Props) {
             <textarea style={{ ...inputStyle, minHeight: 120, resize: 'vertical' } as any} value={form.story}
               onChange={e => set('story', e.target.value)}
               placeholder="Their journey, struggles, and craft tradition…" />
+            <p style={{ fontSize: '0.72rem', color: '#A07840', marginTop: 4 }}>
+              Supports **bold**, *italic*, ## headings, and - bullet lists. Each line break shows as a new line.
+            </p>
           </div>
 
           <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', fontSize: '0.9rem', color: '#1B2E4A', fontWeight: 600 }}>
