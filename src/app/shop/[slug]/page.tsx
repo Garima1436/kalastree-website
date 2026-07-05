@@ -41,7 +41,7 @@ function MediaViewer({ item, productName }: { item: MediaItem; productName: stri
       />
     )
   }
-  return <img src={item.url} alt={productName} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+  return <img src={item.url} alt={productName} style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }} />
 }
 
 function MediaThumbnail({ item }: { item: MediaItem }) {
@@ -213,7 +213,7 @@ export default function ProductPage() {
           </p>
 
           {product.description && (
-            <p style={{ fontSize: '0.95rem', lineHeight: 1.8, color: '#6B4820', marginBottom: '1.5rem' }}>{product.description}</p>
+            <p style={{ fontSize: '0.95rem', lineHeight: 1.8, color: '#6B4820', marginBottom: '1.5rem', whiteSpace: 'pre-wrap' }}>{product.description}</p>
           )}
 
           {/* Qty + Add to Cart */}
