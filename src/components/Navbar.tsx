@@ -374,7 +374,7 @@ export default function Navbar() {
         <div className="ticker-track">
           {[...TICKER_ITEMS, ...TICKER_ITEMS].map((item, i) => (
             <span key={i} style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#D4A000', padding: '0 2rem', whiteSpace: 'nowrap' }}>
-              {i !== 0 ? <><img src="/gi-logo.png" alt="" style={{ width: 14, height: 14, objectFit: 'contain', verticalAlign: 'middle', margin: '0 0.5rem', display: 'inline-block' }} />{item}</> : item}
+              {i !== 0 ? <><img src="/gi-logo.png" alt="" style={{ width: 22, height: 22, objectFit: 'contain', verticalAlign: 'middle', margin: '0 0.5rem', display: 'inline-block' }} />{item}</> : item}
             </span>
           ))}
         </div>
