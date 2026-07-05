@@ -94,13 +94,14 @@ export default function ProductPage() {
           .order('sort_order', { ascending: true })
           .order('created_at', { ascending: true })
 
-        if (mediaData && mediaData.length > 0) {
-          setMedia(mediaData as MediaItem[])
-        } else if (typedProd.images?.length > 0) {
-          setMedia(typedProd.images.map((url: string, i: number) => ({
-            id: `legacy-${i}`, url, type: 'image' as const, source: 'upload' as const, sort_order: i,
-          })))
-        }
+        const dbMedia = (mediaData ?? []) as MediaItem[]
+        const dbUrls = new Set(dbMedia.map(m => m.url))
+        const legacyExtras = (typedProd.images ?? [])
+          .filter((url: string) => !dbUrls.has(url))
+          .map((url: string, i: number) => ({
+            id: `legacy-${i}`, url, type: 'image' as const, source: 'upload' as const, sort_order: dbMedia.length + i,
+          }))
+        setMedia([...dbMedia, ...legacyExtras])
       }
       setLoading(false)
     }
