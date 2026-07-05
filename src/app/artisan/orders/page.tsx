@@ -64,7 +64,7 @@ export default async function ArtisanOrdersPage() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1rem' }}>
           <div>
             <div style={{ fontFamily: 'monospace', fontSize: '0.72rem', color: '#6B4820', marginBottom: 4 }}>
-              #{order.id.slice(0, 8).toUpperCase()}
+              #{order.order_number ?? order.id.slice(0, 8).toUpperCase()}
             </div>
             <div style={{ fontWeight: 700, color: '#1B2E4A', fontSize: '1rem' }}>{order.user_name}</div>
             <div style={{ fontSize: '0.8rem', color: '#6B4820' }}>{order.user_email}</div>

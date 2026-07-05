@@ -29,7 +29,7 @@ export default async function OrderConfirmationPage({ params }: { params: Promis
 
         <div style={{ background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 12, padding: '2rem', marginBottom: '1.5rem' }}>
           <div style={{ fontFamily: 'monospace', fontSize: '0.78rem', color: '#6B4820', marginBottom: '1.25rem', padding: '8px 12px', background: '#FFE8A8', borderRadius: 6, display: 'inline-block' }}>
-            Order #{order.id.slice(0, 8).toUpperCase()}
+            Order #{order.order_number ?? order.id.slice(0, 8).toUpperCase()}
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: '1.25rem' }}>

@@ -86,7 +86,7 @@ export default async function AdminDashboard() {
                 const sc = statusColor[order.status] ?? statusColor.pending
                 return (
                   <tr key={order.id} style={{ borderTop: '1px solid #FFE8A8' }}>
-                    <td style={{ padding: '12px 16px', fontFamily: 'monospace', fontSize: '0.78rem', color: '#1B2E4A' }}>#{order.id.slice(0,8).toUpperCase()}</td>
+                    <td style={{ padding: '12px 16px', fontFamily: 'monospace', fontSize: '0.78rem', color: '#1B2E4A' }}>#{order.order_number ?? order.id.slice(0,8).toUpperCase()}</td>
                     <td style={{ padding: '12px 16px', color: '#1B2E4A' }}>{order.user_name}</td>
                     <td style={{ padding: '12px 16px', fontWeight: 700, color: '#E8380A' }}>₹{Number(order.total).toLocaleString('en-IN')}</td>
                     <td style={{ padding: '12px 16px' }}>

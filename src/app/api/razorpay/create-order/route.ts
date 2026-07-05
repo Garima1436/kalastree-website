@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
     const rzpOrder = await razorpay.orders.create({
       amount: Math.round(amount * 100),
       currency: 'INR',
-      receipt: order.id.slice(0, 40),
+      receipt: (order.order_number ?? order.id).slice(0, 40),
     })
 
     // 4. Save payment record

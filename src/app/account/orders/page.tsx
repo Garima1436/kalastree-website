@@ -53,7 +53,7 @@ export default async function MyOrdersPage() {
                   <div style={{ background: '#FFE8A8', padding: '1rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
                     <div>
                       <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', color: '#6B4820' }}>
-                        Order #{order.id.slice(0, 8).toUpperCase()}
+                        Order #{order.order_number ?? order.id.slice(0, 8).toUpperCase()}
                       </div>
                       <div style={{ fontSize: '0.8rem', color: '#A07840', marginTop: 2 }}>
                         {new Date(order.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}

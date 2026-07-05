@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase-browser'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { INDIAN_STATES } from '@/lib/indian-states'
 
 interface CartItem { id: string; name: string; price: number; image: string; slug: string; qty: number }
 
@@ -182,7 +183,10 @@ export default function CheckoutPage() {
                 </div>
                 <div>
                   <label style={labelStyle}>State *</label>
-                  <input style={inputStyle} required value={form.state} onChange={e => set('state', e.target.value)} placeholder="Delhi" />
+                  <select style={inputStyle} required value={form.state} onChange={e => set('state', e.target.value)}>
+                    <option value="">— Select State —</option>
+                    {INDIAN_STATES.map(s => <option key={s} value={s}>{s}</option>)}
+                  </select>
                 </div>
                 <div>
                   <label style={labelStyle}>Pincode *</label>
