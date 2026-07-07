@@ -71,7 +71,8 @@ export default async function AdminDashboard() {
           </Link>
         </div>
         {recentOrders && recentOrders.length > 0 ? (
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
+          <div style={{ overflow: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem', minWidth: 600 }}>
             <thead style={{ background: '#FFE8A8' }}>
               <tr>
                 {['Order ID', 'Customer', 'Amount', 'Status', 'Date'].map(h => (
@@ -100,6 +101,7 @@ export default async function AdminDashboard() {
               })}
             </tbody>
           </table>
+          </div>
         ) : (
           <div style={{ padding: '3rem', textAlign: 'center', color: '#6B4820', fontStyle: 'italic' }}>
             No orders yet.

@@ -42,9 +42,9 @@ export default async function AdminArtisansPage() {
         <span><span style={{ background: '#E0E7FF', color: '#3730A3', padding: '2px 8px', borderRadius: 20, fontWeight: 700 }}>🏠 Featured</span> — Shows on homepage</span>
       </div>
 
-      <div style={{ background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 10, overflow: 'hidden' }}>
+      <div style={{ background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 10, overflow: 'auto' }}>
         {artisans && artisans.length > 0 ? (
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem', minWidth: 900 }}>
             <thead style={{ background: '#FFE8A8' }}>
               <tr>
                 {['Photo', 'Name', 'State', 'Craft', 'Email', 'GI Verified', 'Featured', 'Portal', 'Actions'].map(h => (

@@ -26,9 +26,9 @@ export default async function AdminUsersPage() {
         </div>
       </div>
 
-      <div style={{ background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 10, overflow: 'hidden' }}>
+      <div style={{ background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 10, overflow: 'auto' }}>
         {profiles && profiles.length > 0 ? (
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem', minWidth: 750 }}>
             <thead style={{ background: '#FFE8A8' }}>
               <tr>
                 {['User', 'Email', 'Phone', 'Location', 'Role', 'Joined', 'Actions'].map(h => (

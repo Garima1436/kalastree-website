@@ -218,6 +218,11 @@ export default function ArtisanForm({ initialData, mode = 'new' }: Props) {
           </div>
         </form>
       </div>
+      <style>{`
+        @media (max-width: 768px) {
+          div[style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
     </div>
   )
 }
