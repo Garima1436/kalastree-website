@@ -26,7 +26,7 @@ const SHOP_STATES = [
 ]
 
 const TICKER_ITEMS = [
-  'PhD Scholar — IIT Patna', 'GI Products Advocate', 'Women Empowerment',
+  'PhD Scholar — IIT Patna', 'Women Empowerment',
   'FinTech & Heritage', 'KalaStree — Heritage by Her', '478 GI Tags Analyzed',
   '16 States Surveyed', '2,500 Women Voices', 'Madhubani · Pashmina · Banarasi · Kanchipuram',
 ]
@@ -374,7 +374,7 @@ export default function Navbar() {
         <div className="ticker-track">
           {[...TICKER_ITEMS, ...TICKER_ITEMS].map((item, i) => (
             <span key={i} style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#D4A000', padding: '0 2rem', whiteSpace: 'nowrap' }}>
-              {i !== 0 ? <><img src="/gi-logo.png" alt="" style={{ width: 22, height: 22, objectFit: 'contain', verticalAlign: 'middle', margin: '0 0.5rem', display: 'inline-block' }} />{item}</> : item}
+              {i !== 0 ? <><img src="/gi-logo.png" alt="" style={{ width: 34, height: 34, objectFit: 'contain', verticalAlign: 'middle', margin: '0 0.5rem', display: 'inline-block' }} />{item}</> : item}
             </span>
           ))}
         </div>
