@@ -11,12 +11,23 @@ async function requireAdmin() {
   return { supabase, user, error: null }
 }
 
+// The artisan's "My Products" panel filters on submitted_by (the owning
+// auth user), while this form only picks artisan_id (the artisans-table
+// row). Resolve the linked user here so admin-assigned products still
+// show up in that artisan's panel.
+async function resolveSubmittedBy(supabase: any, artisanId: string | null | undefined) {
+  if (!artisanId) return null
+  const { data } = await supabase.from('artisans').select('user_id').eq('id', artisanId).single()
+  return data?.user_id ?? null
+}
+
 export async function POST(req: NextRequest) {
   const { supabase, error } = await requireAdmin()
   if (error) return error
 
   const payload = await req.json()
-  const { data, error: dbError } = await supabase.from('products').insert(payload).select('id').single()
+  const submitted_by = await resolveSubmittedBy(supabase, payload.artisan_id)
+  const { data, error: dbError } = await supabase.from('products').insert({ ...payload, submitted_by }).select('id').single()
   if (dbError) return NextResponse.json({ error: dbError.message }, { status: 500 })
   return NextResponse.json({ success: true, id: data.id })
 }
@@ -29,6 +40,7 @@ export async function PATCH(req: NextRequest) {
   if (!id) return NextResponse.json({ error: 'Missing product id' }, { status: 400 })
   // Clear rejection_note when approving
   if (payload.status === 'approved') payload.rejection_note = null
+  if ('artisan_id' in payload) payload.submitted_by = await resolveSubmittedBy(supabase, payload.artisan_id)
   const { error: dbError } = await supabase.from('products').update(payload).eq('id', id)
   if (dbError) return NextResponse.json({ error: dbError.message }, { status: 500 })
   revalidatePath('/')
