@@ -92,7 +92,12 @@ export default async function AdminUsersPage() {
 
                     {/* Actions */}
                     <td style={{ padding: '12px 16px' }}>
-                      <RoleToggle userId={profile.id} currentRole={profile.role ?? 'user'} />
+                      <RoleToggle
+                        userId={profile.id}
+                        currentRole={profile.role ?? 'user'}
+                        fullName={profile.full_name ?? ''}
+                        state={profile.state ?? ''}
+                      />
                     </td>
                   </tr>
                 )

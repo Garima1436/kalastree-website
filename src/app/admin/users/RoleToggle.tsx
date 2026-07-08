@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { INDIAN_STATES } from '@/lib/indian-states'
 
 const ROLES = ['user', 'artisan', 'admin'] as const
 type Role = typeof ROLES[number]
@@ -11,25 +12,55 @@ const roleStyle: Record<Role, { bg: string; color: string; label: string }> = {
   admin:   { bg: '#FFF0C0', color: '#D4A000', label: '⚙️ Admin' },
 }
 
-export default function RoleToggle({ userId, currentRole }: { userId: string; currentRole: string }) {
+interface Props {
+  userId: string
+  currentRole: string
+  fullName?: string
+  state?: string
+}
+
+export default function RoleToggle({ userId, currentRole, fullName = '', state = '' }: Props) {
   const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)
+  const [artisanForm, setArtisanForm] = useState<{ name: string; state: string; craft: string; gi_product: string } | null>(null)
+  const [formError, setFormError] = useState('')
   const router = useRouter()
   const role = (currentRole as Role) ?? 'user'
   const s = roleStyle[role] ?? roleStyle.user
 
-  const setRole = async (newRole: Role) => {
-    if (newRole === role) { setOpen(false); return }
-    if (!confirm(`Change this user to "${newRole}"?`)) { setOpen(false); return }
-    setLoading(true); setOpen(false)
+  const submitRole = async (newRole: Role, artisan?: { name: string; state: string; craft: string; gi_product: string }) => {
+    setLoading(true)
     const res = await fetch('/api/admin/users', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId, role: newRole }),
+      body: JSON.stringify({ userId, role: newRole, artisan }),
     })
     setLoading(false)
     if (!res.ok) { const d = await res.json(); alert('Failed: ' + (d.error || 'Unknown')); return }
     router.refresh()
+  }
+
+  const setRole = async (newRole: Role) => {
+    if (newRole === role) { setOpen(false); return }
+    setOpen(false)
+    if (newRole === 'artisan') {
+      // Making someone an artisan needs a few extra details to create
+      // their public artisan profile — collect those before confirming.
+      setFormError('')
+      setArtisanForm({ name: fullName, state, craft: '', gi_product: '' })
+      return
+    }
+    if (!confirm(`Change this user to "${newRole}"?`)) return
+    await submitRole(newRole)
+  }
+
+  const inputStyle: React.CSSProperties = {
+    width: '100%', padding: '8px 12px', border: '1.5px solid #DDB840',
+    borderRadius: 6, fontSize: '0.85rem', background: '#FFF8EE', outline: 'none', boxSizing: 'border-box',
+  }
+  const labelStyle: React.CSSProperties = {
+    display: 'block', fontSize: '0.68rem', fontWeight: 700,
+    letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6B4820', marginBottom: 4,
   }
 
   return (
@@ -55,6 +86,71 @@ export default function RoleToggle({ userId, currentRole }: { userId: string; cu
               </button>
             )
           })}
+        </div>
+      )}
+
+      {artisanForm && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(27,46,74,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
+          <div style={{ background: '#fff', border: '1.5px solid #DDB840', borderRadius: 12, padding: '1.75rem', width: 380, maxWidth: '90vw' }}>
+            <h3 style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.3rem', fontWeight: 700, color: '#1B2E4A', marginTop: 0, marginBottom: 4 }}>
+              Make Artisan
+            </h3>
+            <p style={{ fontSize: '0.78rem', color: '#6B4820', marginBottom: '1rem' }}>
+              This creates their public artisan profile on /artisans.
+            </p>
+            {formError && (
+              <div style={{ background: '#FEE2E2', border: '1px solid #EF4444', borderRadius: 6, padding: '8px 12px', color: '#B91C1C', fontSize: '0.8rem', marginBottom: '0.75rem' }}>
+                {formError}
+              </div>
+            )}
+            <form onSubmit={async e => {
+              e.preventDefault()
+              if (!artisanForm.name || !artisanForm.state || !artisanForm.craft) {
+                setFormError('Name, state and craft are required.')
+                return
+              }
+              setArtisanForm(null)
+              await submitRole('artisan', artisanForm)
+            }} style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+              <div>
+                <label style={labelStyle}>Full Name *</label>
+                <input style={inputStyle} required value={artisanForm.name}
+                  onChange={e => setArtisanForm(f => f && { ...f, name: e.target.value })} placeholder="Meera Devi" />
+              </div>
+              <div>
+                <label style={labelStyle}>State *</label>
+                <select style={inputStyle} required value={artisanForm.state}
+                  onChange={e => setArtisanForm(f => f && { ...f, state: e.target.value })}>
+                  <option value="">— Select State —</option>
+                  {INDIAN_STATES.map(st => <option key={st} value={st}>{st}</option>)}
+                </select>
+              </div>
+              <div>
+                <label style={labelStyle}>Craft / Skill *</label>
+                <input style={inputStyle} required value={artisanForm.craft}
+                  onChange={e => setArtisanForm(f => f && { ...f, craft: e.target.value })} placeholder="Madhubani Painting" />
+              </div>
+              <div>
+                <label style={labelStyle}>GI Product</label>
+                <input style={inputStyle} value={artisanForm.gi_product}
+                  onChange={e => setArtisanForm(f => f && { ...f, gi_product: e.target.value })} placeholder="Optional" />
+              </div>
+              <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem' }}>
+                <button type="submit" style={{
+                  background: '#E8380A', color: '#fff', padding: '10px 20px', border: 'none',
+                  borderRadius: 6, fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer', flex: 1,
+                }}>
+                  Confirm →
+                </button>
+                <button type="button" onClick={() => setArtisanForm(null)} style={{
+                  background: 'none', color: '#6B4820', padding: '10px 16px',
+                  border: '1.5px solid #DDB840', borderRadius: 6, fontWeight: 700, cursor: 'pointer',
+                }}>
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
     </div>
