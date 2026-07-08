@@ -41,6 +41,7 @@ export default function Footer() {
             {[
               { href: '/about', label: 'Our Mission' },
               { href: '/about#research', label: 'Research' },
+              { href: '/about#our-story', label: 'Our Story' },
               { href: '/join', label: 'Sell on KalaStree' },
               { href: '/about#contact', label: 'Contact' },
             ].map(({ href, label }) => (

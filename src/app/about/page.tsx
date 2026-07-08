@@ -44,7 +44,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* About Garima + Research */}
+      {/* About Garima */}
       <section id="research" style={{ padding: '5rem 5%', background: '#FFE8A8' }}>
         <div className="about-research-grid" style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '300px 1fr', gap: '4rem', alignItems: 'center' }}>
           <div style={{ textAlign: 'center' }}>
@@ -72,28 +72,74 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Research Stats */}
-      <section style={{ padding: '5rem 5%', background: '#1B2E4A' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.8rem, 3vw, 2.4rem)', fontWeight: 700, color: '#fff', textAlign: 'center', marginBottom: '3rem' }}>
-            4 Years of Primary Evidence — <span style={{ color: '#D4A000' }}>Not Just a Pitch Deck</span>
-          </h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
+      {/* Our Story */}
+      <section id="our-story" style={{ padding: '5rem 5%', background: 'var(--parchment)' }}>
+        <div className="about-research-grid" style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '300px 1fr', gap: '4rem', alignItems: 'start' }}>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ width: '100%', aspectRatio: '4/5', borderRadius: '12px 50% 12px 50%', border: '2.5px solid #D4A000', overflow: 'hidden', background: '#FFF8EE', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem' }}>
+              <span style={{ fontSize: '3rem' }}>🖼️</span>
+            </div>
+          </div>
+          <div>
+            <p style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#1A7A32', marginBottom: '0.6rem' }}>Our Story</p>
+            <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.8rem, 3vw, 2.4rem)', fontWeight: 700, color: '#1B2E4A', marginBottom: '1.5rem' }}>
+              A Tuesday in <span style={{ color: '#E8380A' }}>Jitwarpur</span>
+            </h2>
+
             {[
-              { n: '478', l: 'GI Tags Documented', s: '2004–2023, across 32 States', c: '#E8380A' },
-              { n: '2,500', l: 'Women Surveyed', s: 'Primary data from 16 Indian states', c: '#1A7A32' },
-              { n: '0.527', l: 'Avg FinTech Index', s: 'GI workers score 12–18% higher', c: '#D4A000' },
-              { n: '47.4%', l: 'Digital Literacy Gap', s: '#1 barrier to FinTech adoption', c: '#C21859' },
-              { n: '1', l: 'Springer Paper', s: 'ISMS 2025 · LNNS Series · Peer-reviewed', c: '#E8380A' },
-              { n: '815', l: 'Lines of AI Code', s: 'RAG system · 100% local · 0 cloud dependency', c: '#D4A000' },
-            ].map(({ n, l, s, c }) => (
-              <div key={l} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(212,160,0,0.25)', borderRadius: 10, padding: '1.75rem 1.5rem', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
-                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 4, background: c }} />
-                <div style={{ fontFamily: "'EB Garamond', serif", fontSize: '2.5rem', fontWeight: 700, color: c, lineHeight: 1, marginBottom: 8 }}>{n}</div>
-                <div style={{ fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.7)', marginBottom: 4 }}>{l}</div>
-                <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)', lineHeight: 1.5 }}>{s}</div>
-              </div>
+              "It was a Tuesday afternoon in JITWARPUR village, Bihar.\nA woman named Sunita was painting. Bamboo brush. Kohl-black ink. A fish becoming a lotus becoming something I had no word for — something her mother taught her, and her mother's mother before that.",
+              "She painted for eight hours.\nThe man who comes every Tuesday handed her ₹150.\nShe said thank you.",
+              "I sat there after he left. I knew — because I had done the research — that the same painting would sell in Delhi for ₹2,000. In London for ₹8,000. I knew Sunita would never find this out. That nobody had told her. That nobody was going to.",
+              "I drove home that night.\nI could not sleep.",
+            ].map((para, i) => (
+              <p key={i} style={{ fontSize: '0.95rem', lineHeight: 1.85, color: '#6B4820', marginBottom: '1rem' }}>
+                {para.split('\n').map((line, j) => (
+                  <span key={j}>{j > 0 && <br />}{line}</span>
+                ))}
+              </p>
             ))}
+
+            <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.15rem', fontWeight: 600, color: '#1B2E4A', marginTop: '1.75rem', marginBottom: '1rem' }}>
+              My name is Garima Awasthi.
+            </p>
+
+            {[
+              "I spent four years travelling across 16 states of India — sitting in the homes of women who weave, paint, embroider and sculpt India's most extraordinary things. I listened to 2,500 of them. I wrote their data into a research paper at IIT Patna. It got published. It was cited. It sat in a journal.\nAnd Sunita still earned ₹150.",
+              "So I stopped writing about the problem.\nI built the answer.",
+            ].map((para, i) => (
+              <p key={i} style={{ fontSize: '0.95rem', lineHeight: 1.85, color: '#6B4820', marginBottom: '1rem' }}>
+                {para.split('\n').map((line, j) => (
+                  <span key={j}>{j > 0 && <br />}{line}</span>
+                ))}
+              </p>
+            ))}
+
+            <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.15rem', fontWeight: 600, color: '#1B2E4A', marginTop: '1.75rem', marginBottom: '1rem' }}>
+              KalaStree is that answer.<br />Not a marketplace. A door that did not exist before.
+            </p>
+
+            <p style={{ fontSize: '0.95rem', lineHeight: 1.85, color: '#6B4820', marginBottom: '1rem' }}>
+              A door where a woman walks through and finds her name on her product. Her village on the tag. Her money — the full amount, the real amount — in her own account. The same day.<br />
+              No middleman. No Tuesday man. No ₹150.
+            </p>
+
+            <p style={{ fontSize: '0.95rem', lineHeight: 1.85, color: '#6B4820', marginTop: '1.75rem', marginBottom: '1.75rem' }}>
+              I did not plan to build a company.<br />
+              I planned to write a thesis.<br />
+              But 2,500 women trusted me with their truth.<br />
+              And a thesis felt like a very small thing to do with that.
+            </p>
+
+            <div style={{ borderTop: '1px solid #DDB840', paddingTop: '1.25rem' }}>
+              <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.1rem', fontWeight: 700, color: '#1B2E4A', marginBottom: 2 }}>Garima Awasthi</p>
+              <p style={{ fontSize: '0.85rem', color: '#6B4820', marginBottom: 2 }}>Founder, KalaStree — Heritage by Her</p>
+              <p style={{ fontSize: '0.85rem', color: '#6B4820' }}>PhD Scholar, IIT Patna · Springer LNNS Author</p>
+            </div>
+
+            <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.2rem', fontStyle: 'italic', color: '#1B2E4A', lineHeight: 1.7, marginTop: '1.75rem' }}>
+              The woman who made India beautiful deserves to know what that is worth.<br />
+              KalaStree exists until she does.
+            </p>
           </div>
         </div>
       </section>
