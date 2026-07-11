@@ -43,27 +43,6 @@ export default async function HomePage() {
         {/* Subtle radial glow in centre */}
         <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 70% 60% at 50% 45%, rgba(120,20,30,0.6) 0%, transparent 100%)', pointerEvents: 'none' }} />
 
-        {/* Left folk-art SVG */}
-        <svg viewBox="0 0 220 520" style={{ position: 'absolute', left: 0, top: 0, height: '100%', width: 'auto', opacity: 0.18, pointerEvents: 'none' }} fill="none" stroke="#D4A000" strokeWidth="1.2">
-          {/* spinning wheel */}
-          <circle cx="50" cy="400" r="38" /><circle cx="50" cy="400" r="28" />
-          {[0,45,90,135,180,225,270,315].map(a => <line key={a} x1="50" y1="400" x2={50+38*Math.cos(a*Math.PI/180)} y2={400+38*Math.sin(a*Math.PI/180)} />)}
-          {/* flowers */}
-          {[60,90,120].map((y,i) => <g key={y}><circle cx={20+i*15} cy={y} r="6" />{[0,60,120,180,240,300].map(a=><ellipse key={a} cx={20+i*15+10*Math.cos(a*Math.PI/180)} cy={y+10*Math.sin(a*Math.PI/180)} rx="4" ry="2" transform={`rotate(${a},${20+i*15+10*Math.cos(a*Math.PI/180)},${y+10*Math.sin(a*Math.PI/180)})`} />)}</g>)}
-          {/* vines */}
-          <path d="M 10 500 Q 30 450 20 400 Q 40 350 15 300 Q 35 250 10 200" /><path d="M 10 380 Q 40 360 55 340" /><path d="M 20 300 Q 45 285 60 265" />
-        </svg>
-
-        {/* Right folk-art SVG */}
-        <svg viewBox="0 0 220 520" style={{ position: 'absolute', right: 0, top: 0, height: '100%', width: 'auto', opacity: 0.18, pointerEvents: 'none', transform: 'scaleX(-1)' }} fill="none" stroke="#D4A000" strokeWidth="1.2">
-          {/* loom */}
-          <rect x="30" y="300" width="80" height="60" rx="2" /><line x1="30" y1="315" x2="110" y2="315" /><line x1="30" y1="330" x2="110" y2="330" /><line x1="30" y1="345" x2="110" y2="345" />
-          {[45,60,75,90,105].map(x => <line key={x} x1={x} y1="300" x2={x} y2="360" />)}
-          {/* flowers */}
-          {[50,85,120].map((y,i) => <g key={y}><circle cx={180-i*15} cy={y} r="6" />{[0,60,120,180,240,300].map(a=><ellipse key={a} cx={180-i*15+10*Math.cos(a*Math.PI/180)} cy={y+10*Math.sin(a*Math.PI/180)} rx="4" ry="2" transform={`rotate(${a},${180-i*15+10*Math.cos(a*Math.PI/180)},${y+10*Math.sin(a*Math.PI/180)})`} />)}</g>)}
-          <path d="M 210 500 Q 190 450 200 400 Q 180 350 205 300 Q 185 250 210 200" /><path d="M 200 380 Q 170 360 155 340" /><path d="M 195 300 Q 165 285 150 265" />
-        </svg>
-
         {/* Main content */}
         <div style={{ maxWidth: 820, margin: '0 auto', padding: '1rem 5% 0', textAlign: 'center', position: 'relative', zIndex: 2 }}>
 
