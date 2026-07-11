@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase'
-import type { Product, Artisan } from '@/lib/types'
+import type { Product, Artisan, Category } from '@/lib/types'
 import ProductCarousel from '@/components/ProductCarousel'
 import ArtisanCard from '@/components/ArtisanCard'
 import CategoryGrid from '@/components/CategoryGrid'
@@ -23,6 +23,24 @@ function getHeroImages(): string[] {
   }
 }
 
+const CATEGORY_KEYS: Category[] = ['textile', 'handicraft', 'agricultural', 'food']
+
+function getCategoryImages(): Partial<Record<Category, string>> {
+  const result: Partial<Record<Category, string>> = {}
+  try {
+    const dir = path.join(process.cwd(), 'public', 'categories')
+    if (!fs.existsSync(dir)) return result
+    const files = fs.readdirSync(dir)
+    for (const key of CATEGORY_KEYS) {
+      const match = files.find(f => new RegExp(`^${key}\\.(jpe?g|png|webp|avif)$`, 'i').test(f))
+      if (match) result[key] = `/categories/${match}`
+    }
+  } catch {
+    // ignore
+  }
+  return result
+}
+
 async function getData() {
   const [{ data: products }, { data: artisans }] = await Promise.all([
     supabase.from('products').select('*, artisan:artisans(*)').eq('is_featured', true).eq('status', 'approved').order('created_at', { ascending: false }).limit(8),
@@ -34,6 +52,7 @@ async function getData() {
 export default async function HomePage() {
   const { products, artisans } = await getData()
   const heroImages = getHeroImages()
+  const categoryImages = getCategoryImages()
 
   return (
     <>
@@ -122,7 +141,7 @@ export default async function HomePage() {
           <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.8rem, 3vw, 2.6rem)', fontWeight: 700, color: '#1B2E4A', textAlign: 'center', marginBottom: '3rem' }}>
             Four Pillars of India's <span style={{ color: '#E8380A' }}>GI Heritage</span>
           </h2>
-          <CategoryGrid />
+          <CategoryGrid categoryImages={categoryImages} />
         </div>
       </section>
 
