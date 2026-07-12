@@ -3,7 +3,7 @@ import type { Product, Artisan, Category } from '@/lib/types'
 import ProductCarousel from '@/components/ProductCarousel'
 import ArtisanCard from '@/components/ArtisanCard'
 import CategoryGrid from '@/components/CategoryGrid'
-import HeroCarousel from '@/components/HeroCarousel'
+import HeroSection from '@/components/HeroCarousel'
 import Link from 'next/link'
 import fs from 'fs'
 import path from 'path'
@@ -41,6 +41,25 @@ function getCategoryImages(): Partial<Record<Category, string>> {
   return result
 }
 
+type StatKey = 'gi-products' | 'women-artisans' | 'states' | 'marketplace'
+const STAT_KEYS: StatKey[] = ['gi-products', 'women-artisans', 'states', 'marketplace']
+
+function getStatsImages(): Partial<Record<StatKey, string>> {
+  const result: Partial<Record<StatKey, string>> = {}
+  try {
+    const dir = path.join(process.cwd(), 'public', 'stats')
+    if (!fs.existsSync(dir)) return result
+    const files = fs.readdirSync(dir)
+    for (const key of STAT_KEYS) {
+      const match = files.find(f => new RegExp(`^${key}\\.(jpe?g|png|webp|avif)$`, 'i').test(f))
+      if (match) result[key] = `/stats/${match}`
+    }
+  } catch {
+    // ignore
+  }
+  return result
+}
+
 async function getData() {
   const [{ data: products }, { data: artisans }] = await Promise.all([
     supabase.from('products').select('*, artisan:artisans(*)').eq('is_featured', true).eq('status', 'approved').order('created_at', { ascending: false }).limit(8),
@@ -53,76 +72,12 @@ export default async function HomePage() {
   const { products, artisans } = await getData()
   const heroImages = getHeroImages()
   const categoryImages = getCategoryImages()
+  const statsImages = getStatsImages()
 
   return (
     <>
-      {/* HERO */}
-      <section style={{ background: '#5C0A14', position: 'relative', overflow: 'hidden' }}>
-
-        {/* Subtle radial glow in centre */}
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 70% 60% at 50% 45%, rgba(120,20,30,0.6) 0%, transparent 100%)', pointerEvents: 'none' }} />
-
-        {/* Main content */}
-        <div style={{ maxWidth: 820, margin: '0 auto', padding: '1rem 5% 0', textAlign: 'center', position: 'relative', zIndex: 2 }}>
-
-          {/* Logo */}
-          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
-            <img src="/kalastree-logo.png" alt="KalaStree — Heritage by Her"
-              style={{ height: 'clamp(200px, 32vw, 360px)', width: 'auto', objectFit: 'contain', display: 'block', filter: 'drop-shadow(0 0 40px rgba(212,160,0,0.3))' }} />
-          </div>
-
-          <p className="hero-desc" style={{ fontSize: 'clamp(0.92rem, 1.8vw, 1.1rem)', lineHeight: 1.9, color: 'rgba(255,255,255,0.85)', maxWidth: 580, margin: '0 auto 2rem' }}>
-            India's first GI-verified marketplace where every purchase goes{' '}
-            <strong style={{ color: '#D4A000' }}>directly to the woman who made it</strong> — no middlemen, no compromise.
-          </p>
-
-          <div className="hero-btns" style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '3rem' }}>
-            <Link href="/shop" style={{ background: '#D4A000', color: '#1A0800', padding: '14px 34px', borderRadius: 6, fontFamily: "'Lato', sans-serif", fontSize: '0.95rem', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8, boxShadow: '0 4px 24px rgba(212,160,0,0.4)' }}>
-              Shop the Collection →
-            </Link>
-            <Link href="/artisans" style={{ background: 'transparent', color: '#fff', padding: '14px 34px', borderRadius: 6, border: '2px solid rgba(255,255,255,0.5)', fontFamily: "'Lato', sans-serif", fontSize: '0.95rem', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-              Meet the Artisans
-            </Link>
-          </div>
-        </div>
-
-        {/* Stats bar — icon left, text right, always one row */}
-        <div style={{ borderTop: '1px solid rgba(212,160,0,0.25)', position: 'relative', zIndex: 2 }}>
-          <div style={{ display: 'flex', width: '100%' }}>
-            {[
-              { icon: '🏺', num: '478', label: 'GI PRODUCTS', sub: 'Authentic. Verified. Unique.' },
-              { icon: '👩‍🎨', num: '2,500+', label: 'WOMEN ARTISANS', sub: 'Empowered. Skilled. Proud.' },
-              { icon: '🗺️', num: '16', label: 'STATES', sub: 'Diverse. Rich. United.' },
-              { icon: '🌐', num: 'GLOBAL', label: 'MARKETPLACE', sub: 'Bringing India to the World.' },
-            ].map(({ icon, num, label, sub }, i) => (
-              <div key={label} style={{ flex: '1 1 0', minWidth: 0, display: 'flex', alignItems: 'center', gap: 'clamp(6px,1.2vw,14px)', padding: 'clamp(0.7rem,1.8vw,1.2rem) clamp(0.4rem,1.5vw,1.2rem)', borderLeft: i > 0 ? '1px solid rgba(212,160,0,0.2)' : 'none' }}>
-                {/* Icon */}
-                <div style={{ fontSize: 'clamp(1.6rem,3.5vw,2.6rem)', lineHeight: 1, flexShrink: 0, filter: 'drop-shadow(0 0 6px rgba(212,160,0,0.4))' }}>{icon}</div>
-                {/* Text */}
-                <div style={{ minWidth: 0 }}>
-                  <div style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.1rem,2.8vw,1.9rem)', fontWeight: 700, color: '#D4A000', lineHeight: 1, whiteSpace: 'nowrap' }}>{num}</div>
-                  <div style={{ fontSize: 'clamp(0.48rem,1.1vw,0.65rem)', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#fff', marginTop: 3 }}>{label}</div>
-                  <div style={{ fontSize: 'clamp(0.44rem,1vw,0.6rem)', color: 'rgba(212,160,0,0.65)', marginTop: 2, fontStyle: 'italic', whiteSpace: 'nowrap' }}>{sub}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Sliding hero images — same as before */}
-        {heroImages.length > 0 && (
-          <div style={{ position: 'relative', zIndex: 2 }}>
-            <HeroCarousel images={heroImages} />
-          </div>
-        )}
-
-        <style>{`
-          @media(max-width:600px){
-            .hero-btns a { padding:12px 20px !important; font-size:0.85rem !important; width:100%; justify-content:center; }
-            .hero-btns  { flex-direction:column !important; align-items:stretch !important; }
-          }
-        `}</style>
-      </section>
+      {/* HERO — swipable: branded slide first, then state images, background shifts after slide 1 */}
+      <HeroSection heroImages={heroImages} statsImages={statsImages} />
 
       {/* Marigold promo strip */}
       <div style={{ background: '#D4A000', padding: '11px 5%', textAlign: 'center', overflow: 'hidden' }}>
@@ -134,9 +89,9 @@ export default async function HomePage() {
       {/* <ComingSoonRibbon /> */}
 
       {/* GI CATEGORIES */}
-      <section style={{ padding: '5rem 5%', background: '#FFE8A8' }}>
+      <section style={{ padding: '2.5rem 5% 5rem', background: '#FAF7F2' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-          <div className="folk-divider"><span>✦ ✧ ✦</span></div>
+          <div className="folk-divider" style={{ margin: '0 0 1rem' }}><span>✦ ✧ ✦</span></div>
           <p style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#1A7A32', textAlign: 'center', marginBottom: '0.6rem' }}>Browse by Category</p>
           <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.8rem, 3vw, 2.6rem)', fontWeight: 700, color: '#1B2E4A', textAlign: 'center', marginBottom: '3rem' }}>
             Four Pillars of India's <span style={{ color: '#E8380A' }}>GI Heritage</span>
@@ -146,7 +101,7 @@ export default async function HomePage() {
       </section>
 
       {/* FEATURED PRODUCTS */}
-      <section style={{ padding: '5rem 5%', background: 'var(--parchment)' }}>
+      <section style={{ padding: '2.5rem 5% 5rem', background: 'var(--parchment)' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '3rem', flexWrap: 'wrap', gap: '1rem' }}>
             <div>
@@ -191,7 +146,7 @@ export default async function HomePage() {
 
       {/* ARTISANS */}
       {artisans.length > 0 && (
-        <section style={{ padding: '5rem 5%', background: '#FFE8A8' }}>
+        <section style={{ padding: '2.5rem 5% 5rem', background: '#FAF7F2' }}>
           <div style={{ maxWidth: 1280, margin: '0 auto' }}>
             <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
               <p style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#1A7A32', marginBottom: '0.4rem' }}>The Hands Behind the Craft</p>
