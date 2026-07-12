@@ -149,6 +149,7 @@ export default function HeroSection({ heroImages, statsImages }: HeroSectionProp
         {slideCount > 1 && (
           <>
             <button
+              className="hero-arrow"
               aria-label="Previous slide"
               onClick={() => go(index - 1)}
               style={{
@@ -162,6 +163,7 @@ export default function HeroSection({ heroImages, statsImages }: HeroSectionProp
               ‹
             </button>
             <button
+              className="hero-arrow"
               aria-label="Next slide"
               onClick={() => go(index + 1)}
               style={{
@@ -230,6 +232,7 @@ export default function HeroSection({ heroImages, statsImages }: HeroSectionProp
       <style>{`
         @media(max-width:640px){
           .stat-sub { white-space: normal !important; }
+          .hero-arrow { display: none !important; }
         }
       `}</style>
     </section>
