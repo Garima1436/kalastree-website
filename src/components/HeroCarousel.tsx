@@ -30,7 +30,7 @@ function stateNameFromSrc(src: string): string {
 function ImageSlide({ src, priority }: { src: string; priority?: boolean }) {
   const stateName = stateNameFromSrc(src)
   return (
-    <div style={{ position: 'relative', width: '100%', height: 'clamp(320px, 44vw, 560px)', background: '#3D0810', overflow: 'hidden' }}>
+    <div style={{ position: 'relative', width: '100%', height: 'clamp(220px, 62vw, 560px)', background: '#3D0810', overflow: 'hidden' }}>
       <Image
         src={src}
         alt=""
@@ -72,24 +72,24 @@ function ImageSlide({ src, priority }: { src: string; priority?: boolean }) {
 
 function BrandSlide() {
   return (
-    <div style={{ position: 'relative', padding: '3.5rem 5%', overflow: 'hidden' }}>
+    <div style={{ position: 'relative', height: 'clamp(220px, 62vw, 560px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0.5rem 5%', overflow: 'hidden' }}>
       <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 70% 60% at 50% 45%, rgba(120,20,30,0.6) 0%, transparent 100%)', pointerEvents: 'none' }} />
       <div style={{ maxWidth: 820, margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 2 }}>
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 'clamp(0.4rem, 1.4vw, 1rem)' }}>
           <img src="/kalastree-logo.png" alt="KalaStree — Heritage by Her"
-            style={{ height: 'clamp(200px, 32vw, 360px)', width: 'auto', objectFit: 'contain', display: 'block', filter: 'drop-shadow(0 0 40px rgba(212,160,0,0.3))' }} />
+            style={{ height: 'clamp(90px, 22vw, 220px)', width: 'auto', objectFit: 'contain', display: 'block', filter: 'drop-shadow(0 0 40px rgba(212,160,0,0.3))' }} />
         </div>
 
-        <p className="hero-desc" style={{ fontSize: 'clamp(0.92rem, 1.8vw, 1.1rem)', lineHeight: 1.9, color: 'rgba(255,255,255,0.85)', maxWidth: 580, margin: '0 auto 2rem' }}>
+        <p className="hero-desc" style={{ fontSize: 'clamp(0.72rem, 1.4vw, 1rem)', lineHeight: 1.6, color: 'rgba(255,255,255,0.85)', maxWidth: 560, margin: '0 auto clamp(0.6rem, 1.5vw, 1.2rem)' }}>
           India's first GI-verified marketplace where every purchase goes{' '}
           <strong style={{ color: '#D4A000' }}>directly to the woman who made it</strong> — no middlemen, no compromise.
         </p>
 
-        <div className="hero-btns" style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <Link href="/shop" style={{ background: '#D4A000', color: '#1A0800', padding: '14px 34px', borderRadius: 6, fontFamily: "'Lato', sans-serif", fontSize: '0.95rem', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8, boxShadow: '0 4px 24px rgba(212,160,0,0.4)' }}>
+        <div className="hero-btns" style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+          <Link href="/shop" style={{ background: '#D4A000', color: '#1A0800', padding: 'clamp(8px,1.5vw,14px) clamp(16px,3vw,34px)', borderRadius: 6, fontFamily: "'Lato', sans-serif", fontSize: 'clamp(0.75rem,1.3vw,0.95rem)', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8, boxShadow: '0 4px 24px rgba(212,160,0,0.4)' }}>
             Shop the Collection →
           </Link>
-          <Link href="/artisans" style={{ background: 'transparent', color: '#fff', padding: '14px 34px', borderRadius: 6, border: '2px solid rgba(255,255,255,0.5)', fontFamily: "'Lato', sans-serif", fontSize: '0.95rem', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+          <Link href="/artisans" style={{ background: 'transparent', color: '#fff', padding: 'clamp(8px,1.5vw,14px) clamp(16px,3vw,34px)', borderRadius: 6, border: '2px solid rgba(255,255,255,0.5)', fontFamily: "'Lato', sans-serif", fontSize: 'clamp(0.75rem,1.3vw,0.95rem)', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
             Meet the Artisans
           </Link>
         </div>
@@ -183,8 +183,9 @@ export default function HeroSection({ heroImages, statsImages }: HeroSectionProp
                   onClick={() => go(i)}
                   style={{
                     width: i === index ? 22 : 8, height: 8, borderRadius: 4,
-                    background: i === index ? '#D4A000' : 'rgba(255,255,255,0.5)',
-                    border: 'none', padding: 0, cursor: 'pointer', transition: 'width 0.3s, background 0.3s',
+                    background: i === index ? '#D4A000' : onBrand ? 'rgba(255,255,255,0.5)' : 'rgba(139,94,30,0.35)',
+                    border: `1px solid ${i === index ? '#D4A000' : 'rgba(212,160,0,0.7)'}`,
+                    padding: 0, cursor: 'pointer', transition: 'width 0.3s, background 0.3s, border-color 0.3s',
                   }}
                 />
               ))}
@@ -227,10 +228,6 @@ export default function HeroSection({ heroImages, statsImages }: HeroSectionProp
       </div>
 
       <style>{`
-        @media(max-width:600px){
-          .hero-btns a { padding:12px 20px !important; font-size:0.85rem !important; width:100%; justify-content:center; }
-          .hero-btns  { flex-direction:column !important; align-items:stretch !important; }
-        }
         @media(max-width:640px){
           .stats-grid { flex-wrap: wrap; }
           .stats-cell { flex: 0 0 50% !important; }
