@@ -229,10 +229,6 @@ export default function HeroSection({ heroImages, statsImages }: HeroSectionProp
 
       <style>{`
         @media(max-width:640px){
-          .stats-grid { flex-wrap: wrap; }
-          .stats-cell { flex: 0 0 50% !important; }
-          .stats-cell:nth-child(3) { border-left: none !important; }
-          .stats-cell:nth-child(3), .stats-cell:nth-child(4) { border-top: 1px solid rgba(212,160,0,0.2); }
           .stat-sub { white-space: normal !important; }
         }
       `}</style>
