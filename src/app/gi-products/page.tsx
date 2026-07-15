@@ -8,7 +8,7 @@ export default async function GIProductsPage() {
   const supabase = await createClient()
   const { data } = await supabase
     .from('gi_products')
-    .select('id, name, state, gi_tag, year, category, accent, emoji, tagline, women_role, history, materials, district, women_percent, image_url')
+    .select('id, name, name_hi, state, gi_tag, year, category, accent, emoji, tagline, tagline_hi, women_role, women_role_hi, history, history_hi, materials, materials_hi, district, women_percent, image_url')
     .order('state', { ascending: true })
     .order('name', { ascending: true })
 

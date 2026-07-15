@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase-browser'
 import { useRouter } from 'next/navigation'
 import type { Category } from '@/lib/types'
 import { INDIAN_STATES } from '@/lib/indian-states'
+import TranslateHindiField from '@/components/TranslateHindiField'
 import { useLanguage } from '@/lib/i18n/LanguageContext'
 import artisanDashboard from '@/lib/i18n/dictionaries/artisanDashboard'
 import common from '@/lib/i18n/dictionaries/common'
@@ -32,8 +33,10 @@ export default function ArtisanProductForm({ artisanId, initialData, mode = 'new
 
   const [form, setForm] = useState({
     name: initialData?.name ?? '',
+    name_hi: initialData?.name_hi ?? '',
     slug: initialData?.slug ?? '',
     description: initialData?.description ?? '',
+    description_hi: initialData?.description_hi ?? '',
     price: initialData?.price?.toString() ?? '',
     gi_tag: initialData?.gi_tag ?? '',
     category: (initialData?.category ?? 'handicraft') as Category,
@@ -65,7 +68,8 @@ export default function ArtisanProductForm({ artisanId, initialData, mode = 'new
     const slug = form.slug || autoSlug(form.name)
     const images = form.image_url ? [form.image_url] : (initialData?.images ?? [])
     const payload = {
-      name: form.name, slug, description: form.description,
+      name: form.name, name_hi: form.name_hi || null, slug,
+      description: form.description, description_hi: form.description_hi || null,
       price: parseFloat(form.price), gi_tag: form.gi_tag || null,
       category: form.category, state: form.state || null,
       stock: parseInt(form.stock), artisan_id: artisanId, images,
@@ -113,6 +117,18 @@ export default function ArtisanProductForm({ artisanId, initialData, mode = 'new
             </div>
           </div>
 
+          <TranslateHindiField
+            label={t('labelProductNameHi')}
+            sourceText={form.name}
+            value={form.name_hi}
+            onChange={v => set('name_hi', v)}
+            translateLabel={t('autoTranslateBtn')}
+            translatingLabel={t('translatingBtn')}
+            hint={t('hindiOptionalHint')}
+            inputStyle={inputStyle}
+            labelStyle={labelStyle}
+          />
+
           <div>
             <label style={labelStyle}>{t('labelDescription')}</label>
             <textarea style={{ ...inputStyle, minHeight: 90, resize: 'vertical' } as any} value={form.description}
@@ -121,6 +137,18 @@ export default function ArtisanProductForm({ artisanId, initialData, mode = 'new
               {t('descriptionHelp')}
             </p>
           </div>
+
+          <TranslateHindiField
+            label={t('labelDescriptionHi')}
+            sourceText={form.description}
+            value={form.description_hi}
+            onChange={v => set('description_hi', v)}
+            multiline
+            translateLabel={t('autoTranslateBtn')}
+            translatingLabel={t('translatingBtn')}
+            inputStyle={inputStyle}
+            labelStyle={labelStyle}
+          />
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
             <div>

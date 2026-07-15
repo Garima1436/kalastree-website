@@ -8,6 +8,7 @@ import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
 import remarkBreaks from 'remark-breaks'
 import { useTranslation } from '@/lib/i18n/useTranslation'
+import { localizedProductName, localizedProductDescription } from '@/lib/productLocale'
 
 interface MediaItem {
   id: string
@@ -72,7 +73,7 @@ function MediaThumbnail({ item }: { item: MediaItem }) {
 export default function ProductPage() {
   const { slug } = useParams<{ slug: string }>()
   const router = useRouter()
-  const { t } = useTranslation('shop')
+  const { t, lang } = useTranslation('shop')
   const { t: tc } = useTranslation('common')
   const [product, setProduct] = useState<Product | null>(null)
   const [media, setMedia] = useState<MediaItem[]>([])
@@ -134,6 +135,8 @@ export default function ProductPage() {
 
   const cat = CATEGORY_META[product.category]
   const activeItem = media[activeIdx]
+  const name = localizedProductName(product, lang)
+  const description = localizedProductDescription(product, lang)
 
   return (
     <div style={{ background: 'var(--parchment)', minHeight: '80vh' }}>
@@ -143,7 +146,7 @@ export default function ProductPage() {
           <Link href="/" style={{ color: '#6B4820', textDecoration: 'none' }}>{tc('home')}</Link> {' / '}
           <Link href="/shop" style={{ color: '#6B4820', textDecoration: 'none' }}>{tc('shop')}</Link> {' / '}
           <Link href={`/shop?category=${product.category}`} style={{ color: '#6B4820', textDecoration: 'none' }}>{cat.label}</Link> {' / '}
-          <span style={{ color: '#1B2E4A', fontWeight: 600 }}>{product.name}</span>
+          <span style={{ color: '#1B2E4A', fontWeight: 600 }}>{name}</span>
         </div>
       </div>
 
@@ -154,7 +157,7 @@ export default function ProductPage() {
           {/* Main viewer */}
           <div style={{ borderRadius: 12, overflow: 'hidden', background: activeItem?.type === 'video' ? '#000' : cat.bg, height: 420, border: '1.5px solid #DDB840', marginBottom: '0.75rem', position: 'relative' }}>
             {activeItem ? (
-              <MediaViewer item={activeItem} productName={product.name} />
+              <MediaViewer item={activeItem} productName={name} />
             ) : (
               <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <span style={{ fontSize: '5rem' }}>{cat.icon}</span>
@@ -191,7 +194,7 @@ export default function ProductPage() {
           </div>
 
           <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.8rem, 3vw, 2.4rem)', fontWeight: 700, color: '#1B2E4A', lineHeight: 1.2, marginBottom: '0.5rem' }}>
-            {product.name}
+            {name}
           </h1>
 
           {product.artisan && (
@@ -216,9 +219,9 @@ export default function ProductPage() {
             {product.stock > 0 ? <>✓ {product.stock} {t('inStock')} · {t('shipsDirectlyFromArtisan')}</> : <>✗ {t('outOfStock')}</>}
           </p>
 
-          {product.description && (
+          {description && (
             <div className="rich-text" style={{ fontSize: '0.95rem', lineHeight: 1.8, color: '#6B4820', marginBottom: '1.5rem' }}>
-              <ReactMarkdown remarkPlugins={[remarkBreaks]}>{product.description}</ReactMarkdown>
+              <ReactMarkdown remarkPlugins={[remarkBreaks]}>{description}</ReactMarkdown>
             </div>
           )}
 

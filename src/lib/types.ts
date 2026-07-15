@@ -20,8 +20,10 @@ export interface Product {
   id: string
   artisan_id: string
   name: string
+  name_hi: string | null
   slug: string
   description: string | null
+  description_hi: string | null
   price: number
   images: string[]
   gi_tag: string | null

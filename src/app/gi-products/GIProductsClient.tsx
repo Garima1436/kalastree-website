@@ -2,10 +2,12 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useTranslation } from '@/lib/i18n/useTranslation'
+import { localizedGiField } from '@/lib/giProductLocale'
 
 export interface GIProduct {
   id: string
   name: string
+  name_hi: string | null
   state: string
   gi_tag: string
   year: string
@@ -13,9 +15,13 @@ export interface GIProduct {
   accent: string
   emoji: string
   tagline: string
+  tagline_hi: string | null
   women_role: string
+  women_role_hi: string | null
   history: string
+  history_hi: string | null
   materials: string
+  materials_hi: string | null
   district: string
   women_percent: number
   image_url: string | null
@@ -26,15 +32,16 @@ const CATEGORY_COLORS: Record<string, string> = {
 }
 
 function CardVisual({ product }: { product: GIProduct }) {
-  const { t } = useTranslation('giProducts')
+  const { t, lang } = useTranslation('giProducts')
   const { t: tc } = useTranslation('common')
+  const name = localizedGiField(product.name, product.name_hi, lang)
   const categoryLabels: Record<string, string> = {
     textile: t('categoryTextile'), handicraft: t('categoryHandicraft'), agricultural: tc('agricultural'), food: tc('foodAndNatural'),
   }
   return (
     <div style={{ height: 200, position: 'relative', borderRadius: '10px 10px 0 0', overflow: 'hidden', background: `linear-gradient(135deg, ${product.accent}18, ${product.accent}30)` }}>
       {product.image_url ? (
-        <img src={product.image_url} alt={product.name}
+        <img src={product.image_url} alt={name}
           style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
           onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none' }} />
       ) : (
@@ -53,21 +60,25 @@ function CardVisual({ product }: { product: GIProduct }) {
 }
 
 function ProductModal({ product, onClose }: { product: GIProduct; onClose: () => void }) {
-  const { t } = useTranslation('giProducts')
+  const { t, lang } = useTranslation('giProducts')
+  const name = localizedGiField(product.name, product.name_hi, lang)
+  const womenRole = localizedGiField(product.women_role, product.women_role_hi, lang)
+  const history = localizedGiField(product.history, product.history_hi, lang)
+  const materials = localizedGiField(product.materials, product.materials_hi, lang)
   return (
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(10,5,0,0.65)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
       <div onClick={e => e.stopPropagation()} style={{ background: '#FFFFFF', borderRadius: 16, maxWidth: 720, width: '100%', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 24px 80px rgba(0,0,0,0.3)', border: '1.5px solid #DDB840' }}>
         {/* Header */}
         <div style={{ height: 200, background: `linear-gradient(135deg, ${product.accent}25, ${product.accent}45)`, borderRadius: '14px 14px 0 0', display: 'flex', alignItems: 'flex-end', gap: '1.5rem', padding: '0 2rem 1.25rem', position: 'relative', overflow: 'hidden' }}>
           {product.image_url && (
-            <img src={product.image_url} alt={product.name}
+            <img src={product.image_url} alt={name}
               style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.35 }}
               onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none' }} />
           )}
           <span style={{ fontSize: '3rem', filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.4))', position: 'relative', zIndex: 1 }}>{product.emoji}</span>
           <div style={{ position: 'relative', zIndex: 1 }}>
             <div style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#fff', opacity: 0.8, marginBottom: 4 }}>{product.state} · {product.year}</div>
-            <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.4rem, 3vw, 2rem)', fontWeight: 700, color: '#fff', margin: 0, textShadow: '0 1px 4px rgba(0,0,0,0.4)' }}>{product.name}</h2>
+            <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.4rem, 3vw, 2rem)', fontWeight: 700, color: '#fff', margin: 0, textShadow: '0 1px 4px rgba(0,0,0,0.4)' }}>{name}</h2>
             <div style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.72rem', color: 'rgba(255,255,255,0.7)', marginTop: 4 }}>{product.gi_tag}</div>
           </div>
           <button onClick={onClose} style={{ position: 'absolute', top: 14, right: 14, zIndex: 2, background: 'rgba(255,255,255,0.85)', border: 'none', borderRadius: '50%', width: 34, height: 34, cursor: 'pointer', fontSize: '1.1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6B4820', fontWeight: 700 }}>✕</button>
@@ -81,7 +92,7 @@ function ProductModal({ product, onClose }: { product: GIProduct; onClose: () =>
               <span style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: product.accent }}>{t('womenAndHeritage')}</span>
               <span style={{ background: product.accent, color: '#fff', fontSize: '0.65rem', fontWeight: 700, padding: '2px 8px', borderRadius: 20, fontFamily: "'Lato', sans-serif" }}>{product.women_percent}% {t('women')}</span>
             </div>
-            <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.05rem', lineHeight: 1.8, color: '#3A1C08', margin: 0 }}>{product.women_role}</p>
+            <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.05rem', lineHeight: 1.8, color: '#3A1C08', margin: 0 }}>{womenRole}</p>
           </div>
 
           {/* History */}
@@ -90,14 +101,14 @@ function ProductModal({ product, onClose }: { product: GIProduct; onClose: () =>
               <span style={{ fontSize: '1rem' }}>📜</span>
               <span style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#6B4820' }}>{t('historyAndHeritage')}</span>
             </div>
-            <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.05rem', lineHeight: 1.85, color: '#3A1C08', margin: 0 }}>{product.history}</p>
+            <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.05rem', lineHeight: 1.85, color: '#3A1C08', margin: 0 }}>{history}</p>
           </div>
 
           {/* Details */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             <div style={{ background: '#FFF5E0', borderRadius: 8, padding: '1rem' }}>
               <div style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#A07840', marginBottom: 6 }}>{t('materials')}</div>
-              <p style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.88rem', color: '#3A1C08', lineHeight: 1.6, margin: 0 }}>{product.materials}</p>
+              <p style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.88rem', color: '#3A1C08', lineHeight: 1.6, margin: 0 }}>{materials}</p>
             </div>
             <div style={{ background: '#FFF5E0', borderRadius: 8, padding: '1rem' }}>
               <div style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#A07840', marginBottom: 6 }}>{t('districts')}</div>
@@ -119,7 +130,7 @@ function ProductModal({ product, onClose }: { product: GIProduct; onClose: () =>
 }
 
 export default function GIProductsClient({ products }: { products: GIProduct[] }) {
-  const { t } = useTranslation('giProducts')
+  const { t, lang } = useTranslation('giProducts')
   const { t: tc } = useTranslation('common')
   const categoryLabels: Record<string, string> = {
     textile: t('categoryTextile'), handicraft: t('categoryHandicraft'), agricultural: tc('agricultural'), food: tc('foodAndNatural'),
@@ -133,7 +144,7 @@ export default function GIProductsClient({ products }: { products: GIProduct[] }
   const filtered = products.filter(p => {
     const matchState = activeState === 'All States' || p.state === activeState
     const q = searchQuery.toLowerCase()
-    const matchSearch = !q || p.name.toLowerCase().includes(q) || p.state.toLowerCase().includes(q) || p.category.toLowerCase().includes(q)
+    const matchSearch = !q || p.name.toLowerCase().includes(q) || p.name_hi?.toLowerCase().includes(q) || p.state.toLowerCase().includes(q) || p.category.toLowerCase().includes(q)
     return matchState && matchSearch
   })
 
@@ -233,8 +244,8 @@ export default function GIProductsClient({ products }: { products: GIProduct[] }
                 <CardVisual product={product} />
                 <div style={{ padding: '1.25rem' }}>
                   <div style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A07840', marginBottom: '0.35rem' }}>{product.state}</div>
-                  <h3 style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.2rem', fontWeight: 700, color: '#1B2E4A', margin: '0 0 0.5rem' }}>{product.name}</h3>
-                  <p style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.82rem', color: '#6B4820', lineHeight: 1.6, margin: '0 0 1rem' }}>{product.tagline}</p>
+                  <h3 style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.2rem', fontWeight: 700, color: '#1B2E4A', margin: '0 0 0.5rem' }}>{localizedGiField(product.name, product.name_hi, lang)}</h3>
+                  <p style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.82rem', color: '#6B4820', lineHeight: 1.6, margin: '0 0 1rem' }}>{localizedGiField(product.tagline, product.tagline_hi, lang)}</p>
                   <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: `${product.accent}12`, border: `1px solid ${product.accent}35`, borderRadius: 20, padding: '4px 10px', marginBottom: '1rem' }}>
                     <span style={{ fontSize: '0.75rem' }}>👩‍🎨</span>
                     <span style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.7rem', fontWeight: 700, color: product.accent }}>{product.women_percent}{t('womenArtisansSuffix')}</span>

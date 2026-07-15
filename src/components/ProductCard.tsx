@@ -3,10 +3,12 @@ import Link from 'next/link'
 import type { Product } from '@/lib/types'
 import { CATEGORY_META } from '@/lib/types'
 import { useTranslation } from '@/lib/i18n/useTranslation'
+import { localizedProductName } from '@/lib/productLocale'
 
 export default function ProductCard({ product }: { product: Product }) {
   const cat = CATEGORY_META[product.category]
-  const { t } = useTranslation('shop')
+  const { t, lang } = useTranslation('shop')
+  const name = localizedProductName(product, lang)
 
   return (
     <Link href={`/shop/${product.slug}`} style={{ textDecoration: 'none' }}>
@@ -31,7 +33,7 @@ export default function ProductCard({ product }: { product: Product }) {
         {/* Image */}
         <div style={{ height: 200, background: `linear-gradient(135deg, ${cat.bg}, #FFF8EE)`, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
           {product.images?.[0] ? (
-            <img src={product.images[0]} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            <img src={product.images[0]} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           ) : (
             <span style={{ fontSize: '3.5rem' }}>{cat.icon}</span>
           )}
@@ -48,7 +50,7 @@ export default function ProductCard({ product }: { product: Product }) {
             {cat.icon} {cat.label}
           </div>
           <div style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.1rem', fontWeight: 600, color: '#1B2E4A', marginBottom: 4, lineHeight: 1.3 }}>
-            {product.name}
+            {name}
           </div>
           {product.artisan && (
             <div style={{ fontSize: '0.78rem', color: '#6B4820', marginBottom: 8 }}>

@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase-browser'
 import { useRouter } from 'next/navigation'
 import { INDIAN_STATES } from '@/lib/indian-states'
 import { useTranslation } from '@/lib/i18n/useTranslation'
+import TranslateHindiField from '@/components/TranslateHindiField'
 
 const CATEGORIES = ['textile', 'handicraft', 'agricultural', 'food'] as const
 const CATEGORY_LABEL_KEYS: Record<(typeof CATEGORIES)[number], 'categoryTextile' | 'categoryHandicraft' | 'categoryAgricultural' | 'categoryFood'> = {
@@ -29,6 +30,7 @@ export default function GIProductForm({ initialData, mode = 'new' }: Props) {
 
   const [form, setForm] = useState({
     name: initialData?.name ?? '',
+    name_hi: initialData?.name_hi ?? '',
     state: initialData?.state ?? '',
     category: initialData?.category ?? 'handicraft',
     gi_tag: initialData?.gi_tag ?? '',
@@ -37,9 +39,13 @@ export default function GIProductForm({ initialData, mode = 'new' }: Props) {
     accent: initialData?.accent ?? '#E8380A',
     women_percent: initialData?.women_percent?.toString() ?? '',
     tagline: initialData?.tagline ?? '',
+    tagline_hi: initialData?.tagline_hi ?? '',
     women_role: initialData?.women_role ?? '',
+    women_role_hi: initialData?.women_role_hi ?? '',
     history: initialData?.history ?? '',
+    history_hi: initialData?.history_hi ?? '',
     materials: initialData?.materials ?? '',
+    materials_hi: initialData?.materials_hi ?? '',
     district: initialData?.district ?? '',
     image_url: initialData?.image_url ?? '',
   })
@@ -76,6 +82,7 @@ export default function GIProductForm({ initialData, mode = 'new' }: Props) {
 
     const payload = {
       name: form.name,
+      name_hi: form.name_hi || null,
       state: form.state || null,
       category: form.category || null,
       gi_tag: form.gi_tag || null,
@@ -84,9 +91,13 @@ export default function GIProductForm({ initialData, mode = 'new' }: Props) {
       accent: form.accent || null,
       women_percent: form.women_percent !== '' ? parseInt(form.women_percent) : null,
       tagline: form.tagline || null,
+      tagline_hi: form.tagline_hi || null,
       women_role: form.women_role || null,
+      women_role_hi: form.women_role_hi || null,
       history: form.history || null,
+      history_hi: form.history_hi || null,
       materials: form.materials || null,
+      materials_hi: form.materials_hi || null,
       district: form.district || null,
       image_url: form.image_url || null,
     }
@@ -146,6 +157,18 @@ export default function GIProductForm({ initialData, mode = 'new' }: Props) {
             </div>
           </div>
 
+          <TranslateHindiField
+            label={t('nameHiLabel')}
+            sourceText={form.name}
+            value={form.name_hi}
+            onChange={v => set('name_hi', v)}
+            translateLabel={t('autoTranslateBtn')}
+            translatingLabel={t('translatingBtn')}
+            hint={t('hindiOptionalHint')}
+            inputStyle={inputStyle}
+            labelStyle={labelStyle}
+          />
+
           {/* Row 2: Category + GI Tag */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             <div>
@@ -204,6 +227,17 @@ export default function GIProductForm({ initialData, mode = 'new' }: Props) {
             </div>
           </div>
 
+          <TranslateHindiField
+            label={t('materialsHiLabel')}
+            sourceText={form.materials}
+            value={form.materials_hi}
+            onChange={v => set('materials_hi', v)}
+            translateLabel={t('autoTranslateBtn')}
+            translatingLabel={t('translatingBtn')}
+            inputStyle={inputStyle}
+            labelStyle={labelStyle}
+          />
+
           {/* Tagline */}
           <div>
             <label style={labelStyle}>{t('taglineLabel')}</label>
@@ -211,6 +245,18 @@ export default function GIProductForm({ initialData, mode = 'new' }: Props) {
               value={form.tagline} onChange={e => set('tagline', e.target.value)}
               placeholder={t('taglinePlaceholder')} />
           </div>
+
+          <TranslateHindiField
+            label={t('taglineHiLabel')}
+            sourceText={form.tagline}
+            value={form.tagline_hi}
+            onChange={v => set('tagline_hi', v)}
+            multiline
+            translateLabel={t('autoTranslateBtn')}
+            translatingLabel={t('translatingBtn')}
+            inputStyle={inputStyle}
+            labelStyle={labelStyle}
+          />
 
           {/* Women & Heritage Role */}
           <div>
@@ -220,6 +266,18 @@ export default function GIProductForm({ initialData, mode = 'new' }: Props) {
               placeholder={t('womenRolePlaceholder')} />
           </div>
 
+          <TranslateHindiField
+            label={t('womenRoleHiLabel')}
+            sourceText={form.women_role}
+            value={form.women_role_hi}
+            onChange={v => set('women_role_hi', v)}
+            multiline
+            translateLabel={t('autoTranslateBtn')}
+            translatingLabel={t('translatingBtn')}
+            inputStyle={inputStyle}
+            labelStyle={labelStyle}
+          />
+
           {/* History */}
           <div>
             <label style={labelStyle}>{t('historyLabel')}</label>
@@ -227,6 +285,18 @@ export default function GIProductForm({ initialData, mode = 'new' }: Props) {
               value={form.history} onChange={e => set('history', e.target.value)}
               placeholder={t('historyPlaceholder')} />
           </div>
+
+          <TranslateHindiField
+            label={t('historyHiLabel')}
+            sourceText={form.history}
+            value={form.history_hi}
+            onChange={v => set('history_hi', v)}
+            multiline
+            translateLabel={t('autoTranslateBtn')}
+            translatingLabel={t('translatingBtn')}
+            inputStyle={inputStyle}
+            labelStyle={labelStyle}
+          />
 
           {/* Image */}
           <div>

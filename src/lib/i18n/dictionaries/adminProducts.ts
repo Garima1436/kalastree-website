@@ -76,6 +76,11 @@ const dict = {
     savingLabel: 'Saving…',
     saveChangesArrow: 'Save Changes →',
     saveAddMediaArrow: 'Save & Add Media →',
+    productNameHiLabel: 'Product Name (Hindi)',
+    descriptionHiLabel: 'Description (Hindi)',
+    autoTranslateBtn: 'Auto-translate',
+    translatingBtn: 'Translating…',
+    hindiOptionalHint: 'Optional — shown to shoppers browsing in Hindi. Auto-translate fills a first draft you can edit.',
   },
   hi: {
     pageTitle: 'उत्पाद',
@@ -154,6 +159,11 @@ const dict = {
     savingLabel: 'सहेजा जा रहा है…',
     saveChangesArrow: 'परिवर्तन सहेजें →',
     saveAddMediaArrow: 'सहेजें और मीडिया जोड़ें →',
+    productNameHiLabel: 'उत्पाद का नाम (हिंदी)',
+    descriptionHiLabel: 'विवरण (हिंदी)',
+    autoTranslateBtn: 'स्वतः अनुवाद करें',
+    translatingBtn: 'अनुवाद हो रहा है…',
+    hindiOptionalHint: 'वैकल्पिक — हिंदी में ब्राउज़ कर रहे ग्राहकों को दिखेगा। स्वतः अनुवाद एक प्रारंभिक ड्राफ्ट भरता है जिसे आप संपादित कर सकते हैं।',
   },
 } as const
 

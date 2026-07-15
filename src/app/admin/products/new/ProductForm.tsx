@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase-browser'
 import { useRouter } from 'next/navigation'
 import type { Category } from '@/lib/types'
 import ProductMediaManager from '../ProductMediaManager'
+import TranslateHindiField from '@/components/TranslateHindiField'
 import { INDIAN_STATES } from '@/lib/indian-states'
 import { useLanguage } from '@/lib/i18n/LanguageContext'
 import dict from '@/lib/i18n/dictionaries/adminProducts'
@@ -60,8 +61,10 @@ export default function ProductForm({ artisans, initialData, mode = 'new' }: Pro
   }
   const [form, setForm] = useState({
     name: initialData?.name ?? '',
+    name_hi: initialData?.name_hi ?? '',
     slug: initialData?.slug ?? '',
     description: initialData?.description ?? '',
+    description_hi: initialData?.description_hi ?? '',
     price: initialData?.price?.toString() ?? '',
     gi_tag: initialData?.gi_tag ?? '',
     category: (initialData?.category ?? 'handicraft') as Category,
@@ -82,7 +85,8 @@ export default function ProductForm({ artisans, initialData, mode = 'new' }: Pro
     const slug = form.slug || autoSlug(form.name)
     const images = form.image_url ? [form.image_url] : (initialData?.images ?? [])
     const payload = {
-      name: form.name, slug, description: form.description,
+      name: form.name, name_hi: form.name_hi || null, slug,
+      description: form.description, description_hi: form.description_hi || null,
       price: parseFloat(form.price), gi_tag: form.gi_tag || null,
       category: form.category, state: form.state || null,
       stock: parseInt(form.stock), is_featured: form.is_featured,
@@ -142,6 +146,18 @@ export default function ProductForm({ artisans, initialData, mode = 'new' }: Pro
             </div>
           </div>
 
+          <TranslateHindiField
+            label={t('productNameHiLabel')}
+            sourceText={form.name}
+            value={form.name_hi}
+            onChange={v => set('name_hi', v)}
+            translateLabel={t('autoTranslateBtn')}
+            translatingLabel={t('translatingBtn')}
+            hint={t('hindiOptionalHint')}
+            inputStyle={inputStyle}
+            labelStyle={labelStyle}
+          />
+
           <div>
             <label style={labelStyle}>{t('descriptionLabel')}</label>
             <textarea style={{ ...inputStyle, minHeight: 90, resize: 'vertical' } as any} value={form.description}
@@ -150,6 +166,18 @@ export default function ProductForm({ artisans, initialData, mode = 'new' }: Pro
               {t('markdownHint')}
             </p>
           </div>
+
+          <TranslateHindiField
+            label={t('descriptionHiLabel')}
+            sourceText={form.description}
+            value={form.description_hi}
+            onChange={v => set('description_hi', v)}
+            multiline
+            translateLabel={t('autoTranslateBtn')}
+            translatingLabel={t('translatingBtn')}
+            inputStyle={inputStyle}
+            labelStyle={labelStyle}
+          />
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
             <div>
