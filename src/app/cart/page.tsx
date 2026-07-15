@@ -1,10 +1,13 @@
 'use client'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { useTranslation } from '@/lib/i18n/useTranslation'
 
 interface CartItem { id: string; name: string; price: number; image: string; slug: string; qty: number }
 
 export default function CartPage() {
+  const { t } = useTranslation('shopping')
+  const { t: tc } = useTranslation('common')
   const [cart, setCart] = useState<CartItem[]>([])
   const [mounted, setMounted] = useState(false)
 
@@ -35,15 +38,15 @@ export default function CartPage() {
   return (
     <div style={{ background: 'var(--parchment)', minHeight: '80vh', padding: '3rem 5%' }}>
       <div style={{ maxWidth: 900, margin: '0 auto' }}>
-        <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.8rem, 3vw, 2.6rem)', fontWeight: 700, color: '#1B2E4A', marginBottom: '0.5rem' }}>Your Cart</h1>
-        <p style={{ color: '#6B4820', marginBottom: '2.5rem' }}>{count} item{count !== 1 ? 's' : ''}</p>
+        <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.8rem, 3vw, 2.6rem)', fontWeight: 700, color: '#1B2E4A', marginBottom: '0.5rem' }}>{t('yourCart')}</h1>
+        <p style={{ color: '#6B4820', marginBottom: '2.5rem' }}>{count} {count !== 1 ? t('items') : t('item')}</p>
 
         {cart.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '5rem 0', color: '#6B4820' }}>
             <div style={{ fontSize: '3.5rem', marginBottom: '1.5rem' }}>🛒</div>
-            <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.4rem', marginBottom: '1.5rem' }}>Your cart is empty.</p>
+            <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.4rem', marginBottom: '1.5rem' }}>{t('cartEmptyMessage')}</p>
             <Link href="/shop" style={{ background: '#E8380A', color: '#fff', padding: '12px 28px', borderRadius: 5, fontWeight: 700, textDecoration: 'none' }}>
-              Browse GI Products →
+              {t('browseGiProducts')} →
             </Link>
           </div>
         ) : (
@@ -68,7 +71,7 @@ export default function CartPage() {
                       <span style={{ padding: '0 10px', fontWeight: 700, color: '#1B2E4A', minWidth: 32, textAlign: 'center' }}>{item.qty}</span>
                       <button onClick={() => updateQty(item.id, item.qty + 1)} style={{ padding: '6px 12px', background: 'none', border: 'none', cursor: 'pointer', color: '#6B4820', fontSize: '1rem' }}>+</button>
                     </div>
-                    <button onClick={() => updateQty(item.id, 0)} style={{ background: 'none', border: 'none', color: '#E8380A', fontSize: '0.78rem', cursor: 'pointer', fontWeight: 700 }}>Remove</button>
+                    <button onClick={() => updateQty(item.id, 0)} style={{ background: 'none', border: 'none', color: '#E8380A', fontSize: '0.78rem', cursor: 'pointer', fontWeight: 700 }}>{t('remove')}</button>
                   </div>
                 </div>
               ))}
@@ -76,31 +79,31 @@ export default function CartPage() {
 
             {/* Order Summary */}
             <div style={{ background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 12, padding: '2rem', position: 'sticky', top: 90 }}>
-              <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.4rem', fontWeight: 600, color: '#1B2E4A', marginBottom: '1.5rem' }}>Order Summary</h2>
+              <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.4rem', fontWeight: 600, color: '#1B2E4A', marginBottom: '1.5rem' }}>{t('orderSummary')}</h2>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8, fontSize: '0.9rem', color: '#6B4820' }}>
-                <span>Subtotal ({count} items)</span>
+                <span>{tc('subtotal')} ({count} {t('items')})</span>
                 <span>₹{total.toLocaleString('en-IN')}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8, fontSize: '0.9rem', color: '#6B4820' }}>
-                <span>Shipping</span>
-                <span style={{ color: '#1A7A32', fontWeight: 700 }}>Free</span>
+                <span>{t('shippingLabel')}</span>
+                <span style={{ color: '#1A7A32', fontWeight: 700 }}>{t('free')}</span>
               </div>
               <div style={{ borderTop: '1.5px solid #DDB840', paddingTop: '1rem', marginTop: '1rem', display: 'flex', justifyContent: 'space-between', fontFamily: "'EB Garamond', serif", fontSize: '1.4rem', fontWeight: 700, color: '#1B2E4A' }}>
-                <span>Total</span>
+                <span>{tc('total')}</span>
                 <span style={{ color: '#E8380A' }}>₹{total.toLocaleString('en-IN')}</span>
               </div>
 
               <Link href="/checkout"
                 style={{ display: 'block', width: '100%', background: '#E8380A', color: '#fff', padding: '14px', border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '1rem', cursor: 'pointer', marginTop: '1.5rem', textDecoration: 'none', textAlign: 'center' }}>
-                Proceed to Checkout →
+                {t('proceedToCheckout')} →
               </Link>
 
               <div style={{ marginTop: '1rem', padding: '1rem', background: '#C8F5D8', borderRadius: 8, fontSize: '0.8rem', color: '#1A7A32', lineHeight: 1.6 }}>
-                💳 <strong>Direct payment</strong> goes to the artisan's account. 100% authentic GI product guaranteed.
+                💳 <strong>{t('directPayment')}</strong> {t('directPaymentDesc')}
               </div>
 
               <Link href="/shop" style={{ display: 'block', textAlign: 'center', marginTop: '1rem', fontSize: '0.85rem', color: '#6B4820', textDecoration: 'none' }}>
-                ← Continue Shopping
+                ← {t('continueShopping')}
               </Link>
             </div>
           </div>

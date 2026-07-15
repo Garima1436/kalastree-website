@@ -1,6 +1,8 @@
 'use client'
 import { useState } from 'react'
 import ReactMarkdown from 'react-markdown'
+import { useLanguage } from '@/lib/i18n/LanguageContext'
+import chatbotDict from '@/lib/i18n/dictionaries/chatbot'
 
 interface Turn {
   role: 'user' | 'ai'
@@ -8,19 +10,25 @@ interface Turn {
   sources?: string[]
 }
 
-const SAMPLE_QUESTIONS = [
-  'What is the FinTech adoption index for GI workers?',
-  'Which state has the most GI-tagged products?',
-  'What are the main barriers women face in digital payments?',
-  'Tell me about Madhubani painting as a GI product',
-  'How does Pashmina weaving empower women in Kashmir?',
-  'What is the Women Empowerment Index in the research?',
-]
-
 export default function ChatbotPage() {
+  // 'chatbot' namespace isn't added to the shared registry.ts yet (out of scope for
+  // this workstream), so we read the dictionary directly here using the same
+  // lang-with-fallback-to-en logic as useTranslation. Swap to
+  // `useTranslation('chatbot')` once registry.ts registers this namespace.
+  const { lang } = useLanguage()
+  const t = (key: keyof typeof chatbotDict.en): string => chatbotDict[lang]?.[key] ?? chatbotDict.en[key]
   const [question, setQuestion] = useState('')
   const [history, setHistory] = useState<Turn[]>([])
   const [loading, setLoading] = useState(false)
+
+  const SAMPLE_QUESTIONS = [
+    t('sampleQ1'),
+    t('sampleQ2'),
+    t('sampleQ3'),
+    t('sampleQ4'),
+    t('sampleQ5'),
+    t('sampleQ6'),
+  ]
 
   const ask = async (q?: string) => {
     const text = (q ?? question).trim()
@@ -40,9 +48,9 @@ export default function ChatbotPage() {
         body: JSON.stringify({ question: text, history: historySnapshot }),
       })
       const data = await res.json()
-      setHistory(h => [...h, { role: 'ai', text: data.answer || 'No answer returned.', sources: data.sources }])
+      setHistory(h => [...h, { role: 'ai', text: data.answer || t('noAnswer'), sources: data.sources }])
     } catch {
-      setHistory(h => [...h, { role: 'ai', text: 'Unable to connect to the AI assistant. Please try again.' }])
+      setHistory(h => [...h, { role: 'ai', text: t('connectErrorFull') }])
     }
 
     setLoading(false)
@@ -56,16 +64,16 @@ export default function ChatbotPage() {
         <div style={{ maxWidth: 760, margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 1 }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#1B2E4A', color: '#D4A000', padding: '6px 16px', borderRadius: 30, fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '1.2rem' }}>
             <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#4CAF50', animation: 'pulse 1.5s ease-in-out infinite' }} />
-            Live · Powered by GPT-4o Mini + RAG
+            {t('liveLabel')} · {t('poweredByLabel')} GPT-4o Mini + RAG
           </div>
           <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 700, color: '#1B2E4A', marginBottom: '1rem' }}>
-            KalaStree <span style={{ color: '#E8380A' }}>GI Research</span> AI Chatbot
+            KalaStree <span style={{ color: '#E8380A' }}>{t('giResearchHighlight')}</span> {t('aiChatbotSuffix')}
           </h1>
           <p style={{ color: '#6B4820', fontSize: '1rem', lineHeight: 1.8 }}>
-            A domain-specific RAG assistant trained on Garima&apos;s PhD research. Ask anything about GI products, women&apos;s FinTech adoption, empowerment indices, or policy recommendations — and get cited, grounded answers.
+            {t('heroDescription')}
           </p>
           <p style={{ marginTop: '0.75rem', fontSize: '0.85rem', color: '#6B4820' }}>
-            <strong>Built with:</strong> GPT-4o Mini · ChromaDB · LangChain · RAG · Grounded answers
+            <strong>{t('builtWithLabel')}</strong> GPT-4o Mini · ChromaDB · LangChain · RAG · {t('groundedAnswers')}
           </p>
         </div>
       </div>
@@ -78,14 +86,14 @@ export default function ChatbotPage() {
             <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'linear-gradient(135deg, #E8380A, #D4A000)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem' }}>🌾</div>
             <div>
               <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#fff' }}>KalaStree AI</div>
-              <div style={{ fontSize: '0.7rem', color: '#4CAF50', fontWeight: 700, letterSpacing: '0.06em' }}>● Online</div>
+              <div style={{ fontSize: '0.7rem', color: '#4CAF50', fontWeight: 700, letterSpacing: '0.06em' }}>● {t('onlineStatus')}</div>
             </div>
             {history.length > 0 && (
               <button
                 onClick={() => setHistory([])}
                 style={{ marginLeft: 'auto', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.6)', borderRadius: 6, padding: '4px 10px', fontSize: '0.72rem', cursor: 'pointer' }}
               >
-                Clear chat
+                {t('clearChat')}
               </button>
             )}
           </div>
@@ -107,7 +115,7 @@ export default function ChatbotPage() {
                   </div>
                   {turn.sources && turn.sources.length > 0 && (
                     <div style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.4)', marginTop: 3, paddingLeft: 4 }}>
-                      <strong style={{ color: '#D4A000' }}>Sources:</strong> {turn.sources.join(', ')}
+                      <strong style={{ color: '#D4A000' }}>{t('sourcesLabel')}</strong> {turn.sources.join(', ')}
                     </div>
                   )}
                 </div>
@@ -129,7 +137,7 @@ export default function ChatbotPage() {
             value={question}
             onChange={e => setQuestion(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); ask() } }}
-            placeholder="Ask about GI products, women's FinTech adoption, empowerment data, state-wise analysis..."
+            placeholder={t('askPlaceholderFull')}
             rows={3}
             style={{ width: '100%', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(212,160,0,0.25)', borderRadius: 8, padding: '12px 16px', fontFamily: "'Lato', sans-serif", fontSize: '0.9rem', color: '#fff', outline: 'none', resize: 'none', marginBottom: '0.75rem' }}
           />
@@ -138,14 +146,14 @@ export default function ChatbotPage() {
             disabled={loading || !question.trim()}
             style={{ width: '100%', padding: '12px', background: loading ? '#555' : '#E8380A', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 700, fontSize: '0.95rem', cursor: loading ? 'not-allowed' : 'pointer', transition: 'background 0.2s' }}
           >
-            {loading ? 'Thinking...' : 'Ask KalaStree AI'}
+            {loading ? t('thinkingLabel') : t('askButton')}
           </button>
         </div>
 
         {/* Sample questions — only shown before any conversation starts */}
         {history.length === 0 && (
           <div>
-            <p style={{ fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6B4820', marginBottom: '1rem' }}>Try asking:</p>
+            <p style={{ fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6B4820', marginBottom: '1rem' }}>{t('tryAsking')}</p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
               {SAMPLE_QUESTIONS.map(q => (
                 <button

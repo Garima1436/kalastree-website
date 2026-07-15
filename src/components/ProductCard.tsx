@@ -2,9 +2,11 @@
 import Link from 'next/link'
 import type { Product } from '@/lib/types'
 import { CATEGORY_META } from '@/lib/types'
+import { useTranslation } from '@/lib/i18n/useTranslation'
 
 export default function ProductCard({ product }: { product: Product }) {
   const cat = CATEGORY_META[product.category]
+  const { t } = useTranslation('shop')
 
   return (
     <Link href={`/shop/${product.slug}`} style={{ textDecoration: 'none' }}>
@@ -35,7 +37,7 @@ export default function ProductCard({ product }: { product: Product }) {
           )}
           {product.gi_tag && (
             <div style={{ position: 'absolute', top: 10, left: 10 }}>
-              <span className="gi-badge">✦ GI Tagged</span>
+              <span className="gi-badge">✦ {t('giTagged')}</span>
             </div>
           )}
         </div>
@@ -50,7 +52,7 @@ export default function ProductCard({ product }: { product: Product }) {
           </div>
           {product.artisan && (
             <div style={{ fontSize: '0.78rem', color: '#6B4820', marginBottom: 8 }}>
-              by {product.artisan.name} · {product.state}
+              {t('byPrefix')}{product.artisan.name}{t('bySuffix')} · {product.state}
             </div>
           )}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 8 }}>
@@ -58,7 +60,7 @@ export default function ProductCard({ product }: { product: Product }) {
               ₹{product.price.toLocaleString('en-IN')}
             </span>
             <span style={{ fontSize: '0.72rem', color: product.stock > 0 ? '#1A7A32' : '#E8380A', fontWeight: 700 }}>
-              {product.stock > 0 ? `${product.stock} left` : 'Out of stock'}
+              {product.stock > 0 ? <>{product.stock}{t('stockLeftSuffix')}</> : t('outOfStock')}
             </span>
           </div>
         </div>

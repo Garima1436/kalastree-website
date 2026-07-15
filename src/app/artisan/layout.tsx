@@ -1,13 +1,9 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase-server'
 import { redirect } from 'next/navigation'
-
-const LINKS = [
-  { href: '/artisan', label: '📊 Dashboard' },
-  { href: '/artisan/orders', label: '📦 My Orders' },
-  { href: '/artisan/products', label: '🏺 My Products' },
-  { href: '/artisan/products/new', label: '+ Add Product' },
-]
+import { getServerLang } from '@/lib/i18n/server'
+import artisanDashboard from '@/lib/i18n/dictionaries/artisanDashboard'
+import common from '@/lib/i18n/dictionaries/common'
 
 export default async function ArtisanLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
@@ -19,12 +15,23 @@ export default async function ArtisanLayout({ children }: { children: React.Reac
 
   const { data: artisan } = await supabase.from('artisans').select('name, craft').eq('user_id', user.id).single()
 
+  const lang = await getServerLang()
+  const t = (k: keyof typeof artisanDashboard.en) => artisanDashboard[lang][k] ?? artisanDashboard.en[k]
+  const tc = (k: keyof typeof common.en) => common[lang][k] ?? common.en[k]
+
+  const LINKS = [
+    { href: '/artisan', label: `📊 ${t('dashboard')}` },
+    { href: '/artisan/orders', label: `📦 ${tc('myOrders')}` },
+    { href: '/artisan/products', label: `🏺 ${t('myProducts')}` },
+    { href: '/artisan/products/new', label: `+ ${t('addProduct')}` },
+  ]
+
   return (
     <div className="panel-shell" style={{ display: 'grid', gridTemplateColumns: '220px 1fr', minHeight: 'calc(100vh - 90px)' }}>
       <aside style={{ background: '#1A7A32', display: 'flex', flexDirection: 'column' }}>
         <div style={{ padding: '1.5rem', borderBottom: '1px solid rgba(255,255,255,0.15)' }}>
           <div style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.1rem', fontWeight: 700, color: '#fff' }}>
-            Artisan Portal
+            {t('portalTitle')}
           </div>
           <div style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.6)', marginTop: 4 }}>
             {artisan?.name ?? profile.full_name ?? user.email}
@@ -47,11 +54,11 @@ export default async function ArtisanLayout({ children }: { children: React.Reac
         <div style={{ padding: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.15)', display: 'flex', flexDirection: 'column', gap: 8 }}>
           {profile.role === 'admin' && (
             <Link href="/admin" style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.5)', textDecoration: 'none' }}>
-              ⚙️ Admin Panel
+              ⚙️ {tc('adminPanel')}
             </Link>
           )}
           <Link href="/" style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.4)', textDecoration: 'none' }}>
-            ← Back to site
+            ← {t('backToSite')}
           </Link>
         </div>
       </aside>

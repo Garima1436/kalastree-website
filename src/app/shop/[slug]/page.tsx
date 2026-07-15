@@ -7,6 +7,7 @@ import { CATEGORY_META } from '@/lib/types'
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
 import remarkBreaks from 'remark-breaks'
+import { useTranslation } from '@/lib/i18n/useTranslation'
 
 interface MediaItem {
   id: string
@@ -71,6 +72,8 @@ function MediaThumbnail({ item }: { item: MediaItem }) {
 export default function ProductPage() {
   const { slug } = useParams<{ slug: string }>()
   const router = useRouter()
+  const { t } = useTranslation('shop')
+  const { t: tc } = useTranslation('common')
   const [product, setProduct] = useState<Product | null>(null)
   const [media, setMedia] = useState<MediaItem[]>([])
   const [loading, setLoading] = useState(true)
@@ -121,11 +124,11 @@ export default function ProductPage() {
     setTimeout(() => setAdded(false), 2000)
   }
 
-  if (loading) return <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6B4820', fontSize: '1.1rem' }}>Loading...</div>
+  if (loading) return <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6B4820', fontSize: '1.1rem' }}>{tc('loading')}</div>
   if (!product) return (
     <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '1rem' }}>
-      <p>Product not found.</p>
-      <Link href="/shop" style={{ color: '#E8380A' }}>← Back to Shop</Link>
+      <p>{t('productNotFound')}</p>
+      <Link href="/shop" style={{ color: '#E8380A' }}>{t('backToShop')}</Link>
     </div>
   )
 
@@ -137,8 +140,8 @@ export default function ProductPage() {
       {/* Breadcrumb */}
       <div style={{ background: '#FFE8A8', padding: '0.75rem 5%', fontSize: '0.78rem', color: '#6B4820' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-          <Link href="/" style={{ color: '#6B4820', textDecoration: 'none' }}>Home</Link> {' / '}
-          <Link href="/shop" style={{ color: '#6B4820', textDecoration: 'none' }}>Shop</Link> {' / '}
+          <Link href="/" style={{ color: '#6B4820', textDecoration: 'none' }}>{tc('home')}</Link> {' / '}
+          <Link href="/shop" style={{ color: '#6B4820', textDecoration: 'none' }}>{tc('shop')}</Link> {' / '}
           <Link href={`/shop?category=${product.category}`} style={{ color: '#6B4820', textDecoration: 'none' }}>{cat.label}</Link> {' / '}
           <span style={{ color: '#1B2E4A', fontWeight: 600 }}>{product.name}</span>
         </div>
@@ -183,7 +186,7 @@ export default function ProductPage() {
         {/* Details column */}
         <div>
           <div style={{ display: 'flex', gap: 8, marginBottom: '1rem', flexWrap: 'wrap' }}>
-            <span className="gi-badge">✦ {product.gi_tag || 'GI Tagged'}</span>
+            <span className="gi-badge">✦ {product.gi_tag || t('giTagged')}</span>
             <span style={{ background: cat.bg, color: cat.color, fontSize: '0.7rem', fontWeight: 700, padding: '3px 10px', borderRadius: 20, border: `1px solid ${cat.color}40` }}>{cat.icon} {cat.label}</span>
           </div>
 
@@ -199,10 +202,10 @@ export default function ProductPage() {
                   : <span>👩‍🎨</span>}
               </div>
               <div>
-                <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#1B2E4A' }}>by {product.artisan.name}</div>
+                <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#1B2E4A' }}>{t('byPrefix')}{product.artisan.name}{t('bySuffix')}</div>
                 <div style={{ fontSize: '0.75rem', color: '#6B4820' }}>{product.artisan.craft} · {product.artisan.state}</div>
               </div>
-              <span style={{ marginLeft: 'auto', fontSize: '0.75rem', color: '#E8380A' }}>View profile →</span>
+              <span style={{ marginLeft: 'auto', fontSize: '0.75rem', color: '#E8380A' }}>{t('viewProfile')}</span>
             </Link>
           )}
 
@@ -210,7 +213,7 @@ export default function ProductPage() {
             ₹{product.price.toLocaleString('en-IN')}
           </div>
           <p style={{ fontSize: '0.8rem', color: '#1A7A32', fontWeight: 700, marginBottom: '1.5rem' }}>
-            {product.stock > 0 ? `✓ ${product.stock} in stock · Ships directly from artisan` : '✗ Out of stock'}
+            {product.stock > 0 ? <>✓ {product.stock} {t('inStock')} · {t('shipsDirectlyFromArtisan')}</> : <>✗ {t('outOfStock')}</>}
           </p>
 
           {product.description && (
@@ -228,21 +231,21 @@ export default function ProductPage() {
                 <button onClick={() => setQty(Math.min(product.stock, qty + 1))} style={{ padding: '10px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.1rem', color: '#6B4820' }}>+</button>
               </div>
               <button onClick={addToCart} style={{ flex: 1, background: added ? '#1A7A32' : '#E8380A', color: '#fff', padding: '12px 24px', border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '1rem', cursor: 'pointer', transition: 'background 0.2s', minWidth: 180 }}>
-                {added ? '✓ Added to Cart!' : 'Add to Cart'}
+                {added ? <>✓ {t('addedToCart')}</> : tc('addToCart')}
               </button>
             </div>
           )}
 
           <button onClick={() => router.push('/cart')} style={{ width: '100%', background: '#1B2E4A', color: '#fff', padding: '12px', border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '1rem', cursor: 'pointer', marginBottom: '1.5rem' }}>
-            Buy Now →
+            {tc('buyNow')} →
           </button>
 
           {/* Trust signals */}
           <div style={{ borderTop: '1.5px solid #DDB840', paddingTop: '1.5rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             {[
-              { icon: '✅', text: 'GI Registry Verified' },
-              { icon: '📦', text: 'Handmade & Authentic' },
-              { icon: '🔄', text: '7-day Easy Returns' },
+              { icon: '✅', text: t('giRegistryVerified') },
+              { icon: '📦', text: t('handmadeAuthentic') },
+              { icon: '🔄', text: t('sevenDayReturns') },
             ].map(({ icon, text }) => (
               <div key={text} style={{ fontSize: '0.8rem', color: '#6B4820', display: 'flex', alignItems: 'center', gap: 6 }}>
                 <span>{icon}</span> {text}

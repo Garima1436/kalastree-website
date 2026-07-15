@@ -4,12 +4,15 @@ import { createClient } from '@/lib/supabase-browser'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { INDIAN_STATES } from '@/lib/indian-states'
+import { useTranslation } from '@/lib/i18n/useTranslation'
 
 interface CartItem { id: string; name: string; price: number; image: string; slug: string; qty: number }
 
 declare global { interface Window { Razorpay: any } }
 
 export default function CheckoutPage() {
+  const { t } = useTranslation('shopping')
+  const { t: tc } = useTranslation('common')
   const [cart, setCart] = useState<CartItem[]>([])
   const [loading] = useState(false)
   const [form, setForm] = useState({
@@ -69,7 +72,7 @@ export default function CheckoutPage() {
     if (createError) { alert(createError); setLoadingMethod(null); return }
 
     const loaded = await loadRazorpay()
-    if (!loaded) { alert('Payment gateway failed to load. Please try again.'); setLoadingMethod(null); return }
+    if (!loaded) { alert(t('gatewayLoadFailed')); setLoadingMethod(null); return }
 
     const rzp = new window.Razorpay({
       key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
@@ -98,7 +101,7 @@ export default function CheckoutPage() {
           window.dispatchEvent(new Event('cart_updated'))
           router.push(`/order/${orderId}`)
         } else {
-          alert('Payment verification failed. Please contact support.')
+          alert(t('paymentVerificationFailed'))
           setLoadingMethod(null)
         }
       },
@@ -138,8 +141,8 @@ export default function CheckoutPage() {
   if (cart.length === 0) return (
     <div style={{ minHeight: '60vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1rem', color: '#6B4820', background: 'var(--parchment)' }}>
       <div style={{ fontSize: '3rem' }}>🛒</div>
-      <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.3rem' }}>Your cart is empty.</p>
-      <Link href="/shop" style={{ color: '#E8380A', fontWeight: 700, textDecoration: 'none' }}>Browse products →</Link>
+      <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.3rem' }}>{t('cartEmptyMessage')}</p>
+      <Link href="/shop" style={{ color: '#E8380A', fontWeight: 700, textDecoration: 'none' }}>{t('browseProducts')} →</Link>
     </div>
   )
 
@@ -147,7 +150,7 @@ export default function CheckoutPage() {
     <div style={{ minHeight: '80vh', background: 'var(--parchment)', padding: '3rem 5%' }}>
       <div style={{ maxWidth: 960, margin: '0 auto' }}>
         <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: '2rem', fontWeight: 700, color: '#1B2E4A', marginBottom: '2rem' }}>
-          Checkout
+          {t('checkoutTitle')}
         </h1>
 
         <form onSubmit={handleCheckout}>
@@ -156,40 +159,40 @@ export default function CheckoutPage() {
             {/* Shipping form */}
             <div style={{ background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 12, padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.4rem', fontWeight: 600, color: '#1B2E4A' }}>
-                Shipping Details
+                {t('shippingDetails')}
               </h2>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                 <div>
-                  <label style={labelStyle}>Full Name *</label>
+                  <label style={labelStyle}>{t('fullName')} *</label>
                   <input style={inputStyle} required value={form.name} onChange={e => set('name', e.target.value)} placeholder="Priya Sharma" />
                 </div>
                 <div>
-                  <label style={labelStyle}>Phone *</label>
+                  <label style={labelStyle}>{t('phoneLabel')} *</label>
                   <input style={inputStyle} required value={form.phone} onChange={e => set('phone', e.target.value)} placeholder="+91 98765 43210" />
                 </div>
               </div>
               <div>
-                <label style={labelStyle}>Email *</label>
+                <label style={labelStyle}>{t('emailLabel')} *</label>
                 <input style={inputStyle} required type="email" value={form.email} onChange={e => set('email', e.target.value)} />
               </div>
               <div>
-                <label style={labelStyle}>Address *</label>
-                <input style={inputStyle} required value={form.address} onChange={e => set('address', e.target.value)} placeholder="House no., Street, Area" />
+                <label style={labelStyle}>{t('addressLabel')} *</label>
+                <input style={inputStyle} required value={form.address} onChange={e => set('address', e.target.value)} placeholder={t('addressPlaceholder')} />
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
                 <div>
-                  <label style={labelStyle}>City *</label>
+                  <label style={labelStyle}>{t('cityLabel')} *</label>
                   <input style={inputStyle} required value={form.city} onChange={e => set('city', e.target.value)} placeholder="Delhi" />
                 </div>
                 <div>
-                  <label style={labelStyle}>State *</label>
+                  <label style={labelStyle}>{t('stateLabel')} *</label>
                   <select style={inputStyle} required value={form.state} onChange={e => set('state', e.target.value)}>
-                    <option value="">— Select State —</option>
+                    <option value="">{t('selectStatePlaceholder')}</option>
                     {INDIAN_STATES.map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label style={labelStyle}>Pincode *</label>
+                  <label style={labelStyle}>{t('pincodeLabel')} *</label>
                   <input style={inputStyle} required value={form.pincode} onChange={e => set('pincode', e.target.value)} placeholder="110001" pattern="[0-9]{6}" />
                 </div>
               </div>
@@ -198,7 +201,7 @@ export default function CheckoutPage() {
             {/* Order summary */}
             <div style={{ background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 12, padding: '1.75rem', position: 'sticky', top: 90 }}>
               <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.4rem', fontWeight: 600, color: '#1B2E4A', marginBottom: '1.25rem' }}>
-                Order Summary
+                {t('orderSummary')}
               </h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: '1.25rem' }}>
                 {cart.map(item => (
@@ -209,11 +212,11 @@ export default function CheckoutPage() {
                 ))}
               </div>
               <div style={{ borderTop: '1.5px solid #DDB840', paddingTop: '1rem', display: 'flex', justifyContent: 'space-between', fontFamily: "'EB Garamond', serif", fontSize: '1.4rem', fontWeight: 700 }}>
-                <span>Total</span>
+                <span>{tc('total')}</span>
                 <span style={{ color: '#E8380A' }}>₹{total.toLocaleString('en-IN')}</span>
               </div>
               <div style={{ marginTop: '0.75rem', padding: '0.75rem', background: '#C8F5D8', borderRadius: 6, fontSize: '0.75rem', color: '#1A7A32', lineHeight: 1.6 }}>
-                🚚 Free shipping &nbsp;·&nbsp; 🔒 Secured payment &nbsp;·&nbsp; ✅ GI Verified
+                🚚 {t('freeShipping')} &nbsp;·&nbsp; 🔒 {t('securedPayment')} &nbsp;·&nbsp; ✅ {t('giVerified')}
               </div>
 
               {/* Razorpay — India */}
@@ -229,8 +232,8 @@ export default function CheckoutPage() {
                   marginTop: '1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                 }}
               >
-                {loadingMethod === 'razorpay' ? 'Opening Razorpay…' : (
-                  <><span>🇮🇳</span><span>Pay with Razorpay</span><span style={{ fontSize: '0.75rem', opacity: 0.75 }}>UPI · Cards · NetBanking</span></>
+                {loadingMethod === 'razorpay' ? t('openingRazorpay') : (
+                  <><span>🇮🇳</span><span>{t('payWithRazorpay')}</span><span style={{ fontSize: '0.75rem', opacity: 0.75 }}>{t('razorpayMethods')}</span></>
                 )}
               </button>
 
@@ -247,12 +250,12 @@ export default function CheckoutPage() {
                   marginTop: '0.6rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                 }}
               >
-                {loadingMethod === 'stripe' ? 'Redirecting to Stripe…' : (
-                  <><span>🌍</span><span>Pay with Card</span><span style={{ fontSize: '0.75rem', opacity: 0.75 }}>International · Visa · Mastercard</span></>
+                {loadingMethod === 'stripe' ? t('redirectingToStripe') : (
+                  <><span>🌍</span><span>{t('payWithCard')}</span><span style={{ fontSize: '0.75rem', opacity: 0.75 }}>{t('stripeMethods')}</span></>
                 )}
               </button>
               <Link href="/cart" style={{ display: 'block', textAlign: 'center', marginTop: '0.75rem', fontSize: '0.82rem', color: '#6B4820', textDecoration: 'none' }}>
-                ← Edit cart
+                ← {t('editCart')}
               </Link>
             </div>
           </div>

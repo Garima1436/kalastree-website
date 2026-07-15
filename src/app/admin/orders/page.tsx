@@ -1,5 +1,12 @@
 import { createClient } from '@/lib/supabase-server'
 import UpdateOrderStatus from './UpdateOrderStatus'
+import { getServerLang } from '@/lib/i18n/server'
+import { Lang } from '@/lib/i18n/constants'
+import dict from '@/lib/i18n/dictionaries/adminOrders'
+
+function getT(lang: Lang) {
+  return (key: keyof typeof dict.en): string => dict[lang]?.[key] ?? dict.en[key]
+}
 
 const STATUS_COLOR: Record<string, { bg: string; color: string }> = {
   pending:    { bg: '#FFF3A8', color: '#D4A000' },
@@ -11,6 +18,16 @@ const STATUS_COLOR: Record<string, { bg: string; color: string }> = {
 }
 
 export default async function AdminOrdersPage() {
+  const lang = await getServerLang()
+  const t = getT(lang)
+  const statusLabel: Record<string, string> = {
+    pending: t('statusPending'),
+    paid: t('statusPaid'),
+    processing: t('statusProcessing'),
+    shipped: t('statusShipped'),
+    delivered: t('statusDelivered'),
+    cancelled: t('statusCancelled'),
+  }
   const supabase = await createClient()
   const { data: orders } = await supabase
     .from('orders')
@@ -20,13 +37,13 @@ export default async function AdminOrdersPage() {
   return (
     <div>
       <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: '2rem', fontWeight: 700, color: '#1B2E4A', marginBottom: '2rem' }}>
-        Orders
+        {t('pageTitle')}
       </h1>
 
       {(!orders || orders.length === 0) ? (
         <div style={{ textAlign: 'center', padding: '5rem', color: '#6B4820' }}>
           <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📦</div>
-          <p>No orders yet.</p>
+          <p>{t('noOrdersYet')}</p>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
@@ -55,7 +72,7 @@ export default async function AdminOrdersPage() {
                       ₹{Number(order.total).toLocaleString('en-IN')}
                     </div>
                     <span style={{ padding: '3px 12px', borderRadius: 20, fontSize: '0.7rem', fontWeight: 700, background: sc.bg, color: sc.color }}>
-                      {order.status.toUpperCase()}
+                      {(statusLabel[order.status] ?? order.status).toUpperCase()}
                     </span>
                   </div>
                 </div>

@@ -1,15 +1,13 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase-server'
 import { redirect } from 'next/navigation'
+import { getServerLang } from '@/lib/i18n/server'
+import { Lang } from '@/lib/i18n/constants'
+import dict from '@/lib/i18n/dictionaries/adminHome'
 
-const LINKS = [
-  { href: '/admin', label: '📊 Dashboard' },
-  { href: '/admin/products', label: '🏺 Products' },
-  { href: '/admin/artisans', label: '👩‍🎨 Artisans' },
-  { href: '/admin/gi-products', label: '🗺️ GI Products' },
-  { href: '/admin/orders', label: '📦 Orders' },
-  { href: '/admin/users', label: '👥 Users' },
-]
+function getT(lang: Lang) {
+  return (key: keyof typeof dict.en): string => dict[lang]?.[key] ?? dict.en[key]
+}
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
@@ -22,12 +20,24 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   if (!profile || profile.role !== 'admin') redirect('/?error=unauthorized')
 
+  const lang = await getServerLang()
+  const t = getT(lang)
+
+  const LINKS = [
+    { href: '/admin', label: `📊 ${t('navDashboard')}` },
+    { href: '/admin/products', label: `🏺 ${t('navProducts')}` },
+    { href: '/admin/artisans', label: `👩‍🎨 ${t('navArtisans')}` },
+    { href: '/admin/gi-products', label: `🗺️ ${t('navGiProducts')}` },
+    { href: '/admin/orders', label: `📦 ${t('navOrders')}` },
+    { href: '/admin/users', label: `👥 ${t('navUsers')}` },
+  ]
+
   return (
     <div className="panel-shell" style={{ display: 'grid', gridTemplateColumns: '220px 1fr', minHeight: 'calc(100vh - 90px)' }}>
       <aside style={{ background: '#1B2E4A', display: 'flex', flexDirection: 'column', padding: '0' }}>
         <div style={{ padding: '1.5rem', borderBottom: '1px solid rgba(212,160,0,0.2)' }}>
           <div style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.2rem', fontWeight: 700, color: '#D4A000' }}>
-            Admin Panel
+            {t('adminPanelTitle')}
           </div>
           <div style={{ fontSize: '0.68rem', color: 'rgba(255,255,255,0.35)', letterSpacing: '0.12em', textTransform: 'uppercase', marginTop: 3 }}>
             KalaStree
@@ -47,7 +57,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         </nav>
         <div style={{ padding: '1.5rem', borderTop: '1px solid rgba(212,160,0,0.15)' }}>
           <Link href="/" style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.35)', textDecoration: 'none' }}>
-            ← Back to site
+            ← {t('backToSite')}
           </Link>
         </div>
       </aside>

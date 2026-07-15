@@ -5,8 +5,13 @@ import Link from 'next/link'
 import DeleteArtisanButton from './DeleteArtisanButton'
 import RegisterArtisanLogin from './RegisterArtisanLogin'
 import ArtisanToggle from './ArtisanToggle'
+import { getServerLang, getT } from '@/lib/i18n/server'
 
 export default async function AdminArtisansPage() {
+  const lang = await getServerLang()
+  const t = getT('adminArtisans', lang)
+  const tc = getT('common', lang)
+
   // Verify admin
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -27,19 +32,19 @@ export default async function AdminArtisansPage() {
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <div>
-          <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: '2rem', fontWeight: 700, color: '#1B2E4A', margin: 0 }}>Artisans</h1>
-          <p style={{ color: '#6B4820', fontSize: '0.85rem', marginTop: 4 }}>{artisans?.length ?? 0} artisans registered</p>
+          <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: '2rem', fontWeight: 700, color: '#1B2E4A', margin: 0 }}>{t('heading')}</h1>
+          <p style={{ color: '#6B4820', fontSize: '0.85rem', marginTop: 4 }}>{artisans?.length ?? 0} {t('artisansRegisteredSuffix')}</p>
         </div>
         <Link href="/admin/artisans/new" style={{ background: '#E8380A', color: '#fff', padding: '10px 20px', borderRadius: 6, fontWeight: 700, fontSize: '0.88rem', textDecoration: 'none' }}>
-          + Add Artisan
+          {t('addArtisan')}
         </Link>
       </div>
 
       {/* Legend */}
       <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', marginBottom: '1.25rem', fontSize: '0.75rem', color: '#6B4820' }}>
-        <span><span style={{ background: '#DCFCE7', color: '#166534', padding: '2px 8px', borderRadius: 20, fontWeight: 700 }}>✓ Email</span> — Artisan confirmed their email</span>
-        <span><span style={{ background: '#FEF9C3', color: '#854D0E', padding: '2px 8px', borderRadius: 20, fontWeight: 700 }}>⭐ GI Verified</span> — Shows GI badge on profile</span>
-        <span><span style={{ background: '#E0E7FF', color: '#3730A3', padding: '2px 8px', borderRadius: 20, fontWeight: 700 }}>🏠 Featured</span> — Shows on homepage</span>
+        <span><span style={{ background: '#DCFCE7', color: '#166534', padding: '2px 8px', borderRadius: 20, fontWeight: 700 }}>{t('legendEmailLabel')}</span> — {t('legendEmailDesc')}</span>
+        <span><span style={{ background: '#FEF9C3', color: '#854D0E', padding: '2px 8px', borderRadius: 20, fontWeight: 700 }}>{t('legendGiVerifiedLabel')}</span> — {t('legendGiVerifiedDesc')}</span>
+        <span><span style={{ background: '#E0E7FF', color: '#3730A3', padding: '2px 8px', borderRadius: 20, fontWeight: 700 }}>{t('legendFeaturedLabel')}</span> — {t('legendFeaturedDesc')}</span>
       </div>
 
       <div style={{ background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 10, overflow: 'auto' }}>
@@ -47,7 +52,7 @@ export default async function AdminArtisansPage() {
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem', minWidth: 900 }}>
             <thead style={{ background: '#FFE8A8' }}>
               <tr>
-                {['Photo', 'Name', 'State', 'Craft', 'Email', 'GI Verified', 'Featured', 'Portal', 'Actions'].map(h => (
+                {[t('colPhoto'), t('colName'), t('colState'), t('colCraft'), t('colEmail'), t('colGiVerified'), t('colFeatured'), t('colPortal'), t('colActions')].map(h => (
                   <th key={h} style={{ padding: '10px 12px', textAlign: 'left', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6B4820', fontSize: '0.7rem', whiteSpace: 'nowrap' }}>{h}</th>
                 ))}
               </tr>
@@ -76,11 +81,11 @@ export default async function AdminArtisansPage() {
                     {/* Email verification status */}
                     <td style={{ padding: '12px 12px' }}>
                       {emailConfirmed === null ? (
-                        <span style={{ fontSize: '0.7rem', color: '#9CA3AF' }}>No login</span>
+                        <span style={{ fontSize: '0.7rem', color: '#9CA3AF' }}>{t('noLogin')}</span>
                       ) : emailConfirmed ? (
-                        <span style={{ padding: '3px 10px', borderRadius: 20, fontSize: '0.7rem', fontWeight: 700, background: '#DCFCE7', color: '#166534' }}>✓ Confirmed</span>
+                        <span style={{ padding: '3px 10px', borderRadius: 20, fontSize: '0.7rem', fontWeight: 700, background: '#DCFCE7', color: '#166534' }}>{t('emailConfirmed')}</span>
                       ) : (
-                        <span style={{ padding: '3px 10px', borderRadius: 20, fontSize: '0.7rem', fontWeight: 700, background: '#FEE2E2', color: '#991B1B' }}>⏳ Pending</span>
+                        <span style={{ padding: '3px 10px', borderRadius: 20, fontSize: '0.7rem', fontWeight: 700, background: '#FEE2E2', color: '#991B1B' }}>{t('emailPending')}</span>
                       )}
                     </td>
 
@@ -90,8 +95,8 @@ export default async function AdminArtisansPage() {
                         artisanId={artisan.id}
                         field="is_verified"
                         value={artisan.is_verified}
-                        labelOn="⭐ GI Verified"
-                        labelOff="Not Verified"
+                        labelOn={t('legendGiVerifiedLabel')}
+                        labelOff={t('notVerified')}
                         colorOn="#854D0E"
                         bgOn="#FEF9C3"
                       />
@@ -103,8 +108,8 @@ export default async function AdminArtisansPage() {
                         artisanId={artisan.id}
                         field="is_featured"
                         value={artisan.is_featured ?? false}
-                        labelOn="🏠 Featured"
-                        labelOff="Not Featured"
+                        labelOn={t('legendFeaturedLabel')}
+                        labelOff={t('notFeatured')}
                         colorOn="#3730A3"
                         bgOn="#E0E7FF"
                       />
@@ -113,14 +118,14 @@ export default async function AdminArtisansPage() {
                     {/* Portal */}
                     <td style={{ padding: '12px 12px' }}>
                       {artisan.user_id
-                        ? <span style={{ fontSize: '0.75rem', color: '#1A7A32', fontWeight: 700 }}>✓ Has login</span>
+                        ? <span style={{ fontSize: '0.75rem', color: '#1A7A32', fontWeight: 700 }}>{t('hasLogin')}</span>
                         : <RegisterArtisanLogin artisanId={artisan.id} artisanName={artisan.name} />
                       }
                     </td>
 
                     <td style={{ padding: '12px 12px' }}>
                       <div style={{ display: 'flex', gap: 8 }}>
-                        <Link href={`/admin/artisans/${artisan.id}/edit`} style={{ fontSize: '0.78rem', color: '#1B2E4A', fontWeight: 700, border: '1px solid #DDB840', padding: '4px 10px', borderRadius: 4, textDecoration: 'none' }}>Edit</Link>
+                        <Link href={`/admin/artisans/${artisan.id}/edit`} style={{ fontSize: '0.78rem', color: '#1B2E4A', fontWeight: 700, border: '1px solid #DDB840', padding: '4px 10px', borderRadius: 4, textDecoration: 'none' }}>{tc('edit')}</Link>
                         <DeleteArtisanButton id={artisan.id} name={artisan.name} />
                       </div>
                     </td>
@@ -132,8 +137,8 @@ export default async function AdminArtisansPage() {
         ) : (
           <div style={{ padding: '4rem', textAlign: 'center', color: '#6B4820' }}>
             <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>👩‍🎨</div>
-            <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.3rem', marginBottom: '1.5rem' }}>No artisans yet.</p>
-            <Link href="/admin/artisans/new" style={{ background: '#E8380A', color: '#fff', padding: '10px 24px', borderRadius: 6, fontWeight: 700, textDecoration: 'none' }}>Add First Artisan →</Link>
+            <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.3rem', marginBottom: '1.5rem' }}>{t('emptyTitle')}</p>
+            <Link href="/admin/artisans/new" style={{ background: '#E8380A', color: '#fff', padding: '10px 24px', borderRadius: 6, fontWeight: 700, textDecoration: 'none' }}>{t('addFirstArtisan')}</Link>
           </div>
         )}
       </div>

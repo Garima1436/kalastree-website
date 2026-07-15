@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { useTranslation } from '@/lib/i18n/useTranslation'
 
 const PHOTOS = [
   '/quote1.jpeg',
@@ -11,9 +12,8 @@ const PHOTOS = [
   '/quote7.jpeg',
 ]
 
-const FIXED_QUOTE = "When a woman artisan earns her first digital payment, she doesn't just gain income — she gains identity, visibility, and power."
-
 export default function QuoteSlider() {
+  const { t } = useTranslation('home')
   const [current, setCurrent] = useState(0)
   const touchStartX = useRef<number | null>(null)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -62,7 +62,7 @@ export default function QuoteSlider() {
             <div key={i} style={{ minWidth: '100%', height: 320, background: '#FFE8A8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, overflow: 'hidden' }}>
               <img
                 src={photo}
-                alt={`Slide ${i + 1}`}
+                alt={t('quoteSlideAlt').replace('{n}', String(i + 1))}
                 style={{ maxWidth: '100%', maxHeight: '100%', width: 'auto', height: 'auto', display: 'block', objectFit: 'contain' }}
               />
             </div>
@@ -74,13 +74,13 @@ export default function QuoteSlider() {
       <div style={{ border: '2px solid #DDB840', borderTop: '2px solid #D4A000', borderRadius: '0 0 16px 16px', background: '#FFFFFF', padding: '1.5rem 1.75rem 1.25rem' }}>
         <div style={{ fontSize: '1.8rem', color: '#E8380A', fontFamily: "'EB Garamond', serif", lineHeight: 0.8, marginBottom: '0.5rem', opacity: 0.5 }}>"</div>
         <p style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(0.95rem, 1.6vw, 1.1rem)', fontStyle: 'italic', color: '#1B2E4A', lineHeight: 1.75, marginBottom: '1rem' }}>
-          {FIXED_QUOTE}
+          {t('founderQuote')}
         </p>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <div style={{ width: 28, height: 2, background: '#D4A000', borderRadius: 2, flexShrink: 0 }} />
           <div>
             <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#E8380A', fontFamily: "'Lato', sans-serif" }}>Garima Awasthi</div>
-            <div style={{ fontSize: '0.7rem', color: '#A07840', fontFamily: "'Lato', sans-serif", marginTop: 1 }}>Founder, KalaStree · PhD Scholar, IIT Patna</div>
+            <div style={{ fontSize: '0.7rem', color: '#A07840', fontFamily: "'Lato', sans-serif", marginTop: 1 }}>{t('founderRole')}</div>
           </div>
         </div>
       </div>

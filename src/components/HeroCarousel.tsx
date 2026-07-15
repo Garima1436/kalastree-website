@@ -2,16 +2,17 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
+import { useTranslation } from '@/lib/i18n/useTranslation'
 
 const AUTO_MS = 5000
 
 type StatKey = 'gi-products' | 'women-artisans' | 'states' | 'marketplace'
 
-const STATS: { key: StatKey; num: string; label: string; sub: string }[] = [
-  { key: 'gi-products', num: '478', label: 'GI PRODUCTS', sub: 'Authentic. Verified. Unique.' },
-  { key: 'women-artisans', num: '2,500+', label: 'WOMEN ARTISANS', sub: 'Empowered. Skilled. Proud.' },
-  { key: 'states', num: '16', label: 'STATES', sub: 'Diverse. Rich. United.' },
-  { key: 'marketplace', num: 'GLOBAL', label: 'MARKETPLACE', sub: 'Bringing India to the World.' },
+const STATS: { key: StatKey; num: string }[] = [
+  { key: 'gi-products', num: '478' },
+  { key: 'women-artisans', num: '2,500+' },
+  { key: 'states', num: '16' },
+  { key: 'marketplace', num: 'GLOBAL' },
 ]
 
 const STATE_NAME_MAP: Record<string, string> = {
@@ -28,6 +29,7 @@ function stateNameFromSrc(src: string): string {
 }
 
 function ImageSlide({ src, priority }: { src: string; priority?: boolean }) {
+  const { t } = useTranslation('home')
   const stateName = stateNameFromSrc(src)
   return (
     <div style={{ position: 'relative', width: '100%', height: 'clamp(220px, 62vw, 560px)', background: '#3D0810', overflow: 'hidden' }}>
@@ -53,17 +55,17 @@ function ImageSlide({ src, priority }: { src: string; priority?: boolean }) {
       <Link
         href={`/shop?state=${encodeURIComponent(stateName)}`}
         style={{ position: 'absolute', inset: 0, zIndex: 2 }}
-        aria-label={`Shop GI products from ${stateName}`}
+        aria-label={t('shopGiProductsFrom').replace('{state}', stateName)}
       />
       <div style={{ position: 'absolute', left: '6%', bottom: '10%', maxWidth: 420, pointerEvents: 'none' }}>
         <p style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.25em', textTransform: 'uppercase', color: '#D4A000', marginBottom: 8 }}>
-          GI Heritage of
+          {t('giHeritageOf')}
         </p>
         <h3 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.5rem, 4vw, 2.6rem)', fontWeight: 700, color: '#fff', margin: '0 0 1rem', lineHeight: 1.1, textShadow: '0 2px 12px rgba(0,0,0,0.5)' }}>
           {stateName}
         </h3>
         <span style={{ display: 'inline-block', fontSize: '0.82rem', fontWeight: 700, letterSpacing: '0.08em', color: '#fff', textDecoration: 'underline', textUnderlineOffset: 4 }}>
-          SHOP NOW →
+          {t('shopNow')} →
         </span>
       </div>
     </div>
@@ -71,26 +73,27 @@ function ImageSlide({ src, priority }: { src: string; priority?: boolean }) {
 }
 
 function BrandSlide() {
+  const { t } = useTranslation('home')
   return (
     <div style={{ position: 'relative', height: 'clamp(220px, 62vw, 560px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0.5rem 5%', overflow: 'hidden' }}>
       <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 70% 60% at 50% 45%, rgba(120,20,30,0.6) 0%, transparent 100%)', pointerEvents: 'none' }} />
       <div style={{ maxWidth: 820, margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 2 }}>
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 'clamp(0.4rem, 1.4vw, 1rem)' }}>
-          <img src="/kalastree-logo.png" alt="KalaStree — Heritage by Her"
+          <img src="/kalastree-logo.png" alt={`KalaStree — ${t('heritageByHer')}`}
             style={{ height: 'clamp(90px, 22vw, 220px)', width: 'auto', objectFit: 'contain', display: 'block', filter: 'drop-shadow(0 0 40px rgba(212,160,0,0.3))' }} />
         </div>
 
         <p className="hero-desc" style={{ fontSize: 'clamp(0.72rem, 1.4vw, 1rem)', lineHeight: 1.6, color: 'rgba(255,255,255,0.85)', maxWidth: 560, margin: '0 auto clamp(0.6rem, 1.5vw, 1.2rem)' }}>
-          India's first GI-verified marketplace where every purchase goes{' '}
-          <strong style={{ color: '#D4A000' }}>directly to the woman who made it</strong> — no middlemen, no compromise.
+          {t('heroDescPrefix')}{' '}
+          <strong style={{ color: '#D4A000' }}>{t('heroDescHighlight')}</strong> {t('heroDescSuffix')}
         </p>
 
         <div className="hero-btns" style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
           <Link href="/shop" style={{ background: '#D4A000', color: '#1A0800', padding: 'clamp(8px,1.5vw,14px) clamp(16px,3vw,34px)', borderRadius: 6, fontFamily: "'Lato', sans-serif", fontSize: 'clamp(0.75rem,1.3vw,0.95rem)', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8, boxShadow: '0 4px 24px rgba(212,160,0,0.4)' }}>
-            Shop the Collection →
+            {t('shopTheCollection')} →
           </Link>
           <Link href="/artisans" style={{ background: 'transparent', color: '#fff', padding: 'clamp(8px,1.5vw,14px) clamp(16px,3vw,34px)', borderRadius: 6, border: '2px solid rgba(255,255,255,0.5)', fontFamily: "'Lato', sans-serif", fontSize: 'clamp(0.75rem,1.3vw,0.95rem)', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-            Meet the Artisans
+            {t('meetTheArtisans')}
           </Link>
         </div>
       </div>
@@ -104,6 +107,7 @@ interface HeroSectionProps {
 }
 
 export default function HeroSection({ heroImages, statsImages }: HeroSectionProps) {
+  const { t } = useTranslation('home')
   const [index, setIndex] = useState(0)
   const [height, setHeight] = useState<number>()
   const slideRefs = useRef<(HTMLDivElement | null)[]>([])
@@ -124,6 +128,13 @@ export default function HeroSection({ heroImages, statsImages }: HeroSectionProp
   }, [slideCount])
 
   const go = (next: number) => setIndex(((next % slideCount) + slideCount) % slideCount)
+
+  const statText: Record<StatKey, { label: string; sub: string }> = {
+    'gi-products': { label: t('statGiProductsLabel'), sub: t('statGiProductsSub') },
+    'women-artisans': { label: t('statWomenArtisansLabel'), sub: t('statWomenArtisansSub') },
+    'states': { label: t('statStatesLabel'), sub: t('statStatesSub') },
+    'marketplace': { label: t('statMarketplaceLabel'), sub: t('statMarketplaceSub') },
+  }
 
   return (
     <section style={{ background: onBrand ? '#5C0A14' : 'linear-gradient(135deg, #FFFFFF 0%, #FDFBF6 55%, #F3ECDD 100%)', transition: 'background 0.8s ease', position: 'relative', overflow: 'hidden' }}>
@@ -150,7 +161,7 @@ export default function HeroSection({ heroImages, statsImages }: HeroSectionProp
           <>
             <button
               className="hero-arrow"
-              aria-label="Previous slide"
+              aria-label={t('previousSlide')}
               onClick={() => go(index - 1)}
               style={{
                 position: 'absolute', top: '50%', left: 14, transform: 'translateY(-50%)', zIndex: 3,
@@ -164,7 +175,7 @@ export default function HeroSection({ heroImages, statsImages }: HeroSectionProp
             </button>
             <button
               className="hero-arrow"
-              aria-label="Next slide"
+              aria-label={t('nextSlide')}
               onClick={() => go(index + 1)}
               style={{
                 position: 'absolute', top: '50%', right: 14, transform: 'translateY(-50%)', zIndex: 3,
@@ -181,7 +192,7 @@ export default function HeroSection({ heroImages, statsImages }: HeroSectionProp
               {Array.from({ length: slideCount }).map((_, i) => (
                 <button
                   key={i}
-                  aria-label={`Go to slide ${i + 1}`}
+                  aria-label={t('goToSlide').replace('{n}', String(i + 1))}
                   onClick={() => go(i)}
                   style={{
                     width: i === index ? 22 : 8, height: 8, borderRadius: 4,
@@ -199,8 +210,10 @@ export default function HeroSection({ heroImages, statsImages }: HeroSectionProp
       {/* Stats bar — each cell shows its own background image with text overlaid */}
       <div style={{ borderTop: `1px solid ${onBrand ? 'rgba(212,160,0,0.25)' : 'rgba(139,94,30,0.2)'}`, transition: 'border-color 0.8s ease', position: 'relative', zIndex: 2 }}>
         <div className="stats-grid" style={{ display: 'flex', width: '100%' }}>
-          {STATS.map(({ key, num, label, sub }, i) => {
+          {STATS.map(({ key, num }, i) => {
             const bg = statsImages[key]
+            const { label, sub } = statText[key]
+            const displayNum = key === 'marketplace' ? t('statMarketplaceNum') : num
             return (
               <div
                 key={key}
@@ -219,7 +232,7 @@ export default function HeroSection({ heroImages, statsImages }: HeroSectionProp
                   </>
                 )}
                 <div style={{ position: 'relative', minWidth: 0 }}>
-                  <div style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.1rem,2.8vw,1.9rem)', fontWeight: 700, color: '#D4A000', lineHeight: 1, whiteSpace: 'nowrap' }}>{num}</div>
+                  <div style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.1rem,2.8vw,1.9rem)', fontWeight: 700, color: '#D4A000', lineHeight: 1, whiteSpace: 'nowrap' }}>{displayNum}</div>
                   <div style={{ fontSize: 'clamp(0.48rem,1.1vw,0.65rem)', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: bg || onBrand ? '#fff' : '#3A1C08', transition: 'color 0.8s ease', marginTop: 3 }}>{label}</div>
                   <div className="stat-sub" style={{ fontSize: 'clamp(0.48rem,1vw,0.6rem)', color: bg ? 'rgba(212,160,0,0.85)' : onBrand ? 'rgba(212,160,0,0.65)' : 'rgba(139,94,30,0.8)', transition: 'color 0.8s ease', marginTop: 2, fontStyle: 'italic', whiteSpace: 'nowrap' }}>{sub}</div>
                 </div>

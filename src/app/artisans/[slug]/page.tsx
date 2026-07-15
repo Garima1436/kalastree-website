@@ -7,8 +7,11 @@ import ProductCard from '@/components/ProductCard'
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
 import remarkBreaks from 'remark-breaks'
+import { useTranslation } from '@/lib/i18n/useTranslation'
 
 export default function ArtisanProfilePage() {
+  const { t } = useTranslation('artisanDetail')
+  const { t: tc } = useTranslation('common')
   const { slug } = useParams<{ slug: string }>()
   const [artisan, setArtisan] = useState<Artisan | null>(null)
   const [products, setProducts] = useState<Product[]>([])
@@ -28,16 +31,16 @@ export default function ArtisanProfilePage() {
     load()
   }, [slug])
 
-  if (loading) return <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6B4820' }}>Loading...</div>
-  if (!artisan) return <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '1rem' }}><p>Artisan not found.</p><Link href="/artisans" style={{ color: '#E8380A' }}>← All Artisans</Link></div>
+  if (loading) return <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6B4820' }}>{tc('loading')}</div>
+  if (!artisan) return <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '1rem' }}><p>{t('notFound')}</p><Link href="/artisans" style={{ color: '#E8380A' }}>{t('backToAll')}</Link></div>
 
   return (
     <div style={{ background: 'var(--parchment)', minHeight: '80vh' }}>
       {/* Breadcrumb */}
       <div style={{ background: '#FFE8A8', padding: '0.75rem 5%', fontSize: '0.78rem', color: '#6B4820' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-          <Link href="/" style={{ color: '#6B4820', textDecoration: 'none' }}>Home</Link> {' / '}
-          <Link href="/artisans" style={{ color: '#6B4820', textDecoration: 'none' }}>Artisans</Link> {' / '}
+          <Link href="/" style={{ color: '#6B4820', textDecoration: 'none' }}>{tc('home')}</Link> {' / '}
+          <Link href="/artisans" style={{ color: '#6B4820', textDecoration: 'none' }}>{tc('artisans')}</Link> {' / '}
           <span style={{ color: '#1B2E4A', fontWeight: 600 }}>{artisan.name}</span>
         </div>
       </div>
@@ -58,7 +61,7 @@ export default function ArtisanProfilePage() {
               <span style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.65)' }}>📍 {artisan.state}</span>
               {artisan.gi_product && <span style={{ fontSize: '0.85rem', color: '#D4A000', fontStyle: 'italic' }}>✦ {artisan.gi_product}</span>}
             </div>
-            {artisan.is_verified && <span className="verified-badge">✓ GI Verified Artisan</span>}
+            {artisan.is_verified && <span className="verified-badge">✓ {t('giVerifiedArtisanBadge')}</span>}
           </div>
         </div>
       </div>
@@ -66,12 +69,12 @@ export default function ArtisanProfilePage() {
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: '3rem 5%', display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '3rem', alignItems: 'start' }}>
         {/* Story sidebar */}
         <div style={{ background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 12, padding: '2rem', position: 'sticky', top: 90 }}>
-          <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.4rem', fontWeight: 600, color: '#1B2E4A', marginBottom: '1rem' }}>Her Story</h2>
+          <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.4rem', fontWeight: 600, color: '#1B2E4A', marginBottom: '1rem' }}>{t('herStory')}</h2>
           {artisan.story
             ? <div className="rich-text" style={{ fontSize: '0.95rem', lineHeight: 1.85, color: '#6B4820', fontStyle: 'italic' }}>
                 <ReactMarkdown remarkPlugins={[remarkBreaks]}>{artisan.story}</ReactMarkdown>
               </div>
-            : <p style={{ fontSize: '0.9rem', color: '#6B4820' }}>This artisan's story is being collected. Every purchase helps write the next chapter.</p>
+            : <p style={{ fontSize: '0.9rem', color: '#6B4820' }}>{t('storyPlaceholder')}</p>
           }
           {artisan.bio && (
             <div className="rich-text" style={{ fontSize: '0.88rem', lineHeight: 1.75, color: '#6B4820', marginTop: '1.5rem', borderTop: '1px solid #DDB840', paddingTop: '1.5rem' }}>
@@ -79,11 +82,11 @@ export default function ArtisanProfilePage() {
             </div>
           )}
           <div style={{ marginTop: '1.5rem', borderTop: '1px solid #DDB840', paddingTop: '1.5rem' }}>
-            <div style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6B4820', marginBottom: 8 }}>Craft Details</div>
+            <div style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6B4820', marginBottom: 8 }}>{t('craftDetails')}</div>
             <div style={{ fontSize: '0.88rem', color: '#1B2E4A', lineHeight: 2 }}>
-              <div>🎨 <strong>Craft:</strong> {artisan.craft}</div>
-              <div>📍 <strong>State:</strong> {artisan.state}</div>
-              {artisan.gi_product && <div>✦ <strong>GI Product:</strong> {artisan.gi_product}</div>}
+              <div>🎨 <strong>{t('craftLabel')}</strong> {artisan.craft}</div>
+              <div>📍 <strong>{t('stateLabel')}</strong> {artisan.state}</div>
+              {artisan.gi_product && <div>✦ <strong>{t('giProductLabel')}</strong> {artisan.gi_product}</div>}
             </div>
           </div>
         </div>
@@ -91,11 +94,11 @@ export default function ArtisanProfilePage() {
         {/* Products */}
         <div>
           <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.6rem', fontWeight: 600, color: '#1B2E4A', marginBottom: '1.5rem' }}>
-            Products by {artisan.name}
+            {t('productsBy')} {artisan.name}
           </h2>
           {products.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '3rem', background: '#FFFFFF', borderRadius: 10, border: '1.5px solid #DDB840', color: '#6B4820' }}>
-              <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.2rem' }}>Products coming soon from this artisan.</p>
+              <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.2rem' }}>{t('noProducts')}</p>
             </div>
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1.25rem' }}>

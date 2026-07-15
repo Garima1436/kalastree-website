@@ -1,8 +1,12 @@
 import { createClient } from '@/lib/supabase-server'
 import Link from 'next/link'
 import DeleteGIProductButton from './DeleteGIProductButton'
+import { getServerLang, getT } from '@/lib/i18n/server'
 
 export default async function AdminGIProductsPage() {
+  const lang = await getServerLang()
+  const t = getT('adminGiProducts', lang)
+  const tc = getT('common', lang)
   const supabase = await createClient()
   const { data: giProducts } = await supabase
     .from('gi_products')
@@ -15,14 +19,14 @@ export default async function AdminGIProductsPage() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <div>
           <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: '2rem', fontWeight: 700, color: '#1B2E4A' }}>
-            GI Products
+            {t('heading')}
           </h1>
           <div style={{ fontSize: '0.78rem', color: '#6B4820', marginTop: 4 }}>
-            {giProducts ? giProducts.length : 0} Geographical Indication product{giProducts?.length !== 1 ? 's' : ''}
+            {giProducts ? giProducts.length : 0} {t('giProductCountLabel')}{lang === 'en' && giProducts?.length !== 1 ? 's' : ''}
           </div>
         </div>
         <Link href="/admin/gi-products/new" style={{ background: '#E8380A', color: '#fff', padding: '10px 20px', borderRadius: 6, fontWeight: 700, fontSize: '0.88rem', textDecoration: 'none' }}>
-          + Add GI Product
+          {t('addGiProduct')}
         </Link>
       </div>
 
@@ -30,7 +34,7 @@ export default async function AdminGIProductsPage() {
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem', minWidth: 800 }}>
           <thead style={{ background: '#FFE8A8' }}>
             <tr>
-              {['Photo', 'Name', 'State', 'Category', 'Women%', 'GI Tag', 'Year', 'Actions'].map(h => (
+              {[t('colPhoto'), t('colName'), t('colState'), t('colCategory'), t('colWomenPercent'), t('colGiTag'), t('colYear'), t('colActions')].map(h => (
                 <th key={h} style={{ padding: '12px 16px', textAlign: 'left', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6B4820', fontSize: '0.7rem' }}>
                   {h}
                 </th>
@@ -74,7 +78,7 @@ export default async function AdminGIProductsPage() {
                 <td style={{ padding: '12px 16px' }}>
                   <div style={{ display: 'flex', gap: 8 }}>
                     <Link href={`/admin/gi-products/${p.id}/edit`} style={{ fontSize: '0.78rem', color: '#1B2E4A', fontWeight: 700, textDecoration: 'none', border: '1px solid #DDB840', padding: '4px 10px', borderRadius: 4 }}>
-                      Edit
+                      {tc('edit')}
                     </Link>
                     <DeleteGIProductButton id={p.id} name={p.name} />
                   </div>
@@ -85,8 +89,8 @@ export default async function AdminGIProductsPage() {
         </table>
         {(!giProducts || giProducts.length === 0) && (
           <div style={{ padding: '3rem', textAlign: 'center', color: '#6B4820' }}>
-            No GI products yet.{' '}
-            <Link href="/admin/gi-products/new" style={{ color: '#E8380A', fontWeight: 700 }}>Add your first GI product →</Link>
+            {t('emptyText')}{' '}
+            <Link href="/admin/gi-products/new" style={{ color: '#E8380A', fontWeight: 700 }}>{t('addFirstGiProduct')}</Link>
           </div>
         )}
       </div>

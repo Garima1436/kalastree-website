@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslation } from '@/lib/i18n/useTranslation'
 
 interface Props {
   artisanId: string
@@ -16,6 +17,7 @@ export default function ArtisanToggle({ artisanId, field, value, labelOn, labelO
   const [current, setCurrent] = useState(value)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
+  const { t } = useTranslation('adminArtisans')
 
   const toggle = async () => {
     setLoading(true)
@@ -36,7 +38,7 @@ export default function ArtisanToggle({ artisanId, field, value, labelOn, labelO
     <button
       onClick={toggle}
       disabled={loading}
-      title={current ? `Click to remove` : `Click to enable`}
+      title={current ? t('clickToRemove') : t('clickToEnable')}
       style={{
         padding: '3px 10px', borderRadius: 20, fontSize: '0.7rem', fontWeight: 700,
         border: 'none', cursor: loading ? 'not-allowed' : 'pointer',

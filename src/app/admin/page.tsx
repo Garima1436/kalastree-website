@@ -1,7 +1,21 @@
 import { createClient } from '@/lib/supabase-server'
 import Link from 'next/link'
+import { getServerLang } from '@/lib/i18n/server'
+import { Lang } from '@/lib/i18n/constants'
+import dict from '@/lib/i18n/dictionaries/adminHome'
+import commonDict from '@/lib/i18n/dictionaries/common'
+
+function getT(lang: Lang) {
+  return (key: keyof typeof dict.en): string => dict[lang]?.[key] ?? dict.en[key]
+}
+function getCommonT(lang: Lang) {
+  return (key: keyof typeof commonDict.en): string => commonDict[lang]?.[key] ?? commonDict.en[key]
+}
 
 export default async function AdminDashboard() {
+  const lang = await getServerLang()
+  const t = getT(lang)
+  const tc = getCommonT(lang)
   const supabase = await createClient()
   const [
     { count: productCount },
@@ -20,11 +34,11 @@ export default async function AdminDashboard() {
   ])
 
   const stats = [
-    { label: 'Products', value: productCount ?? 0, color: '#E8380A', icon: '🏺', href: '/admin/products' },
-    { label: 'Artisans', value: artisanCount ?? 0, color: '#1A7A32', icon: '👩‍🎨', href: '/admin/artisans' },
-    { label: 'GI Products', value: giProductCount ?? 0, color: '#D4A000', icon: '🗺️', href: '/admin/gi-products' },
-    { label: 'Orders', value: orderCount ?? 0, color: '#D4A000', icon: '📦', href: '/admin/orders' },
-    { label: 'Users', value: userCount ?? 0, color: '#1B2E4A', icon: '👥', href: '/admin/users' },
+    { label: t('navProducts'), value: productCount ?? 0, color: '#E8380A', icon: '🏺', href: '/admin/products' },
+    { label: t('navArtisans'), value: artisanCount ?? 0, color: '#1A7A32', icon: '👩‍🎨', href: '/admin/artisans' },
+    { label: t('navGiProducts'), value: giProductCount ?? 0, color: '#D4A000', icon: '🗺️', href: '/admin/gi-products' },
+    { label: t('navOrders'), value: orderCount ?? 0, color: '#D4A000', icon: '📦', href: '/admin/orders' },
+    { label: t('navUsers'), value: userCount ?? 0, color: '#1B2E4A', icon: '👥', href: '/admin/users' },
   ]
 
   const statusColor: Record<string, { bg: string; color: string }> = {
@@ -36,14 +50,23 @@ export default async function AdminDashboard() {
     cancelled:  { bg: '#FEE2E2', color: '#B91C1C' },
   }
 
+  const statusLabel: Record<string, string> = {
+    pending: t('statusPending'),
+    paid: t('statusPaid'),
+    processing: t('statusProcessing'),
+    shipped: t('statusShipped'),
+    delivered: t('statusDelivered'),
+    cancelled: t('statusCancelled'),
+  }
+
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: '2rem', fontWeight: 700, color: '#1B2E4A' }}>
-          Dashboard
+          {t('navDashboard')}
         </h1>
         <Link href="/admin/products/new" style={{ background: '#E8380A', color: '#fff', padding: '10px 20px', borderRadius: 6, fontWeight: 700, fontSize: '0.88rem', textDecoration: 'none' }}>
-          + Add Product
+          {t('addProductBtn')}
         </Link>
       </div>
 
@@ -64,10 +87,10 @@ export default async function AdminDashboard() {
       <div style={{ background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 10, overflow: 'hidden' }}>
         <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1.5px solid #FFE8A8', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.3rem', fontWeight: 600, color: '#1B2E4A' }}>
-            Recent Orders
+            {t('recentOrders')}
           </h2>
           <Link href="/admin/orders" style={{ fontSize: '0.82rem', color: '#E8380A', fontWeight: 700, textDecoration: 'none' }}>
-            View all →
+            {t('viewAllArrow')}
           </Link>
         </div>
         {recentOrders && recentOrders.length > 0 ? (
@@ -75,7 +98,7 @@ export default async function AdminDashboard() {
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem', minWidth: 600 }}>
             <thead style={{ background: '#FFE8A8' }}>
               <tr>
-                {['Order ID', 'Customer', 'Amount', 'Status', 'Date'].map(h => (
+                {[t('thOrderId'), t('thCustomer'), t('thAmount'), tc('status'), t('thDate')].map(h => (
                   <th key={h} style={{ padding: '10px 16px', textAlign: 'left', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6B4820', fontSize: '0.7rem' }}>
                     {h}
                   </th>
@@ -92,7 +115,7 @@ export default async function AdminDashboard() {
                     <td style={{ padding: '12px 16px', fontWeight: 700, color: '#E8380A' }}>₹{Number(order.total).toLocaleString('en-IN')}</td>
                     <td style={{ padding: '12px 16px' }}>
                       <span style={{ padding: '3px 10px', borderRadius: 20, fontSize: '0.7rem', fontWeight: 700, background: sc.bg, color: sc.color }}>
-                        {order.status.toUpperCase()}
+                        {(statusLabel[order.status] ?? order.status).toUpperCase()}
                       </span>
                     </td>
                     <td style={{ padding: '12px 16px', color: '#6B4820' }}>{new Date(order.created_at).toLocaleDateString('en-IN')}</td>
@@ -104,7 +127,7 @@ export default async function AdminDashboard() {
           </div>
         ) : (
           <div style={{ padding: '3rem', textAlign: 'center', color: '#6B4820', fontStyle: 'italic' }}>
-            No orders yet.
+            {t('noOrdersYet')}
           </div>
         )}
       </div>

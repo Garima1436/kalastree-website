@@ -4,10 +4,13 @@ import { createClient } from '@/lib/supabase-browser'
 import { friendlyAuthError, isUnconfirmedEmailError } from '@/lib/auth-errors'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
+import { useTranslation } from '@/lib/i18n/useTranslation'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 function LoginForm() {
+  const { t } = useTranslation('auth')
+  const { t: tc } = useTranslation('common')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -22,9 +25,9 @@ function LoginForm() {
 
   const validate = () => {
     const errs: { email?: string; password?: string } = {}
-    if (!email.trim()) errs.email = 'Email is required'
-    else if (!EMAIL_RE.test(email.trim())) errs.email = 'Enter a valid email address'
-    if (!password) errs.password = 'Password is required'
+    if (!email.trim()) errs.email = t('emailRequired')
+    else if (!EMAIL_RE.test(email.trim())) errs.email = t('emailInvalid')
+    if (!password) errs.password = t('passwordRequired')
     setFieldErrors(errs)
     return Object.keys(errs).length === 0
   }
@@ -110,9 +113,9 @@ function LoginForm() {
       <div style={{ width: '100%', maxWidth: 440, background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 12, padding: '2.5rem' }}>
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: '2rem', fontWeight: 700, color: '#1B2E4A', marginBottom: '0.4rem' }}>
-            Welcome Back
+            {t('welcomeBack')}
           </h1>
-          <p style={{ color: '#6B4820', fontSize: '0.9rem' }}>Sign in to your KalaStree account</p>
+          <p style={{ color: '#6B4820', fontSize: '0.9rem' }}>{t('signInSubtitle')}</p>
         </div>
 
         <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }} noValidate>
@@ -122,13 +125,13 @@ function LoginForm() {
               {showResend && (
                 <div style={{ marginTop: 8 }}>
                   {resendState === 'sent' ? (
-                    <span style={{ color: '#166534', fontWeight: 700 }}>✓ Confirmation email sent — check your inbox.</span>
+                    <span style={{ color: '#166534', fontWeight: 700 }}>{t('confirmationEmailSent')}</span>
                   ) : (
                     <button type="button" onClick={handleResend} disabled={resendState === 'sending'} style={{
                       background: 'none', border: 'none', padding: 0, color: '#B91C1C',
                       fontWeight: 700, textDecoration: 'underline', cursor: resendState === 'sending' ? 'not-allowed' : 'pointer',
                     }}>
-                      {resendState === 'sending' ? 'Sending…' : 'Resend confirmation email'}
+                      {resendState === 'sending' ? t('sending') : t('resendConfirmationEmail')}
                     </button>
                   )}
                 </div>
@@ -136,31 +139,31 @@ function LoginForm() {
             </div>
           )}
           <div>
-            <label style={labelStyle}>Email</label>
+            <label style={labelStyle}>{tc('email')}</label>
             <input type="email" value={email} disabled={loading}
               onChange={e => { setEmail(e.target.value); if (fieldErrors.email) setFieldErrors(f => ({ ...f, email: undefined })) }}
-              style={fieldErrors.email ? inputErrorStyle : inputStyle} placeholder="you@email.com" />
+              style={fieldErrors.email ? inputErrorStyle : inputStyle} placeholder={t('placeholderEmail')} />
             {fieldErrors.email && <p style={fieldErrorStyle}>{fieldErrors.email}</p>}
           </div>
           <div>
-            <label style={labelStyle}>Password</label>
+            <label style={labelStyle}>{tc('password')}</label>
             <div style={{ position: 'relative' }}>
               <input type={showPassword ? 'text' : 'password'} value={password} disabled={loading}
                 onChange={e => { setPassword(e.target.value); if (fieldErrors.password) setFieldErrors(f => ({ ...f, password: undefined })) }}
-                style={{ ...(fieldErrors.password ? inputErrorStyle : inputStyle), paddingRight: 46 }} placeholder="••••••••" />
-              <button type="button" onClick={() => setShowPassword(s => !s)} aria-label={showPassword ? 'Hide password' : 'Show password'}
+                style={{ ...(fieldErrors.password ? inputErrorStyle : inputStyle), paddingRight: 46 }} placeholder={t('placeholderDots')} />
+              <button type="button" onClick={() => setShowPassword(s => !s)} aria-label={showPassword ? t('hidePasswordAria') : t('showPasswordAria')}
                 style={{
                   position: 'absolute', right: 4, top: '50%', transform: 'translateY(-50%)',
                   background: 'none', border: 'none', cursor: 'pointer', padding: '6px 8px',
                   fontSize: '0.78rem', fontWeight: 700, color: '#6B4820',
                 }}>
-                {showPassword ? 'Hide' : 'Show'}
+                {showPassword ? t('hidePassword') : t('showPassword')}
               </button>
             </div>
             {fieldErrors.password && <p style={fieldErrorStyle}>{fieldErrors.password}</p>}
             <div style={{ textAlign: 'right', marginTop: 6 }}>
               <Link href="/forgot-password" style={{ fontSize: '0.8rem', color: '#E8380A', fontWeight: 700, textDecoration: 'none' }}>
-                Forgot password?
+                {t('forgotPasswordLink')}
               </Link>
             </div>
           </div>
@@ -169,13 +172,13 @@ function LoginForm() {
             border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '1rem',
             cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1, marginTop: '0.5rem',
           }}>
-            {loading ? 'Signing in…' : 'Sign In →'}
+            {loading ? t('signingIn') : t('signInButton')}
           </button>
         </form>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '1.5rem 0' }}>
           <div style={{ flex: 1, height: 1, background: '#DDB840', opacity: 0.4 }} />
-          <span style={{ fontSize: '0.75rem', color: '#A07840', textTransform: 'uppercase', letterSpacing: '0.06em' }}>or</span>
+          <span style={{ fontSize: '0.75rem', color: '#A07840', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{t('orDivider')}</span>
           <div style={{ flex: 1, height: 1, background: '#DDB840', opacity: 0.4 }} />
         </div>
 
@@ -191,13 +194,13 @@ function LoginForm() {
             <path fill="#4CAF50" d="M24 45c5.5 0 10.4-1.9 14.2-5.1l-6.6-5.4C29.6 36.4 27 37 24 37c-5.3 0-9.7-3.4-11.3-8l-6.6 5.1C8.7 40.3 15.8 45 24 45z"/>
             <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.2 4.2-4.1 5.5l6.6 5.4C41.5 35.6 45 30.4 45 24c0-1.2-.1-2.4-.4-3.5z"/>
           </svg>
-          {googleLoading ? 'Opening Google…' : 'Continue with Google'}
+          {googleLoading ? t('openingGoogle') : t('continueWithGoogle')}
         </button>
 
         <p style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.9rem', color: '#6B4820' }}>
-          No account?{' '}
+          {t('noAccount')}{' '}
           <Link href={`/signup?redirect=${encodeURIComponent(redirect)}`} style={{ color: '#E8380A', fontWeight: 700, textDecoration: 'none' }}>
-            Sign up
+            {t('signUpLink')}
           </Link>
         </p>
       </div>

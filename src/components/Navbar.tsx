@@ -4,34 +4,39 @@ import Image from 'next/image'
 import { useState, useEffect, useRef } from 'react'
 import CartIcon from './CartIcon'
 import NavSearch from './NavSearch'
+import LanguageSwitcher from './LanguageSwitcher'
 import { createClient } from '@/lib/supabase-browser'
-
-const NAV_LINKS = [
-  { href: '/artisans', label: 'Artisans' },
-  { href: '/gi-products', label: 'GI Products' },
-  { href: '/about', label: 'About Us' },
-]
-
-const SHOP_CATEGORIES = [
-  { href: '/shop?category=textile', label: 'Textiles & Silk', icon: '🧵' },
-  { href: '/shop?category=handicraft', label: 'Handicrafts', icon: '🏺' },
-  { href: '/shop?category=agricultural', label: 'Agricultural', icon: '🌾' },
-  { href: '/shop?category=food', label: 'Food & Natural', icon: '🍯' },
-]
-
-const SHOP_STATES = [
-  'Rajasthan', 'Uttar Pradesh', 'West Bengal', 'Kashmir',
-  'Bihar', 'Odisha', 'Punjab', 'Kerala',
-  'Tamil Nadu', 'Gujarat', 'Madhya Pradesh', 'Karnataka',
-]
-
-const TICKER_ITEMS = [
-  'PhD Scholar — IIT Patna', 'Women Empowerment',
-  'FinTech & Heritage', 'KalaStree — Heritage by Her', '478 GI Tags Analyzed',
-  '16 States Surveyed', '2,500 Women Voices', 'Madhubani · Pashmina · Banarasi · Kanchipuram',
-]
+import { useTranslation } from '@/lib/i18n/useTranslation'
 
 export default function Navbar() {
+  const { t: tCommon } = useTranslation('common')
+  const { t: tNav } = useTranslation('nav')
+
+  const NAV_LINKS = [
+    { href: '/artisans', label: tCommon('artisans') },
+    { href: '/gi-products', label: tCommon('giProducts') },
+    { href: '/about', label: tCommon('aboutUs') },
+  ]
+
+  const SHOP_CATEGORIES = [
+    { href: '/shop?category=textile', label: tCommon('textilesAndSilk'), icon: '🧵' },
+    { href: '/shop?category=handicraft', label: tCommon('handicrafts'), icon: '🏺' },
+    { href: '/shop?category=agricultural', label: tCommon('agricultural'), icon: '🌾' },
+    { href: '/shop?category=food', label: tCommon('foodAndNatural'), icon: '🍯' },
+  ]
+
+  const SHOP_STATES = [
+    tNav('stateRajasthan'), tNav('stateUttarPradesh'), tNav('stateWestBengal'), tNav('stateKashmir'),
+    tNav('stateBihar'), tNav('stateOdisha'), tNav('statePunjab'), tNav('stateKerala'),
+    tNav('stateTamilNadu'), tNav('stateGujarat'), tNav('stateMadhyaPradesh'), tNav('stateKarnataka'),
+  ]
+
+  const TICKER_ITEMS = [
+    tNav('tickerScholar'), tNav('tickerWomen'),
+    tNav('tickerFintech'), tNav('tickerBrand'), tNav('tickerGiCount'),
+    tNav('tickerStates'), tNav('tickerVoices'), tNav('tickerCrafts'),
+  ]
+
   const [menuOpen, setMenuOpen] = useState(false)
   const [userDropdown, setUserDropdown] = useState(false)
   const [shopDropdown, setShopDropdown] = useState(false)
@@ -124,19 +129,19 @@ export default function Navbar() {
 
           {/* Desktop nav */}
           <ul className="nav-desktop" style={{ display: 'flex', gap: '0.15rem', listStyle: 'none', alignItems: 'center', flexWrap: 'nowrap' }}>
-            <li><Link href="/" className="nav-link">Home</Link></li>
+            <li><Link href="/" className="nav-link">{tCommon('home')}</Link></li>
             {/* Shop dropdown */}
             <li ref={shopRef} style={{ position: 'relative' }}>
               <button onClick={() => setShopDropdown(v => !v)}
                 className="nav-link"
                 style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
-                Shop <span style={{ fontSize: '0.55rem', marginTop: 1 }}>{shopDropdown ? '▲' : '▼'}</span>
+                {tCommon('shop')} <span style={{ fontSize: '0.55rem', marginTop: 1 }}>{shopDropdown ? '▲' : '▼'}</span>
               </button>
               {shopDropdown && (
                 <div style={{ position: 'absolute', top: 'calc(100% + 12px)', left: 0, background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 12, boxShadow: '0 12px 40px rgba(26,10,0,0.14)', zIndex: 300, minWidth: 480, display: 'grid', gridTemplateColumns: '1fr 1fr', overflow: 'hidden' }}>
                   {/* By Category */}
                   <div style={{ padding: '1.25rem 1.5rem', borderRight: '1px solid #EDD060' }}>
-                    <div style={{ fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#D4A000', marginBottom: '0.75rem' }}>Shop by Category</div>
+                    <div style={{ fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#D4A000', marginBottom: '0.75rem' }}>{tCommon('shopByCategory')}</div>
                     {SHOP_CATEGORIES.map(({ href, label, icon }) => (
                       <Link key={href} href={href} onClick={() => setShopDropdown(false)}
                         style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', textDecoration: 'none', borderBottom: '1px solid #FFE8A8', color: '#1B2E4A', fontSize: '0.88rem', fontWeight: 600, fontFamily: "'Lato', sans-serif" }}
@@ -147,12 +152,12 @@ export default function Navbar() {
                     ))}
                     <Link href="/shop" onClick={() => setShopDropdown(false)}
                       style={{ display: 'block', marginTop: '0.75rem', fontSize: '0.78rem', fontWeight: 700, color: '#E8380A', textDecoration: 'none' }}>
-                      View All Products →
+                      {tCommon('viewAllProducts')} →
                     </Link>
                   </div>
                   {/* By State */}
                   <div style={{ padding: '1.25rem 1.5rem', background: '#FFFFF0' }}>
-                    <div style={{ fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#D4A000', marginBottom: '0.75rem' }}>Shop by State</div>
+                    <div style={{ fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#D4A000', marginBottom: '0.75rem' }}>{tCommon('shopByState')}</div>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2px 8px' }}>
                       {SHOP_STATES.map(state => (
                         <Link key={state} href={`/shop?state=${encodeURIComponent(state)}`} onClick={() => setShopDropdown(false)}
@@ -173,7 +178,10 @@ export default function Navbar() {
                 <Link href={href} className="nav-link">{label}</Link>
               </li>
             ))}
-            <li><Link href="/about#contact" className="nav-cta">Contact</Link></li>
+            <li><Link href="/about#contact" className="nav-cta">{tCommon('contact')}</Link></li>
+            <li style={{ marginLeft: '0.25rem' }}>
+              <LanguageSwitcher />
+            </li>
             <li style={{ marginLeft: '0.25rem' }}>
               <button onClick={() => setSearchOpen(true)} aria-label="Search"
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 36, height: 36, background: 'none', border: '1.5px solid #DDB840', borderRadius: 8, cursor: 'pointer', color: '#6B4820', transition: 'all 0.15s' }}
@@ -206,8 +214,8 @@ export default function Navbar() {
                       <div style={{ fontSize: '0.75rem', color: '#A07840', marginTop: 2 }}>{user.email}</div>
                     </div>
                     {[
-                      { href: '/account/profile', icon: '👤', label: 'My Profile' },
-                      { href: '/account/orders', icon: '📦', label: 'My Orders' },
+                      { href: '/account/profile', icon: '👤', label: tCommon('myProfile') },
+                      { href: '/account/orders', icon: '📦', label: tCommon('myOrders') },
                     ].map(({ href, icon, label }) => (
                       <Link key={href} href={href} onClick={() => setUserDropdown(false)}
                         style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '11px 16px', fontFamily: "'Lato', sans-serif", fontSize: '0.88rem', fontWeight: 600, color: '#1B2E4A', textDecoration: 'none', borderBottom: '1px solid #FFE8A8' }}
@@ -221,7 +229,7 @@ export default function Navbar() {
                         style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '11px 16px', fontFamily: "'Lato', sans-serif", fontSize: '0.88rem', fontWeight: 700, color: '#1A7A32', textDecoration: 'none', borderBottom: '1px solid #FFE8A8', background: '#F0FFF4' }}
                         onMouseEnter={e => (e.currentTarget.style.background = '#C8F5D8')}
                         onMouseLeave={e => (e.currentTarget.style.background = '#F0FFF4')}>
-                        <span>🎨</span>Artisan Panel
+                        <span>🎨</span>{tCommon('artisanPanel')}
                       </Link>
                     )}
                     {isAdmin && (
@@ -229,14 +237,14 @@ export default function Navbar() {
                         style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '11px 16px', fontFamily: "'Lato', sans-serif", fontSize: '0.88rem', fontWeight: 700, color: '#D4A000', textDecoration: 'none', borderBottom: '1px solid #FFE8A8', background: '#FFFBF0' }}
                         onMouseEnter={e => (e.currentTarget.style.background = '#FFF3A8')}
                         onMouseLeave={e => (e.currentTarget.style.background = '#FFFBF0')}>
-                        <span>⚙️</span>Admin Panel
+                        <span>⚙️</span>{tCommon('adminPanel')}
                       </Link>
                     )}
                     <button onClick={handleLogout}
                       style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '11px 16px', width: '100%', background: 'none', border: 'none', fontFamily: "'Lato', sans-serif", fontSize: '0.88rem', fontWeight: 600, color: '#E8380A', cursor: 'pointer', textAlign: 'left' }}
                       onMouseEnter={e => (e.currentTarget.style.background = '#FEE2E2')}
                       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                      <span>🚪</span>Sign Out
+                      <span>🚪</span>{tCommon('signOut')}
                     </button>
                   </div>
                 )}
@@ -244,10 +252,10 @@ export default function Navbar() {
             ) : (
               <li style={{ display: 'flex', gap: 8 }}>
                 <Link href="/login" style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', background: 'none', border: '1.5px solid #DDB840', color: '#6B4820', padding: '6px 14px', borderRadius: 4, textDecoration: 'none', whiteSpace: 'nowrap' }}>
-                  Sign In
+                  {tCommon('signIn')}
                 </Link>
                 <Link href="/signup" style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', background: '#E8380A', color: '#fff', padding: '6px 14px', borderRadius: 4, textDecoration: 'none', whiteSpace: 'nowrap' }}>
-                  Sign Up
+                  {tCommon('signUp')}
                 </Link>
               </li>
             )}
@@ -262,6 +270,7 @@ export default function Navbar() {
               </svg>
             </button>
             <CartIcon />
+            <LanguageSwitcher compact />
             <button onClick={() => setMenuOpen(!menuOpen)} style={{ display: 'flex', flexDirection: 'column', gap: 5, background: 'none', border: 'none', cursor: 'pointer', padding: 4 }} aria-label="Menu">
               {[0, 1, 2].map(i => <span key={i} style={{ display: 'block', width: 24, height: 2, background: '#E8380A', borderRadius: 2 }} />)}
             </button>
@@ -273,24 +282,24 @@ export default function Navbar() {
           <div style={{ background: 'rgba(253,246,227,0.99)', borderTop: '1px solid #DDB840', padding: '1.25rem 5%', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
             <Link href="/" onClick={() => setMenuOpen(false)}
               style={{ fontFamily: "'Lato', sans-serif", fontWeight: 700, color: '#1B2E4A', textDecoration: 'none', fontSize: '0.95rem', letterSpacing: '0.04em', padding: '4px 0', borderBottom: '1px solid #EDD060' }}>
-              Home
+              {tCommon('home')}
             </Link>
             {/* Shop expandable */}
             <div>
               <button onClick={() => setMobileShopOpen(v => !v)}
                 style={{ width: '100%', background: 'none', border: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontFamily: "'Lato', sans-serif", fontWeight: 700, color: '#1B2E4A', fontSize: '0.95rem', padding: '4px 0', borderBottom: '1px solid #EDD060', cursor: 'pointer' }}>
-                Shop <span style={{ fontSize: '0.7rem', color: '#A07840' }}>{mobileShopOpen ? '▲' : '▼'}</span>
+                {tCommon('shop')} <span style={{ fontSize: '0.7rem', color: '#A07840' }}>{mobileShopOpen ? '▲' : '▼'}</span>
               </button>
               {mobileShopOpen && (
                 <div style={{ paddingTop: '0.75rem', paddingLeft: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                  <div style={{ fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#D4A000', marginBottom: 2 }}>By Category</div>
+                  <div style={{ fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#D4A000', marginBottom: 2 }}>{tCommon('shopByCategory')}</div>
                   {SHOP_CATEGORIES.map(({ href, label, icon }) => (
                     <Link key={href} href={href} onClick={() => { setMenuOpen(false); setMobileShopOpen(false) }}
                       style={{ fontFamily: "'Lato', sans-serif", color: '#1B2E4A', textDecoration: 'none', fontSize: '0.88rem', padding: '3px 0' }}>
                       {icon} {label}
                     </Link>
                   ))}
-                  <div style={{ fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#D4A000', marginTop: '0.5rem', marginBottom: 2 }}>By State</div>
+                  <div style={{ fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#D4A000', marginTop: '0.5rem', marginBottom: 2 }}>{tCommon('shopByState')}</div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px 12px' }}>
                     {SHOP_STATES.map(state => (
                       <Link key={state} href={`/shop?state=${encodeURIComponent(state)}`} onClick={() => { setMenuOpen(false); setMobileShopOpen(false) }}
@@ -301,7 +310,7 @@ export default function Navbar() {
                   </div>
                   <Link href="/shop" onClick={() => { setMenuOpen(false); setMobileShopOpen(false) }}
                     style={{ color: '#E8380A', fontWeight: 700, textDecoration: 'none', fontSize: '0.82rem', marginTop: 4 }}>
-                    View All →
+                    {tCommon('viewAll')} →
                   </Link>
                 </div>
               )}
@@ -315,8 +324,11 @@ export default function Navbar() {
             ))}
             <Link href="/about#contact" onClick={() => setMenuOpen(false)}
               style={{ fontFamily: "'Lato', sans-serif", fontWeight: 700, color: '#fff', background: '#E8380A', textDecoration: 'none', fontSize: '0.95rem', padding: '8px 14px', borderRadius: 4, textAlign: 'center' }}>
-              Contact
+              {tCommon('contact')}
             </Link>
+            <div style={{ display: 'flex', justifyContent: 'center', padding: '4px 0' }}>
+              <LanguageSwitcher />
+            </div>
             {user ? (
               <>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: '1px solid #EDD060' }}>
@@ -330,38 +342,38 @@ export default function Navbar() {
                 </div>
                 <Link href="/account/profile" onClick={() => setMenuOpen(false)}
                   style={{ fontFamily: "'Lato', sans-serif", fontWeight: 700, color: '#1B2E4A', textDecoration: 'none', fontSize: '0.95rem', padding: '4px 0', borderBottom: '1px solid #EDD060' }}>
-                  👤 My Profile
+                  👤 {tCommon('myProfile')}
                 </Link>
                 <Link href="/account/orders" onClick={() => setMenuOpen(false)}
                   style={{ fontFamily: "'Lato', sans-serif", fontWeight: 700, color: '#1B2E4A', textDecoration: 'none', fontSize: '0.95rem', padding: '4px 0', borderBottom: '1px solid #EDD060' }}>
-                  📦 My Orders
+                  📦 {tCommon('myOrders')}
                 </Link>
                 {isArtisan && (
                   <Link href="/artisan" onClick={() => setMenuOpen(false)}
                     style={{ fontFamily: "'Lato', sans-serif", fontWeight: 700, color: '#1A7A32', textDecoration: 'none', fontSize: '0.95rem', padding: '4px 0', borderBottom: '1px solid #EDD060' }}>
-                    🎨 Artisan Panel
+                    🎨 {tCommon('artisanPanel')}
                   </Link>
                 )}
                 {isAdmin && (
                   <Link href="/admin" onClick={() => setMenuOpen(false)}
                     style={{ fontFamily: "'Lato', sans-serif", fontWeight: 700, color: '#D4A000', textDecoration: 'none', fontSize: '0.95rem', padding: '4px 0', borderBottom: '1px solid #EDD060' }}>
-                    ⚙️ Admin Panel
+                    ⚙️ {tCommon('adminPanel')}
                   </Link>
                 )}
                 <button onClick={() => { handleLogout(); setMenuOpen(false) }}
                   style={{ background: 'none', border: 'none', fontFamily: "'Lato', sans-serif", fontWeight: 700, color: '#E8380A', fontSize: '0.95rem', padding: '4px 0', textAlign: 'left', cursor: 'pointer' }}>
-                  🚪 Sign Out
+                  🚪 {tCommon('signOut')}
                 </button>
               </>
             ) : (
               <>
                 <Link href="/login" onClick={() => setMenuOpen(false)}
                   style={{ fontFamily: "'Lato', sans-serif", fontWeight: 700, color: '#1B2E4A', textDecoration: 'none', fontSize: '0.95rem', padding: '4px 0', borderBottom: '1px solid #EDD060' }}>
-                  Sign In
+                  {tCommon('signIn')}
                 </Link>
                 <Link href="/signup" onClick={() => setMenuOpen(false)}
                   style={{ fontFamily: "'Lato', sans-serif", fontWeight: 700, color: '#E8380A', textDecoration: 'none', fontSize: '0.95rem', padding: '4px 0' }}>
-                  Sign Up
+                  {tCommon('signUp')}
                 </Link>
               </>
             )}

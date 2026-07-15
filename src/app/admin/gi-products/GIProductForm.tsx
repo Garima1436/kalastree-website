@@ -3,8 +3,15 @@ import { useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase-browser'
 import { useRouter } from 'next/navigation'
 import { INDIAN_STATES } from '@/lib/indian-states'
+import { useTranslation } from '@/lib/i18n/useTranslation'
 
 const CATEGORIES = ['textile', 'handicraft', 'agricultural', 'food'] as const
+const CATEGORY_LABEL_KEYS: Record<(typeof CATEGORIES)[number], 'categoryTextile' | 'categoryHandicraft' | 'categoryAgricultural' | 'categoryFood'> = {
+  textile: 'categoryTextile',
+  handicraft: 'categoryHandicraft',
+  agricultural: 'categoryAgricultural',
+  food: 'categoryFood',
+}
 
 interface Props {
   initialData?: any
@@ -17,6 +24,8 @@ export default function GIProductForm({ initialData, mode = 'new' }: Props) {
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const { t } = useTranslation('adminGiProducts')
+  const { t: tc } = useTranslation('common')
 
   const [form, setForm] = useState({
     name: initialData?.name ?? '',
@@ -40,8 +49,8 @@ export default function GIProductForm({ initialData, mode = 'new' }: Props) {
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-    if (!file.type.startsWith('image/')) { setError('Please select an image file'); return }
-    if (file.size > 5 * 1024 * 1024) { setError('Image must be under 5MB'); return }
+    if (!file.type.startsWith('image/')) { setError(t('selectImageError')); return }
+    if (file.size > 5 * 1024 * 1024) { setError(t('imageSizeError')); return }
 
     setUploading(true)
     setError('')
@@ -52,7 +61,7 @@ export default function GIProductForm({ initialData, mode = 'new' }: Props) {
       .from('gi-products').upload(fileName, file, { contentType: file.type, upsert: true })
 
     if (uploadError) {
-      setError(`Upload failed: ${uploadError.message}`)
+      setError(t('uploadFailedPrefix') + uploadError.message)
     } else {
       const { data: { publicUrl } } = supabase.storage.from('gi-products').getPublicUrl(fileName)
       set('image_url', publicUrl)
@@ -88,7 +97,7 @@ export default function GIProductForm({ initialData, mode = 'new' }: Props) {
       body: JSON.stringify(mode === 'edit' && initialData?.id ? { id: initialData.id, ...payload } : payload),
     })
     const result = await res.json()
-    if (!res.ok) { setError(result.error ?? 'Failed to save GI product'); setLoading(false) }
+    if (!res.ok) { setError(result.error ?? t('saveFailedDefault')); setLoading(false) }
     else { router.push('/admin/gi-products'); router.refresh() }
   }
 
@@ -105,10 +114,10 @@ export default function GIProductForm({ initialData, mode = 'new' }: Props) {
     <div>
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
         <button onClick={() => router.push('/admin/gi-products')} style={{ background: 'none', border: 'none', color: '#6B4820', cursor: 'pointer', fontSize: '0.88rem' }}>
-          ← GI Products
+          {t('backToGiProducts')}
         </button>
         <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: '2rem', fontWeight: 700, color: '#1B2E4A' }}>
-          {mode === 'edit' ? 'Edit GI Product' : 'Add New GI Product'}
+          {mode === 'edit' ? t('editHeading') : t('addHeading')}
         </h1>
       </div>
 
@@ -123,15 +132,15 @@ export default function GIProductForm({ initialData, mode = 'new' }: Props) {
           {/* Row 1: Name + State */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             <div>
-              <label style={labelStyle}>Name *</label>
+              <label style={labelStyle}>{t('nameLabel')}</label>
               <input style={inputStyle} required value={form.name}
                 onChange={e => set('name', e.target.value)}
                 placeholder="Pochampally Ikat" />
             </div>
             <div>
-              <label style={labelStyle}>State</label>
+              <label style={labelStyle}>{t('stateLabel')}</label>
               <select style={inputStyle} value={form.state} onChange={e => set('state', e.target.value)}>
-                <option value="">— Select state —</option>
+                <option value="">{t('selectStatePlaceholder')}</option>
                 {INDIAN_STATES.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
@@ -140,13 +149,13 @@ export default function GIProductForm({ initialData, mode = 'new' }: Props) {
           {/* Row 2: Category + GI Tag */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             <div>
-              <label style={labelStyle}>Category</label>
+              <label style={labelStyle}>{t('categoryLabel')}</label>
               <select style={inputStyle} value={form.category} onChange={e => set('category', e.target.value)}>
-                {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                {CATEGORIES.map(c => <option key={c} value={c}>{t(CATEGORY_LABEL_KEYS[c])}</option>)}
               </select>
             </div>
             <div>
-              <label style={labelStyle}>GI Tag</label>
+              <label style={labelStyle}>{t('giTagLabel')}</label>
               <input style={inputStyle} value={form.gi_tag} onChange={e => set('gi_tag', e.target.value)}
                 placeholder="GI Tag No. 213" />
             </div>
@@ -155,17 +164,17 @@ export default function GIProductForm({ initialData, mode = 'new' }: Props) {
           {/* Row 3: Year + Emoji + Accent + Women% */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '1rem' }}>
             <div>
-              <label style={labelStyle}>Year</label>
+              <label style={labelStyle}>{t('yearLabel')}</label>
               <input style={inputStyle} value={form.year} onChange={e => set('year', e.target.value)}
                 placeholder="2007" />
             </div>
             <div>
-              <label style={labelStyle}>Emoji</label>
+              <label style={labelStyle}>{t('emojiLabel')}</label>
               <input style={inputStyle} value={form.emoji} onChange={e => set('emoji', e.target.value)}
                 placeholder="🧵" maxLength={2} />
             </div>
             <div>
-              <label style={labelStyle}>Accent Color</label>
+              <label style={labelStyle}>{t('accentColorLabel')}</label>
               <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                 <input type="color" value={form.accent} onChange={e => set('accent', e.target.value)}
                   style={{ width: 44, height: 40, border: '1.5px solid #DDB840', borderRadius: 6, padding: 2, cursor: 'pointer', background: '#FFF8EE' }} />
@@ -174,7 +183,7 @@ export default function GIProductForm({ initialData, mode = 'new' }: Props) {
               </div>
             </div>
             <div>
-              <label style={labelStyle}>Women %</label>
+              <label style={labelStyle}>{t('womenPercentLabel')}</label>
               <input style={inputStyle} type="number" min={0} max={100}
                 value={form.women_percent} onChange={e => set('women_percent', e.target.value)}
                 placeholder="85" />
@@ -184,12 +193,12 @@ export default function GIProductForm({ initialData, mode = 'new' }: Props) {
           {/* Row 4: District + Materials */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             <div>
-              <label style={labelStyle}>District</label>
+              <label style={labelStyle}>{t('districtLabel')}</label>
               <input style={inputStyle} value={form.district} onChange={e => set('district', e.target.value)}
                 placeholder="Nalgonda" />
             </div>
             <div>
-              <label style={labelStyle}>Materials</label>
+              <label style={labelStyle}>{t('materialsLabel')}</label>
               <input style={inputStyle} value={form.materials} onChange={e => set('materials', e.target.value)}
                 placeholder="Silk, Cotton" />
             </div>
@@ -197,31 +206,31 @@ export default function GIProductForm({ initialData, mode = 'new' }: Props) {
 
           {/* Tagline */}
           <div>
-            <label style={labelStyle}>Tagline</label>
+            <label style={labelStyle}>{t('taglineLabel')}</label>
             <textarea style={{ ...inputStyle, minHeight: 60, resize: 'vertical' } as any}
               value={form.tagline} onChange={e => set('tagline', e.target.value)}
-              placeholder="A short evocative line about this GI product…" />
+              placeholder={t('taglinePlaceholder')} />
           </div>
 
           {/* Women & Heritage Role */}
           <div>
-            <label style={labelStyle}>Women &amp; Heritage Role</label>
+            <label style={labelStyle}>{t('womenRoleLabel')}</label>
             <textarea style={{ ...inputStyle, minHeight: 130, resize: 'vertical' } as any}
               value={form.women_role} onChange={e => set('women_role', e.target.value)}
-              placeholder="Describe the role of women in preserving and creating this GI product, its cultural significance…" />
+              placeholder={t('womenRolePlaceholder')} />
           </div>
 
           {/* History */}
           <div>
-            <label style={labelStyle}>History</label>
+            <label style={labelStyle}>{t('historyLabel')}</label>
             <textarea style={{ ...inputStyle, minHeight: 130, resize: 'vertical' } as any}
               value={form.history} onChange={e => set('history', e.target.value)}
-              placeholder="The historical origin and evolution of this GI product…" />
+              placeholder={t('historyPlaceholder')} />
           </div>
 
           {/* Image */}
           <div>
-            <label style={labelStyle}>Image</label>
+            <label style={labelStyle}>{t('imageLabel')}</label>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               <div style={{ width: 80, height: 80, borderRadius: 8, background: '#FFE8A8', border: '2px solid #DDB840', overflow: 'hidden', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 {form.image_url
@@ -232,11 +241,11 @@ export default function GIProductForm({ initialData, mode = 'new' }: Props) {
                 <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageUpload} style={{ display: 'none' }} />
                 <button type="button" onClick={() => fileInputRef.current?.click()} disabled={uploading}
                   style={{ background: uploading ? '#A07840' : '#1B2E4A', color: '#fff', padding: '9px 20px', border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '0.85rem', cursor: uploading ? 'not-allowed' : 'pointer', marginBottom: 8, display: 'block' }}>
-                  {uploading ? 'Uploading…' : '📷 Upload from Computer'}
+                  {uploading ? t('uploading') : t('uploadFromComputer')}
                 </button>
-                <div style={{ fontSize: '0.75rem', color: '#A07840', marginBottom: 6 }}>JPG, PNG, WebP · Max 5MB · Auto-saves to Supabase Storage</div>
+                <div style={{ fontSize: '0.75rem', color: '#A07840', marginBottom: 6 }}>{t('imageHelp')}</div>
                 <input style={{ ...inputStyle, fontSize: '0.8rem' }} value={form.image_url}
-                  onChange={e => set('image_url', e.target.value)} placeholder="Or paste image URL directly" />
+                  onChange={e => set('image_url', e.target.value)} placeholder={t('pasteImageUrlPlaceholder')} />
               </div>
             </div>
           </div>
@@ -247,13 +256,13 @@ export default function GIProductForm({ initialData, mode = 'new' }: Props) {
               border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '0.95rem',
               cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1,
             }}>
-              {loading ? 'Saving…' : mode === 'edit' ? 'Save Changes →' : 'Add GI Product →'}
+              {loading ? t('saving') : mode === 'edit' ? t('saveChanges') : t('addGiProductSubmit')}
             </button>
             <button type="button" onClick={() => router.push('/admin/gi-products')} style={{
               background: 'none', color: '#6B4820', padding: '12px 20px',
               border: '1.5px solid #DDB840', borderRadius: 6, fontWeight: 700, cursor: 'pointer',
             }}>
-              Cancel
+              {tc('cancel')}
             </button>
           </div>
         </form>

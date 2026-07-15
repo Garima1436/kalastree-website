@@ -2,15 +2,12 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { INDIAN_STATES } from '@/lib/indian-states'
+import { useLanguage } from '@/lib/i18n/LanguageContext'
+import dict from '@/lib/i18n/dictionaries/adminUsers'
+import commonDict from '@/lib/i18n/dictionaries/common'
 
 const ROLES = ['user', 'artisan', 'admin'] as const
 type Role = typeof ROLES[number]
-
-const roleStyle: Record<Role, { bg: string; color: string; label: string }> = {
-  user:    { bg: '#FFE8A8', color: '#6B4820', label: '👤 User' },
-  artisan: { bg: '#C8F5D8', color: '#1A7A32', label: '🎨 Artisan' },
-  admin:   { bg: '#FFF0C0', color: '#D4A000', label: '⚙️ Admin' },
-}
 
 interface Props {
   userId: string
@@ -25,6 +22,21 @@ export default function RoleToggle({ userId, currentRole, fullName = '', state =
   const [artisanForm, setArtisanForm] = useState<{ name: string; state: string; craft: string; gi_product: string } | null>(null)
   const [formError, setFormError] = useState('')
   const router = useRouter()
+  const { lang } = useLanguage()
+  const t = (key: keyof typeof dict.en): string => dict[lang]?.[key] ?? dict.en[key]
+  const tc = (key: keyof typeof commonDict.en): string => commonDict[lang]?.[key] ?? commonDict.en[key]
+
+  const roleLabel: Record<Role, string> = {
+    user: t('roleUserLabel'),
+    artisan: t('roleArtisanLabel'),
+    admin: t('roleAdminLabel'),
+  }
+  const roleStyle: Record<Role, { bg: string; color: string; label: string }> = {
+    user:    { bg: '#FFE8A8', color: '#6B4820', label: `👤 ${roleLabel.user}` },
+    artisan: { bg: '#C8F5D8', color: '#1A7A32', label: `🎨 ${roleLabel.artisan}` },
+    admin:   { bg: '#FFF0C0', color: '#D4A000', label: `⚙️ ${roleLabel.admin}` },
+  }
+
   const role = (currentRole as Role) ?? 'user'
   const s = roleStyle[role] ?? roleStyle.user
 
@@ -36,7 +48,7 @@ export default function RoleToggle({ userId, currentRole, fullName = '', state =
       body: JSON.stringify({ userId, role: newRole, artisan }),
     })
     setLoading(false)
-    if (!res.ok) { const d = await res.json(); alert('Failed: ' + (d.error || 'Unknown')); return }
+    if (!res.ok) { const d = await res.json(); alert(t('failedPrefix') + ' ' + (d.error || t('unknownError'))); return }
     router.refresh()
   }
 
@@ -50,7 +62,7 @@ export default function RoleToggle({ userId, currentRole, fullName = '', state =
       setArtisanForm({ name: fullName, state, craft: '', gi_product: '' })
       return
     }
-    if (!confirm(`Change this user to "${newRole}"?`)) return
+    if (!confirm(t('changeRoleConfirm').replace('{role}', roleLabel[newRole]))) return
     await submitRole(newRole)
   }
 
@@ -93,10 +105,10 @@ export default function RoleToggle({ userId, currentRole, fullName = '', state =
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(27,46,74,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
           <div style={{ background: '#fff', border: '1.5px solid #DDB840', borderRadius: 12, padding: '1.75rem', width: 380, maxWidth: '90vw' }}>
             <h3 style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.3rem', fontWeight: 700, color: '#1B2E4A', marginTop: 0, marginBottom: 4 }}>
-              Make Artisan
+              {t('makeArtisanHeading')}
             </h3>
             <p style={{ fontSize: '0.78rem', color: '#6B4820', marginBottom: '1rem' }}>
-              This creates their public artisan profile on /artisans.
+              {t('makeArtisanDescription')}
             </p>
             {formError && (
               <div style={{ background: '#FEE2E2', border: '1px solid #EF4444', borderRadius: 6, padding: '8px 12px', color: '#B91C1C', fontSize: '0.8rem', marginBottom: '0.75rem' }}>
@@ -106,47 +118,47 @@ export default function RoleToggle({ userId, currentRole, fullName = '', state =
             <form onSubmit={async e => {
               e.preventDefault()
               if (!artisanForm.name || !artisanForm.state || !artisanForm.craft) {
-                setFormError('Name, state and craft are required.')
+                setFormError(t('nameStateCraftRequired'))
                 return
               }
               setArtisanForm(null)
               await submitRole('artisan', artisanForm)
             }} style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
               <div>
-                <label style={labelStyle}>Full Name *</label>
+                <label style={labelStyle}>{t('fullNameLabel')}</label>
                 <input style={inputStyle} required value={artisanForm.name}
                   onChange={e => setArtisanForm(f => f && { ...f, name: e.target.value })} placeholder="Meera Devi" />
               </div>
               <div>
-                <label style={labelStyle}>State *</label>
+                <label style={labelStyle}>{t('stateRequiredLabel')}</label>
                 <select style={inputStyle} required value={artisanForm.state}
                   onChange={e => setArtisanForm(f => f && { ...f, state: e.target.value })}>
-                  <option value="">— Select State —</option>
+                  <option value="">{t('selectStatePlaceholder')}</option>
                   {INDIAN_STATES.map(st => <option key={st} value={st}>{st}</option>)}
                 </select>
               </div>
               <div>
-                <label style={labelStyle}>Craft / Skill *</label>
+                <label style={labelStyle}>{t('craftSkillLabel')}</label>
                 <input style={inputStyle} required value={artisanForm.craft}
                   onChange={e => setArtisanForm(f => f && { ...f, craft: e.target.value })} placeholder="Madhubani Painting" />
               </div>
               <div>
-                <label style={labelStyle}>GI Product</label>
+                <label style={labelStyle}>{t('giProductLabel')}</label>
                 <input style={inputStyle} value={artisanForm.gi_product}
-                  onChange={e => setArtisanForm(f => f && { ...f, gi_product: e.target.value })} placeholder="Optional" />
+                  onChange={e => setArtisanForm(f => f && { ...f, gi_product: e.target.value })} placeholder={tc('optional')} />
               </div>
               <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem' }}>
                 <button type="submit" style={{
                   background: '#E8380A', color: '#fff', padding: '10px 20px', border: 'none',
                   borderRadius: 6, fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer', flex: 1,
                 }}>
-                  Confirm →
+                  {t('confirmArrow')}
                 </button>
                 <button type="button" onClick={() => setArtisanForm(null)} style={{
                   background: 'none', color: '#6B4820', padding: '10px 16px',
                   border: '1.5px solid #DDB840', borderRadius: 6, fontWeight: 700, cursor: 'pointer',
                 }}>
-                  Cancel
+                  {tc('cancel')}
                 </button>
               </div>
             </form>

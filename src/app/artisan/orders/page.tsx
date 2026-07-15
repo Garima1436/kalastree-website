@@ -1,19 +1,26 @@
 import { createClient } from '@/lib/supabase-server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import ArtisanOrderActions from './ArtisanOrderActions'
+import { getServerLang } from '@/lib/i18n/server'
+import artisanDashboard from '@/lib/i18n/dictionaries/artisanDashboard'
+import common from '@/lib/i18n/dictionaries/common'
 
-const STATUS_STYLE: Record<string, { bg: string; color: string; label: string }> = {
-  pending:    { bg: '#FFF3CD', color: '#D4A000',  label: 'Pending' },
-  paid:       { bg: '#C8F5D8', color: '#1A7A32',  label: 'New Order' },
-  processing: { bg: '#E0EAFF', color: '#1B2E4A',  label: 'Accepted' },
-  shipped:    { bg: '#dbeafe', color: '#1d4ed8',  label: 'Shipped' },
-  delivered:  { bg: '#C8F5D8', color: '#1A7A32',  label: 'Delivered' },
-  cancelled:  { bg: '#FEE2E2', color: '#B91C1C',  label: 'Cancelled' },
+const STATUS_STYLE: Record<string, { bg: string; color: string; labelKey: keyof typeof artisanDashboard.en }> = {
+  pending:    { bg: '#FFF3CD', color: '#D4A000',  labelKey: 'statusPendingWord' },
+  paid:       { bg: '#C8F5D8', color: '#1A7A32',  labelKey: 'statusNewOrder' },
+  processing: { bg: '#E0EAFF', color: '#1B2E4A',  labelKey: 'statusAccepted' },
+  shipped:    { bg: '#dbeafe', color: '#1d4ed8',  labelKey: 'statusShipped' },
+  delivered:  { bg: '#C8F5D8', color: '#1A7A32',  labelKey: 'statusDelivered' },
+  cancelled:  { bg: '#FEE2E2', color: '#B91C1C',  labelKey: 'statusCancelled' },
 }
 
 export default async function ArtisanOrdersPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
+
+  const lang = await getServerLang()
+  const t = (k: keyof typeof artisanDashboard.en) => artisanDashboard[lang][k] ?? artisanDashboard.en[k]
+  const tc = (k: keyof typeof common.en) => common[lang][k] ?? common.en[k]
 
   // Get this artisan's product IDs
   const { data: myProducts } = await supabaseAdmin
@@ -23,10 +30,10 @@ export default async function ArtisanOrdersPage() {
   if (myProductIds.length === 0) {
     return (
       <div>
-        <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: '2rem', fontWeight: 700, color: '#1B2E4A', marginBottom: '2rem' }}>My Orders</h1>
+        <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: '2rem', fontWeight: 700, color: '#1B2E4A', marginBottom: '2rem' }}>{tc('myOrders')}</h1>
         <div style={{ background: '#fff', border: '1.5px solid #86EFAC', borderRadius: 10, padding: '4rem', textAlign: 'center', color: '#1A7A32' }}>
           <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📦</div>
-          <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.3rem' }}>No approved products yet — orders will appear here once your products go live.</p>
+          <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.3rem' }}>{t('noApprovedProductsYet')}</p>
         </div>
       </div>
     )
@@ -58,6 +65,7 @@ export default async function ArtisanOrdersPage() {
 
   const OrderCard = ({ order }: { order: any }) => {
     const sc = STATUS_STYLE[order.status] ?? STATUS_STYLE.pending
+    const scLabel = t(sc.labelKey)
     const items = itemsByOrder[order.id] ?? []
     return (
       <div style={{ background: '#fff', border: `1.5px solid ${order.status === 'paid' ? '#1A7A32' : '#86EFAC'}`, borderRadius: 10, padding: '1.5rem', marginBottom: '1rem' }}>
@@ -82,7 +90,7 @@ export default async function ArtisanOrdersPage() {
               ₹{Number(order.total).toLocaleString('en-IN')}
             </div>
             <span style={{ padding: '3px 12px', borderRadius: 20, fontSize: '0.7rem', fontWeight: 700, background: sc.bg, color: sc.color }}>
-              {sc.label}
+              {scLabel}
             </span>
           </div>
         </div>
@@ -104,20 +112,20 @@ export default async function ArtisanOrdersPage() {
   return (
     <div>
       <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: '2rem', fontWeight: 700, color: '#1B2E4A', marginBottom: '2rem' }}>
-        My Orders
+        {tc('myOrders')}
       </h1>
 
       {(orders ?? []).length === 0 ? (
         <div style={{ background: '#fff', border: '1.5px solid #86EFAC', borderRadius: 10, padding: '4rem', textAlign: 'center', color: '#1A7A32' }}>
           <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📦</div>
-          <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.3rem' }}>No orders yet for your products.</p>
+          <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.3rem' }}>{t('noOrdersYet')}</p>
         </div>
       ) : (
         <>
           {newOrders.length > 0 && (
             <div style={{ marginBottom: '2rem' }}>
               <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.3rem', color: '#1A7A32', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: 8 }}>
-                🔔 New Orders
+                🔔 {t('newOrdersHeading')}
                 <span style={{ background: '#1A7A32', color: '#fff', borderRadius: 20, padding: '2px 10px', fontSize: '0.7rem', fontWeight: 700 }}>{newOrders.length}</span>
               </h2>
               {newOrders.map((o: any) => <OrderCard key={o.id} order={o} />)}
@@ -127,7 +135,7 @@ export default async function ArtisanOrdersPage() {
           {activeOrders.length > 0 && (
             <div style={{ marginBottom: '2rem' }}>
               <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.3rem', color: '#1B2E4A', marginBottom: '1rem' }}>
-                🚚 In Progress
+                🚚 {t('inProgressHeading')}
               </h2>
               {activeOrders.map((o: any) => <OrderCard key={o.id} order={o} />)}
             </div>
@@ -136,7 +144,7 @@ export default async function ArtisanOrdersPage() {
           {pastOrders.length > 0 && (
             <div>
               <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.3rem', color: '#A07840', marginBottom: '1rem' }}>
-                📋 Past Orders
+                📋 {t('pastOrdersHeading')}
               </h2>
               {pastOrders.map((o: any) => <OrderCard key={o.id} order={o} />)}
             </div>

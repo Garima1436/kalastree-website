@@ -1,10 +1,13 @@
 'use client'
+import { useTranslation } from '@/lib/i18n/useTranslation'
 
 interface ComingSoonRibbonProps {
   text?: string
 }
 
-export default function ComingSoonRibbon({ text = 'Coming Soon' }: ComingSoonRibbonProps) {
+export default function ComingSoonRibbon({ text }: ComingSoonRibbonProps) {
+  const { t } = useTranslation('home')
+  const label = text ?? t('comingSoon')
   return (
     <>
       <style>{`
@@ -124,7 +127,7 @@ export default function ComingSoonRibbon({ text = 'Coming Soon' }: ComingSoonRib
               alignItems: 'center',
               gap: '1.2rem',
             }}>
-              ✦ &nbsp; {text} &nbsp; ✦
+              ✦ &nbsp; {label} &nbsp; ✦
             </span>
           </div>
 

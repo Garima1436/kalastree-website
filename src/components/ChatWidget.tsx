@@ -1,6 +1,8 @@
 'use client'
 import { useState, useRef, useEffect } from 'react'
 import ReactMarkdown from 'react-markdown'
+import { useLanguage } from '@/lib/i18n/LanguageContext'
+import chatbotDict from '@/lib/i18n/dictionaries/chatbot'
 
 interface Message {
   role: 'user' | 'ai'
@@ -8,14 +10,21 @@ interface Message {
   sources?: string[]
 }
 
-const SUGGESTED = [
-  'Which state has most GI products?',
-  'How does Pashmina empower women?',
-  'What is the FinTech adoption index?',
-  'Tell me about Madhubani painting',
-]
-
 export default function ChatWidget() {
+  // 'chatbot' namespace isn't added to the shared registry.ts yet (out of scope for
+  // this workstream), so we read the dictionary directly here using the same
+  // lang-with-fallback-to-en logic as useTranslation. Swap to
+  // `useTranslation('chatbot')` once registry.ts registers this namespace.
+  const { lang } = useLanguage()
+  const t = (key: keyof typeof chatbotDict.en): string => chatbotDict[lang]?.[key] ?? chatbotDict.en[key]
+
+  const SUGGESTED = [
+    t('suggestedQ1'),
+    t('suggestedQ2'),
+    t('suggestedQ3'),
+    t('suggestedQ4'),
+  ]
+
   const [open, setOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
@@ -25,7 +34,7 @@ export default function ChatWidget() {
 
   useEffect(() => {
     if (open && messages.length === 0) {
-      setMessages([{ role: 'ai', text: 'Namaste! 🌾 I\'m KalaStree AI, trained on GI research data. Ask me anything about Indian GI products, women artisans, or FinTech adoption.' }])
+      setMessages([{ role: 'ai', text: `Namaste! 🌾 ${t('greetingBody')}` }])
     }
     if (open) setTimeout(() => inputRef.current?.focus(), 100)
   }, [open])
@@ -51,9 +60,9 @@ export default function ChatWidget() {
         body: JSON.stringify({ question: q, history: historySnapshot }),
       })
       const data = await res.json()
-      setMessages(m => [...m, { role: 'ai', text: data.answer || 'No answer returned.', sources: data.sources }])
+      setMessages(m => [...m, { role: 'ai', text: data.answer || t('noAnswer'), sources: data.sources }])
     } catch {
-      setMessages(m => [...m, { role: 'ai', text: 'Unable to connect. Please try again.' }])
+      setMessages(m => [...m, { role: 'ai', text: t('connectErrorShort') }])
     }
     setLoading(false)
   }
@@ -77,7 +86,7 @@ export default function ChatWidget() {
             </div>
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#fff', fontFamily: "'Lato', sans-serif" }}>KalaStree AI</div>
-              <div style={{ fontSize: '0.68rem', color: '#4CAF50', fontWeight: 700, letterSpacing: '0.05em' }}>● GI Research Assistant</div>
+              <div style={{ fontSize: '0.68rem', color: '#4CAF50', fontWeight: 700, letterSpacing: '0.05em' }}>● {t('giResearchAssistant')}</div>
             </div>
             <button onClick={() => setOpen(false)}
               style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: 28, height: 28, borderRadius: '50%', cursor: 'pointer', fontSize: '0.9rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -99,7 +108,7 @@ export default function ChatWidget() {
                 </div>
                 {msg.sources && msg.sources.length > 0 && (
                   <div style={{ fontSize: '0.68rem', color: '#A07840', marginTop: 3, paddingLeft: 4 }}>
-                    <span style={{ color: '#D4A000', fontWeight: 700 }}>Sources:</span> {msg.sources.join(', ')}
+                    <span style={{ color: '#D4A000', fontWeight: 700 }}>{t('sourcesLabel')}</span> {msg.sources.join(', ')}
                   </div>
                 )}
               </div>
@@ -138,7 +147,7 @@ export default function ChatWidget() {
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }}
-                placeholder="Ask about GI products…"
+                placeholder={t('askPlaceholderShort')}
                 rows={1}
                 style={{
                   flex: 1, resize: 'none', border: '1.5px solid #DDB840', borderRadius: 10,
@@ -159,7 +168,7 @@ export default function ChatWidget() {
               </button>
             </div>
             <div style={{ fontSize: '0.65rem', color: '#C0A050', marginTop: 6, textAlign: 'center', fontFamily: "'Lato', sans-serif" }}>
-              Powered by Gemini 2.5 Flash · KalaStree PhD Research
+              {t('poweredByLabel')} Gemini 2.5 Flash · KalaStree PhD Research
             </div>
           </div>
         </div>
@@ -169,7 +178,7 @@ export default function ChatWidget() {
       <button
         className="chat-fab"
         onClick={() => setOpen(v => !v)}
-        aria-label="Open AI Chatbot"
+        aria-label={t('openChatbotAria')}
         style={{
           position: 'fixed', bottom: 24, right: 24, zIndex: 1000,
           width: 56, height: 56, borderRadius: '50%', border: 'none',

@@ -3,8 +3,11 @@ import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase-browser'
 import { useRouter } from 'next/navigation'
 import { INDIAN_STATES } from '@/lib/indian-states'
+import { useTranslation } from '@/lib/i18n/useTranslation'
 
 export default function ProfilePage() {
+  const { t } = useTranslation('shopping')
+  const { t: tc } = useTranslation('common')
   const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -50,7 +53,7 @@ export default function ProfilePage() {
 
   if (loading) return (
     <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--parchment)' }}>
-      <div style={{ color: '#6B4820', fontFamily: "'Lato', sans-serif" }}>Loading profile…</div>
+      <div style={{ color: '#6B4820', fontFamily: "'Lato', sans-serif" }}>{t('loadingProfile')}</div>
     </div>
   )
 
@@ -67,7 +70,7 @@ export default function ProfilePage() {
           </div>
           <div>
             <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.8rem', fontWeight: 700, color: '#1B2E4A', margin: 0 }}>
-              {form.full_name || 'Your Profile'}
+              {form.full_name || t('yourProfileFallback')}
             </h1>
             <p style={{ color: '#6B4820', fontSize: '0.9rem', margin: '4px 0 0' }}>{user?.email}</p>
           </div>
@@ -76,8 +79,8 @@ export default function ProfilePage() {
         {/* Quick links */}
         <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
           {[
-            { label: '📦 My Orders', href: '/account/orders' },
-            { label: '🛒 Continue Shopping', href: '/shop' },
+            { label: `📦 ${tc('myOrders')}`, href: '/account/orders' },
+            { label: `🛒 ${t('continueShopping')}`, href: '/shop' },
           ].map(({ label, href }) => (
             <a key={href} href={href} style={{ padding: '8px 18px', background: '#FFE8A8', border: '1.5px solid #DDB840', borderRadius: 6, fontSize: '0.85rem', fontWeight: 700, color: '#1B2E4A', textDecoration: 'none', fontFamily: "'Lato', sans-serif" }}>
               {label}
@@ -90,22 +93,22 @@ export default function ProfilePage() {
           {/* Personal Info */}
           <div style={{ padding: '1.5rem', borderBottom: '1px solid #EDD060' }}>
             <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.2rem', fontWeight: 700, color: '#1B2E4A', marginBottom: '1.25rem' }}>
-              Personal Information
+              {t('personalInformation')}
             </h2>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
               <div style={{ gridColumn: '1 / -1' }}>
-                <label style={labelStyle}>Full Name</label>
+                <label style={labelStyle}>{t('fullName')}</label>
                 <input value={form.full_name} onChange={e => setForm(f => ({ ...f, full_name: e.target.value }))}
                   placeholder="Ashish Prasad" style={inputStyle} />
               </div>
               <div style={{ gridColumn: '1 / -1' }}>
-                <label style={labelStyle}>Email Address</label>
+                <label style={labelStyle}>{t('emailAddressLabel')}</label>
                 <input value={user?.email} disabled
                   style={{ ...inputStyle, background: '#FFE8A8', color: '#A07840', cursor: 'not-allowed' }} />
-                <span style={{ fontSize: '0.72rem', color: '#A07840' }}>Email cannot be changed</span>
+                <span style={{ fontSize: '0.72rem', color: '#A07840' }}>{t('emailCannotBeChanged')}</span>
               </div>
               <div>
-                <label style={labelStyle}>Phone Number</label>
+                <label style={labelStyle}>{t('phoneNumberLabel')}</label>
                 <input value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
                   placeholder="+91 98765 43210" type="tel" style={inputStyle} />
               </div>
@@ -115,31 +118,31 @@ export default function ProfilePage() {
           {/* Shipping Address */}
           <div style={{ padding: '1.5rem' }}>
             <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.2rem', fontWeight: 700, color: '#1B2E4A', marginBottom: '0.25rem' }}>
-              Default Shipping Address
+              {t('defaultShippingAddress')}
             </h2>
             <p style={{ fontSize: '0.8rem', color: '#A07840', marginBottom: '1.25rem', fontFamily: "'Lato', sans-serif" }}>
-              Auto-filled at checkout
+              {t('autoFilledAtCheckout')}
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
               <div style={{ gridColumn: '1 / -1' }}>
-                <label style={labelStyle}>Address Line</label>
+                <label style={labelStyle}>{t('addressLineLabel')}</label>
                 <input value={form.address_line} onChange={e => setForm(f => ({ ...f, address_line: e.target.value }))}
-                  placeholder="House No., Street, Area" style={inputStyle} />
+                  placeholder={t('addressPlaceholder')} style={inputStyle} />
               </div>
               <div>
-                <label style={labelStyle}>City</label>
+                <label style={labelStyle}>{t('cityLabel')}</label>
                 <input value={form.city} onChange={e => setForm(f => ({ ...f, city: e.target.value }))}
                   placeholder="Patna" style={inputStyle} />
               </div>
               <div>
-                <label style={labelStyle}>State</label>
+                <label style={labelStyle}>{t('stateLabel')}</label>
                 <select value={form.state} onChange={e => setForm(f => ({ ...f, state: e.target.value }))} style={inputStyle}>
-                  <option value="">Select State</option>
+                  <option value="">{t('selectStateOption')}</option>
                   {INDIAN_STATES.map(s => <option key={s} value={s}>{s}</option>)}
                 </select>
               </div>
               <div>
-                <label style={labelStyle}>Pincode</label>
+                <label style={labelStyle}>{t('pincodeLabel')}</label>
                 <input value={form.pincode} onChange={e => setForm(f => ({ ...f, pincode: e.target.value }))}
                   placeholder="800001" maxLength={6} style={inputStyle} />
               </div>
@@ -150,11 +153,11 @@ export default function ProfilePage() {
           <div style={{ padding: '1.25rem 1.5rem', background: '#FFF5E0', borderTop: '1px solid #EDD060', display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <button type="submit" disabled={saving}
               style={{ background: saving ? '#A07840' : '#E8380A', color: '#fff', padding: '11px 28px', border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '0.95rem', cursor: saving ? 'not-allowed' : 'pointer', fontFamily: "'Lato', sans-serif", transition: 'background 0.2s' }}>
-              {saving ? 'Saving…' : 'Save Changes'}
+              {saving ? t('savingLabel') : t('saveChanges')}
             </button>
             {saved && (
               <span style={{ color: '#1A7A32', fontWeight: 700, fontSize: '0.9rem', fontFamily: "'Lato', sans-serif" }}>
-                ✓ Profile updated successfully
+                ✓ {t('profileUpdatedSuccess')}
               </span>
             )}
           </div>

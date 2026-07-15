@@ -1,9 +1,14 @@
 import { createClient } from '@/lib/supabase-server'
 import Link from 'next/link'
+import { getServerLang } from '@/lib/i18n/server'
+import artisanDashboard from '@/lib/i18n/dictionaries/artisanDashboard'
 
 export default async function ArtisanDashboard() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
+
+  const lang = await getServerLang()
+  const t = (k: keyof typeof artisanDashboard.en) => artisanDashboard[lang][k] ?? artisanDashboard.en[k]
 
   const { data: artisan } = await supabase.from('artisans').select('id, name').eq('user_id', user!.id).single()
 
@@ -20,10 +25,10 @@ export default async function ArtisanDashboard() {
   ])
 
   const stats = [
-    { label: 'Total Products', value: total ?? 0, color: '#1B2E4A', href: '/artisan/products' },
-    { label: 'Pending Approval', value: pending ?? 0, color: '#D4A000', href: '/artisan/products' },
-    { label: 'Live / Approved', value: approved ?? 0, color: '#1A7A32', href: '/artisan/products' },
-    { label: 'Rejected', value: rejected ?? 0, color: '#E8380A', href: '/artisan/products' },
+    { label: t('statTotalProducts'), value: total ?? 0, color: '#1B2E4A', href: '/artisan/products' },
+    { label: t('statPendingApproval'), value: pending ?? 0, color: '#D4A000', href: '/artisan/products' },
+    { label: t('statLiveApproved'), value: approved ?? 0, color: '#1A7A32', href: '/artisan/products' },
+    { label: t('statRejected'), value: rejected ?? 0, color: '#E8380A', href: '/artisan/products' },
   ]
 
   return (
@@ -31,12 +36,12 @@ export default async function ArtisanDashboard() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <div>
           <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: '2rem', fontWeight: 700, color: '#1B2E4A', margin: 0 }}>
-            Welcome{artisan?.name ? `, ${artisan.name.split(' ')[0]}` : ''}!
+            {t('welcome')}{artisan?.name ? `, ${artisan.name.split(' ')[0]}` : ''}!
           </h1>
-          <p style={{ color: '#1A7A32', fontSize: '0.85rem', marginTop: 4 }}>Artisan Portal — KalaStree</p>
+          <p style={{ color: '#1A7A32', fontSize: '0.85rem', marginTop: 4 }}>{t('portalTagline')}</p>
         </div>
         <Link href="/artisan/products/new" style={{ background: '#1A7A32', color: '#fff', padding: '10px 20px', borderRadius: 6, fontWeight: 700, fontSize: '0.88rem', textDecoration: 'none' }}>
-          + Add Product
+          + {t('addProduct')}
         </Link>
       </div>
 
@@ -53,19 +58,19 @@ export default async function ArtisanDashboard() {
 
       {!artisan && (
         <div style={{ background: '#FFF3CD', border: '1px solid #D4A000', borderRadius: 8, padding: '1rem 1.25rem', color: '#7A5800', fontSize: '0.88rem' }}>
-          ⚠️ Your account is not yet linked to an artisan profile. Please ask the admin to link your account to an artisan record.
+          ⚠️ {t('notLinkedWarning')}
         </div>
       )}
 
       <div style={{ background: '#FFFFFF', border: '1.5px solid #86EFAC', borderRadius: 10, padding: '1.5rem' }}>
         <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.3rem', fontWeight: 600, color: '#1B2E4A', marginBottom: '0.75rem' }}>
-          How it works
+          {t('howItWorks')}
         </h2>
         <ol style={{ color: '#1A7A32', lineHeight: 2, paddingLeft: '1.25rem', margin: 0, fontSize: '0.9rem' }}>
-          <li>Add your product with photos, description, price and stock</li>
-          <li>Your product goes to the admin for review (<strong>Pending</strong>)</li>
-          <li>Once approved it goes <strong>Live</strong> on the KalaStree shop</li>
-          <li>You receive payment directly when a customer buys</li>
+          <li>{t('step1')}</li>
+          <li>{t('step2Pre')} (<strong>{t('step2Strong')}</strong>)</li>
+          <li>{t('step3Pre')} <strong>{t('step3Strong')}</strong> {t('step3Post')}</li>
+          <li>{t('step4')}</li>
         </ol>
       </div>
     </div>

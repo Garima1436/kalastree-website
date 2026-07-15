@@ -3,6 +3,7 @@ import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase-browser'
 import { INDIAN_STATES } from '@/lib/indian-states'
+import { useTranslation } from '@/lib/i18n/useTranslation'
 
 const autoSlug = (name: string) =>
   name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
@@ -18,12 +19,14 @@ export default function ArtisanForm({ initialData, mode = 'new' }: Props) {
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const { t } = useTranslation('adminArtisans')
+  const { t: tc } = useTranslation('common')
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-    if (!file.type.startsWith('image/')) { setError('Please select an image file'); return }
-    if (file.size > 5 * 1024 * 1024) { setError('Image must be under 5MB'); return }
+    if (!file.type.startsWith('image/')) { setError(t('selectImageError')); return }
+    if (file.size > 5 * 1024 * 1024) { setError(t('imageSizeError')); return }
 
     setUploading(true)
     setError('')
@@ -34,7 +37,7 @@ export default function ArtisanForm({ initialData, mode = 'new' }: Props) {
       .from('artisans').upload(fileName, file, { contentType: file.type, upsert: true })
 
     if (uploadError) {
-      setError(`Upload failed: ${uploadError.message}`)
+      setError(t('uploadFailedPrefix') + uploadError.message)
     } else {
       const { data: { publicUrl } } = supabase.storage.from('artisans').getPublicUrl(fileName)
       set('photo_url', publicUrl)
@@ -78,7 +81,7 @@ export default function ArtisanForm({ initialData, mode = 'new' }: Props) {
       body: JSON.stringify(mode === 'edit' && initialData?.id ? { id: initialData.id, ...payload } : payload),
     })
     const result = await res.json()
-    if (!res.ok) { setError(result.error ?? 'Failed to save'); setLoading(false) }
+    if (!res.ok) { setError(result.error ?? t('saveFailedDefault')); setLoading(false) }
     else { router.push('/admin/artisans'); router.refresh() }
   }
 
@@ -95,10 +98,10 @@ export default function ArtisanForm({ initialData, mode = 'new' }: Props) {
     <div>
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
         <button onClick={() => router.push('/admin/artisans')} style={{ background: 'none', border: 'none', color: '#6B4820', cursor: 'pointer', fontSize: '0.88rem' }}>
-          ← Artisans
+          {t('backToArtisans')}
         </button>
         <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: '2rem', fontWeight: 700, color: '#1B2E4A' }}>
-          {mode === 'edit' ? 'Edit Artisan' : 'Add New Artisan'}
+          {mode === 'edit' ? t('editHeading') : t('addHeading')}
         </h1>
       </div>
 
@@ -112,40 +115,40 @@ export default function ArtisanForm({ initialData, mode = 'new' }: Props) {
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             <div>
-              <label style={labelStyle}>Full Name *</label>
+              <label style={labelStyle}>{t('fullNameLabel')}</label>
               <input style={inputStyle} required value={form.name}
                 onChange={e => { set('name', e.target.value); if (!initialData) set('slug', autoSlug(e.target.value)) }}
                 placeholder="Meera Devi" />
             </div>
             <div>
-              <label style={labelStyle}>URL Slug</label>
-              <input style={inputStyle} value={form.slug} onChange={e => set('slug', e.target.value)} placeholder="auto-generated" />
+              <label style={labelStyle}>{t('urlSlugLabel')}</label>
+              <input style={inputStyle} value={form.slug} onChange={e => set('slug', e.target.value)} placeholder={t('slugPlaceholder')} />
             </div>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             <div>
-              <label style={labelStyle}>State *</label>
+              <label style={labelStyle}>{t('stateLabel')}</label>
               <select style={inputStyle} required value={form.state} onChange={e => set('state', e.target.value)}>
-                <option value="">— Select State —</option>
+                <option value="">{t('selectStatePlaceholder')}</option>
                 {INDIAN_STATES.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
             <div>
-              <label style={labelStyle}>Craft / Skill *</label>
+              <label style={labelStyle}>{t('craftLabel')}</label>
               <input style={inputStyle} required value={form.craft} onChange={e => set('craft', e.target.value)}
                 placeholder="Madhubani Painting" />
             </div>
           </div>
 
           <div>
-            <label style={labelStyle}>GI Product</label>
+            <label style={labelStyle}>{t('giProductLabel')}</label>
             <input style={inputStyle} value={form.gi_product} onChange={e => set('gi_product', e.target.value)}
               placeholder="Bihar Madhubani Paintings — GI Tag 2007" />
           </div>
 
           <div>
-            <label style={labelStyle}>Photo</label>
+            <label style={labelStyle}>{t('photoLabel')}</label>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               {/* Preview */}
               <div style={{ width: 72, height: 72, borderRadius: '50%', background: '#FFE8A8', border: '2px solid #DDB840', overflow: 'hidden', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -159,46 +162,46 @@ export default function ArtisanForm({ initialData, mode = 'new' }: Props) {
                   style={{ display: 'none' }} />
                 <button type="button" onClick={() => fileInputRef.current?.click()} disabled={uploading}
                   style={{ background: uploading ? '#A07840' : '#1B2E4A', color: '#fff', padding: '9px 20px', border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '0.85rem', cursor: uploading ? 'not-allowed' : 'pointer', marginBottom: 8 }}>
-                  {uploading ? 'Uploading…' : '📷 Upload from Computer'}
+                  {uploading ? t('uploading') : t('uploadFromComputer')}
                 </button>
-                <div style={{ fontSize: '0.75rem', color: '#A07840' }}>JPG, PNG, WebP · Max 5MB · Auto-saves to Supabase Storage</div>
+                <div style={{ fontSize: '0.75rem', color: '#A07840' }}>{t('photoHelp')}</div>
                 {/* Or paste URL */}
                 <input style={{ ...inputStyle, marginTop: 8, fontSize: '0.8rem' }} value={form.photo_url}
-                  onChange={e => set('photo_url', e.target.value)} placeholder="Or paste image URL directly" />
+                  onChange={e => set('photo_url', e.target.value)} placeholder={t('pasteImageUrlPlaceholder')} />
               </div>
             </div>
           </div>
 
           <div>
-            <label style={labelStyle}>Short Bio</label>
+            <label style={labelStyle}>{t('shortBioLabel')}</label>
             <textarea style={{ ...inputStyle, minHeight: 80, resize: 'vertical' } as any} value={form.bio}
               onChange={e => set('bio', e.target.value)}
-              placeholder="A brief introduction about the artisan…" />
+              placeholder={t('bioPlaceholder')} />
             <p style={{ fontSize: '0.72rem', color: '#A07840', marginTop: 4 }}>
-              Supports **bold**, *italic*, ## headings, and - bullet lists. Each line break shows as a new line.
+              {t('markdownHelp')}
             </p>
           </div>
 
           <div>
-            <label style={labelStyle}>Story</label>
+            <label style={labelStyle}>{t('storyLabel')}</label>
             <textarea style={{ ...inputStyle, minHeight: 120, resize: 'vertical' } as any} value={form.story}
               onChange={e => set('story', e.target.value)}
-              placeholder="Their journey, struggles, and craft tradition…" />
+              placeholder={t('storyPlaceholder')} />
             <p style={{ fontSize: '0.72rem', color: '#A07840', marginTop: 4 }}>
-              Supports **bold**, *italic*, ## headings, and - bullet lists. Each line break shows as a new line.
+              {t('markdownHelp')}
             </p>
           </div>
 
           <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', fontSize: '0.9rem', color: '#1B2E4A', fontWeight: 600 }}>
             <input type="checkbox" checked={form.is_verified} onChange={e => set('is_verified', e.target.checked)}
               style={{ width: 17, height: 17, accentColor: '#1A7A32' }} />
-            Mark as GI Verified Artisan <span style={{ fontSize: '0.75rem', color: '#6B4820', fontWeight: 400 }}>(shows ⭐ GI badge on profile)</span>
+            {t('markGiVerifiedLabel')} <span style={{ fontSize: '0.75rem', color: '#6B4820', fontWeight: 400 }}>{t('markGiVerifiedHint')}</span>
           </label>
 
           <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', fontSize: '0.9rem', color: '#1B2E4A', fontWeight: 600 }}>
             <input type="checkbox" checked={form.is_featured} onChange={e => set('is_featured', e.target.checked)}
               style={{ width: 17, height: 17, accentColor: '#3730A3' }} />
-            Feature this Artisan on Homepage <span style={{ fontSize: '0.75rem', color: '#6B4820', fontWeight: 400 }}>(shows in homepage artisans section)</span>
+            {t('featureHomepageLabel')} <span style={{ fontSize: '0.75rem', color: '#6B4820', fontWeight: 400 }}>{t('featureHomepageHint')}</span>
           </label>
 
           <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
@@ -207,13 +210,13 @@ export default function ArtisanForm({ initialData, mode = 'new' }: Props) {
               border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '0.95rem',
               cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1,
             }}>
-              {loading ? 'Saving…' : mode === 'edit' ? 'Save Changes →' : 'Add Artisan →'}
+              {loading ? t('saving') : mode === 'edit' ? t('saveChanges') : t('addArtisanSubmit')}
             </button>
             <button type="button" onClick={() => router.push('/admin/artisans')} style={{
               background: 'none', color: '#6B4820', padding: '12px 20px',
               border: '1.5px solid #DDB840', borderRadius: 6, fontWeight: 700, cursor: 'pointer',
             }}>
-              Cancel
+              {tc('cancel')}
             </button>
           </div>
         </form>

@@ -1,8 +1,10 @@
 'use client'
 import Link from 'next/link'
 import type { Artisan } from '@/lib/types'
+import { useTranslation } from '@/lib/i18n/useTranslation'
 
 export default function ArtisanCard({ artisan }: { artisan: Artisan }) {
+  const { t } = useTranslation('artisansPage')
   return (
     <Link href={`/artisans/${artisan.slug}`} style={{ textDecoration: 'none' }}>
       <div style={{
@@ -51,7 +53,7 @@ export default function ArtisanCard({ artisan }: { artisan: Artisan }) {
 
         <div style={{ minHeight: 26, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           {artisan.is_verified && (
-            <span className="verified-badge">✓ GI Verified</span>
+            <span className="verified-badge">✓ {t('giVerifiedBadge')}</span>
           )}
         </div>
         <div style={{

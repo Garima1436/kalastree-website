@@ -1,10 +1,13 @@
 import { createClient } from '@/lib/supabase-server'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { getServerLang, getT } from '@/lib/i18n/server'
 
 export default async function OrderConfirmationPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const supabase = await createClient()
+  const lang = await getServerLang()
+  const t = getT('shopping', lang)
 
   const { data: order } = await supabase
     .from('orders')
@@ -20,16 +23,16 @@ export default async function OrderConfirmationPage({ params }: { params: Promis
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>✅</div>
           <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: '2.2rem', fontWeight: 700, color: '#1A7A32', marginBottom: '0.5rem' }}>
-            Order Confirmed!
+            {t('orderConfirmed')}
           </h1>
           <p style={{ color: '#6B4820', fontSize: '1rem', lineHeight: 1.7 }}>
-            Thank you, <strong>{order.user_name}</strong>. Your order is placed and will be carefully packed and shipped by the artisan.
+            {t('thankYouPrefix')} <strong>{order.user_name}</strong>. {t('orderPlacedMessage')}
           </p>
         </div>
 
         <div style={{ background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 12, padding: '2rem', marginBottom: '1.5rem' }}>
           <div style={{ fontFamily: 'monospace', fontSize: '0.78rem', color: '#6B4820', marginBottom: '1.25rem', padding: '8px 12px', background: '#FFE8A8', borderRadius: 6, display: 'inline-block' }}>
-            Order #{order.order_number ?? order.id.slice(0, 8).toUpperCase()}
+            {t('orderNumberLabel')}{order.order_number ?? order.id.slice(0, 8).toUpperCase()}
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: '1.25rem' }}>
@@ -42,27 +45,27 @@ export default async function OrderConfirmationPage({ params }: { params: Promis
           </div>
 
           <div style={{ borderTop: '1.5px solid #DDB840', paddingTop: '1rem', display: 'flex', justifyContent: 'space-between', fontFamily: "'EB Garamond', serif", fontSize: '1.4rem', fontWeight: 700, marginBottom: '1rem' }}>
-            <span>Total Paid</span>
+            <span>{t('totalPaid')}</span>
             <span style={{ color: '#E8380A' }}>₹{Number(order.total).toLocaleString('en-IN')}</span>
           </div>
 
           {order.address_line && (
             <div style={{ padding: '1rem', background: '#C8F5D8', borderRadius: 8, fontSize: '0.82rem', color: '#1A7A32', lineHeight: 1.7 }}>
-              📦 Shipping to: <strong>{order.address_line}, {order.city}, {order.state} – {order.pincode}</strong>
+              📦 {t('shippingTo')} <strong>{order.address_line}, {order.city}, {order.state} – {order.pincode}</strong>
             </div>
           )}
         </div>
 
         <div style={{ background: '#FFF3A8', border: '1px solid #D4A000', borderRadius: 8, padding: '1rem', marginBottom: '2rem', fontSize: '0.85rem', color: '#6B4820', lineHeight: 1.7 }}>
-          🌾 A confirmation email has been sent to <strong>{order.user_email}</strong>. Direct payment goes to the artisan — no middlemen.
+          🌾 {t('confirmationEmailPrefix')} <strong>{order.user_email}</strong>. {t('confirmationEmailSuffix')}
         </div>
 
         <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
           <Link href="/account/orders" style={{ background: '#1B2E4A', color: '#fff', padding: '12px 24px', borderRadius: 6, fontWeight: 700, textDecoration: 'none', fontSize: '0.9rem' }}>
-            Track My Orders
+            {t('trackMyOrders')}
           </Link>
           <Link href="/shop" style={{ background: 'transparent', color: '#E8380A', padding: '12px 24px', borderRadius: 6, fontWeight: 700, textDecoration: 'none', fontSize: '0.9rem', border: '2px solid #E8380A' }}>
-            Continue Shopping
+            {t('continueShopping')}
           </Link>
         </div>
       </div>

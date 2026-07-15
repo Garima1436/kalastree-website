@@ -3,8 +3,11 @@ import { useState, Suspense } from 'react'
 import { createClient } from '@/lib/supabase-browser'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { useTranslation } from '@/lib/i18n/useTranslation'
 
 function SignupForm() {
+  const { t } = useTranslation('auth')
+  const { t: tc } = useTranslation('common')
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -47,9 +50,9 @@ function SignupForm() {
       <div style={{ width: '100%', maxWidth: 440, background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 12, padding: '2.5rem' }}>
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: '2rem', fontWeight: 700, color: '#1B2E4A', marginBottom: '0.4rem' }}>
-            Create Account
+            {t('createAccount')}
           </h1>
-          <p style={{ color: '#6B4820', fontSize: '0.9rem' }}>Join KalaStree and support women artisans</p>
+          <p style={{ color: '#6B4820', fontSize: '0.9rem' }}>{t('joinSubtitle')}</p>
         </div>
 
         <form onSubmit={handleSignup} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -59,33 +62,33 @@ function SignupForm() {
             </div>
           )}
           <div>
-            <label style={labelStyle}>Full Name</label>
+            <label style={labelStyle}>{t('fullNameLabel')}</label>
             <input type="text" value={name} onChange={e => setName(e.target.value)}
-              required style={inputStyle} placeholder="Priya Sharma" />
+              required style={inputStyle} placeholder={t('placeholderFullName')} />
           </div>
           <div>
-            <label style={labelStyle}>Email</label>
+            <label style={labelStyle}>{tc('email')}</label>
             <input type="email" value={email} onChange={e => setEmail(e.target.value)}
-              required style={inputStyle} placeholder="you@email.com" />
+              required style={inputStyle} placeholder={t('placeholderEmail')} />
           </div>
           <div>
-            <label style={labelStyle}>Password</label>
+            <label style={labelStyle}>{tc('password')}</label>
             <input type="password" value={password} onChange={e => setPassword(e.target.value)}
-              required minLength={6} style={inputStyle} placeholder="Min 6 characters" />
+              required minLength={6} style={inputStyle} placeholder={t('placeholderMinPassword6')} />
           </div>
           <button type="submit" disabled={loading} style={{
             width: '100%', background: '#E8380A', color: '#fff', padding: '13px',
             border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '1rem',
             cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1, marginTop: '0.5rem',
           }}>
-            {loading ? 'Creating account…' : 'Create Account →'}
+            {loading ? t('creatingAccount') : t('createAccountButton')}
           </button>
         </form>
 
         <p style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.9rem', color: '#6B4820' }}>
-          Already have an account?{' '}
+          {t('alreadyHaveAccount')}{' '}
           <Link href={`/login?redirect=${encodeURIComponent(redirect)}`} style={{ color: '#E8380A', fontWeight: 700, textDecoration: 'none' }}>
-            Sign in
+            {t('signInLink')}
           </Link>
         </p>
       </div>

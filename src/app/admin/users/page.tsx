@@ -1,7 +1,21 @@
 import { createClient } from '@/lib/supabase-server'
 import RoleToggle from './RoleToggle'
+import { getServerLang } from '@/lib/i18n/server'
+import { Lang } from '@/lib/i18n/constants'
+import dict from '@/lib/i18n/dictionaries/adminUsers'
+import commonDict from '@/lib/i18n/dictionaries/common'
+
+function getT(lang: Lang) {
+  return (key: keyof typeof dict.en): string => dict[lang]?.[key] ?? dict.en[key]
+}
+function getCommonT(lang: Lang) {
+  return (key: keyof typeof commonDict.en): string => commonDict[lang]?.[key] ?? commonDict.en[key]
+}
 
 export default async function AdminUsersPage() {
+  const lang = await getServerLang()
+  const t = getT(lang)
+  const tc = getCommonT(lang)
   const supabase = await createClient()
   const { data: profiles } = await supabase
     .from('profiles')
@@ -18,10 +32,10 @@ export default async function AdminUsersPage() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <div>
           <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: '2rem', fontWeight: 700, color: '#1B2E4A', margin: 0 }}>
-            Users
+            {t('pageTitle')}
           </h1>
           <p style={{ color: '#6B4820', fontSize: '0.85rem', marginTop: 4 }}>
-            {total} total &nbsp;·&nbsp; {admins} admin{admins !== 1 ? 's' : ''} &nbsp;·&nbsp; {artisans} artisan{artisans !== 1 ? 's' : ''} &nbsp;·&nbsp; {users} customer{users !== 1 ? 's' : ''}
+            {total} {t('totalWord')} &nbsp;·&nbsp; {admins} {admins !== 1 ? t('adminPlural') : t('adminSingular')} &nbsp;·&nbsp; {artisans} {artisans !== 1 ? t('artisanPlural') : t('artisanSingular')} &nbsp;·&nbsp; {users} {users !== 1 ? t('customerPlural') : t('customerSingular')}
           </p>
         </div>
       </div>
@@ -31,7 +45,7 @@ export default async function AdminUsersPage() {
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem', minWidth: 750 }}>
             <thead style={{ background: '#FFE8A8' }}>
               <tr>
-                {['User', 'Email', 'Phone', 'Location', 'Role', 'Joined', 'Actions'].map(h => (
+                {[t('thUser'), tc('email'), tc('phone'), t('thLocation'), t('thRole'), t('thJoined'), tc('actions')].map(h => (
                   <th key={h} style={{ padding: '10px 16px', textAlign: 'left', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6B4820', fontSize: '0.7rem', whiteSpace: 'nowrap' }}>
                     {h}
                   </th>
@@ -81,7 +95,7 @@ export default async function AdminUsersPage() {
                         color: isAdmin ? '#D4A000' : isArtisan ? '#1A7A32' : '#6B4820',
                         border: isAdmin ? '1px solid #D4A00040' : isArtisan ? '1px solid #1A7A3240' : '1px solid #DDB840',
                       }}>
-                        {isAdmin ? '⚙️ Admin' : isArtisan ? '🎨 Artisan' : '👤 User'}
+                        {isAdmin ? `⚙️ ${t('roleAdminLabel')}` : isArtisan ? `🎨 ${t('roleArtisanLabel')}` : `👤 ${t('roleUserLabel')}`}
                       </span>
                     </td>
 
@@ -107,7 +121,7 @@ export default async function AdminUsersPage() {
         ) : (
           <div style={{ padding: '4rem', textAlign: 'center', color: '#6B4820' }}>
             <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>👥</div>
-            <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.3rem' }}>No users yet.</p>
+            <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.3rem' }}>{t('noUsersYet')}</p>
           </div>
         )}
       </div>

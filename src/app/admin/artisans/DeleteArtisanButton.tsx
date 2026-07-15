@@ -1,11 +1,14 @@
 'use client'
 import { useRouter } from 'next/navigation'
+import { useTranslation } from '@/lib/i18n/useTranslation'
 
 export default function DeleteArtisanButton({ id, name }: { id: string; name: string }) {
   const router = useRouter()
+  const { t } = useTranslation('adminArtisans')
+  const { t: tc } = useTranslation('common')
 
   const handleDelete = async () => {
-    if (!confirm(`Delete "${name}"? This will also unlink their products.`)) return
+    if (!confirm(t('confirmDeleteArtisan').replace('{name}', name))) return
     await fetch('/api/admin/artisans', {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
@@ -20,7 +23,7 @@ export default function DeleteArtisanButton({ id, name }: { id: string; name: st
       border: '1px solid #EF4444', background: 'none',
       padding: '4px 10px', borderRadius: 4, cursor: 'pointer',
     }}>
-      Delete
+      {tc('delete')}
     </button>
   )
 }

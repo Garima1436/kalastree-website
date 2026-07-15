@@ -1,11 +1,15 @@
 'use client'
 import { useState } from 'react'
+import { useLanguage } from '@/lib/i18n/LanguageContext'
+import delivery from '@/lib/i18n/dictionaries/delivery'
 
 export default function DeliveryVerifyPage() {
   const [shortId, setShortId] = useState('')
   const [otp, setOtp] = useState('')
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<{ success?: boolean; error?: string } | null>(null)
+  const { lang } = useLanguage()
+  const t = (k: keyof typeof delivery.en) => delivery[lang][k] ?? delivery.en[k]
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -30,33 +34,33 @@ export default function DeliveryVerifyPage() {
             Kala<em style={{ color: '#D4A000' }}>Stree</em>
           </h1>
           <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem', letterSpacing: '2px', textTransform: 'uppercase' }}>
-            Delivery Verification Portal
+            {t('portalSubtitle')}
           </p>
         </div>
 
         <div style={{ background: '#fff', borderRadius: 14, padding: '2rem', boxShadow: '0 20px 60px rgba(0,0,0,0.3)' }}>
           <h2 style={{ fontFamily: 'Georgia, serif', fontSize: '1.4rem', color: '#1B2E4A', marginBottom: '0.4rem' }}>
-            Confirm Delivery
+            {t('confirmDeliveryHeading')}
           </h2>
           <p style={{ fontSize: '0.82rem', color: '#6B4820', marginBottom: '1.5rem', lineHeight: 1.6 }}>
-            Ask the customer for their 4-digit OTP and enter it below along with the Order ID shown on the package.
+            {t('instructions')}
           </p>
 
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <div>
               <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6B4820', marginBottom: 6 }}>
-                Order ID (first 8 characters)
+                {t('labelOrderId')}
               </label>
               <input
                 value={shortId}
                 onChange={e => setShortId(e.target.value.toUpperCase())}
-                required maxLength={8} placeholder="e.g. A1B2C3D4"
+                required maxLength={8} placeholder={t('placeholderOrderId')}
                 style={{ width: '100%', padding: '11px 14px', border: '1.5px solid #DDB840', borderRadius: 6, fontSize: '1rem', fontFamily: 'monospace', letterSpacing: '2px', background: '#FFF8EE', boxSizing: 'border-box', textTransform: 'uppercase' }}
               />
             </div>
             <div>
               <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6B4820', marginBottom: 6 }}>
-                Customer OTP
+                {t('labelOtp')}
               </label>
               <input
                 value={otp}
@@ -73,7 +77,7 @@ export default function DeliveryVerifyPage() {
                 color: result.success ? '#1A7A32' : '#B91C1C',
                 border: `1px solid ${result.success ? '#86EFAC' : '#FCA5A5'}`,
               }}>
-                {result.success ? '✓ Delivery confirmed successfully! Order marked as delivered.' : `✗ ${result.error}`}
+                {result.success ? `✓ ${t('successMessage')}` : `✗ ${result.error}`}
               </div>
             )}
 
@@ -82,13 +86,13 @@ export default function DeliveryVerifyPage() {
               fontWeight: 700, fontSize: '1rem', cursor: loading ? 'not-allowed' : 'pointer',
               opacity: (loading || otp.length < 4 || shortId.length < 8) ? 0.5 : 1, marginTop: '0.5rem',
             }}>
-              {loading ? 'Verifying…' : 'Confirm Delivery →'}
+              {loading ? t('verifyingBtn') : t('confirmDeliveryBtn')}
             </button>
           </form>
         </div>
 
         <p style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.75rem', color: 'rgba(255,255,255,0.3)' }}>
-          Only for authorized delivery partners · KalaStree
+          {t('footerNote')}
         </p>
       </div>
     </div>

@@ -2,10 +2,13 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase-browser'
 import Link from 'next/link'
+import { useTranslation } from '@/lib/i18n/useTranslation'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 export default function ForgotPasswordPage() {
+  const { t } = useTranslation('auth')
+  const { t: tc } = useTranslation('common')
   const [email, setEmail] = useState('')
   const [fieldError, setFieldError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -16,8 +19,8 @@ export default function ForgotPasswordPage() {
     setFieldError('')
 
     const trimmed = email.trim()
-    if (!trimmed) { setFieldError('Email is required'); return }
-    if (!EMAIL_RE.test(trimmed)) { setFieldError('Enter a valid email address'); return }
+    if (!trimmed) { setFieldError(t('emailRequired')); return }
+    if (!EMAIL_RE.test(trimmed)) { setFieldError(t('emailInvalid')); return }
 
     setLoading(true)
     const supabase = createClient()
@@ -48,24 +51,24 @@ export default function ForgotPasswordPage() {
       <div style={{ width: '100%', maxWidth: 440, background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 12, padding: '2.5rem' }}>
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: '2rem', fontWeight: 700, color: '#1B2E4A', marginBottom: '0.4rem' }}>
-            Reset Password
+            {t('resetPasswordHeading')}
           </h1>
           <p style={{ color: '#6B4820', fontSize: '0.9rem' }}>
-            {sent ? "We've sent a reset link if that email has an account." : "Enter your email and we'll send you a reset link."}
+            {sent ? t('resetSentMessage') : t('resetInstructions')}
           </p>
         </div>
 
         {sent ? (
           <div style={{ background: '#DCFCE7', border: '1px solid #16A34A', borderRadius: 6, padding: '14px 16px', color: '#166534', fontSize: '0.88rem', textAlign: 'center' }}>
-            ✓ Check your inbox for a link to reset your password.
+            {t('checkInboxMessage')}
           </div>
         ) : (
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }} noValidate>
             <div>
-              <label style={labelStyle}>Email</label>
+              <label style={labelStyle}>{tc('email')}</label>
               <input type="email" value={email} disabled={loading}
                 onChange={e => { setEmail(e.target.value); if (fieldError) setFieldError('') }}
-                style={fieldError ? inputErrorStyle : inputStyle} placeholder="you@email.com" />
+                style={fieldError ? inputErrorStyle : inputStyle} placeholder={t('placeholderEmail')} />
               {fieldError && <p style={{ color: '#B91C1C', fontSize: '0.78rem', marginTop: 4 }}>{fieldError}</p>}
             </div>
             <button type="submit" disabled={loading} style={{
@@ -73,14 +76,14 @@ export default function ForgotPasswordPage() {
               border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '1rem',
               cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1, marginTop: '0.5rem',
             }}>
-              {loading ? 'Sending…' : 'Send Reset Link →'}
+              {loading ? t('sending') : t('sendResetLinkButton')}
             </button>
           </form>
         )}
 
         <p style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.9rem', color: '#6B4820' }}>
           <Link href="/login" style={{ color: '#E8380A', fontWeight: 700, textDecoration: 'none' }}>
-            ← Back to sign in
+            {t('backToSignIn')}
           </Link>
         </p>
       </div>

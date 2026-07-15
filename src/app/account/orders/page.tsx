@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase-server'
 import Link from 'next/link'
+import { getServerLang, getT } from '@/lib/i18n/server'
 
 const STATUS_COLOR: Record<string, { bg: string; color: string }> = {
   pending:    { bg: '#FFF3A8', color: '#D4A000' },
@@ -12,7 +13,19 @@ const STATUS_COLOR: Record<string, { bg: string; color: string }> = {
 
 const STATUS_STEPS = ['pending', 'paid', 'processing', 'shipped', 'delivered']
 
+const STATUS_LABEL_KEY = {
+  pending: 'statusPending',
+  paid: 'statusPaid',
+  processing: 'statusProcessing',
+  shipped: 'statusShipped',
+  delivered: 'statusDelivered',
+  cancelled: 'statusCancelled',
+} as const
+
 export default async function MyOrdersPage() {
+  const lang = await getServerLang()
+  const t = getT('shopping', lang)
+  const tc = getT('common', lang)
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -22,24 +35,29 @@ export default async function MyOrdersPage() {
     .eq('user_id', user!.id)
     .order('created_at', { ascending: false })
 
+  const statusLabel = (status: string) => {
+    const key = STATUS_LABEL_KEY[status as keyof typeof STATUS_LABEL_KEY]
+    return key ? t(key) : status.toUpperCase()
+  }
+
   return (
     <div style={{ minHeight: '80vh', background: 'var(--parchment)', padding: '3rem 5%' }}>
       <div style={{ maxWidth: 820, margin: '0 auto' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
           <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: '2rem', fontWeight: 700, color: '#1B2E4A' }}>
-            My Orders
+            {tc('myOrders')}
           </h1>
           <Link href="/shop" style={{ fontSize: '0.85rem', color: '#E8380A', fontWeight: 700, textDecoration: 'none' }}>
-            Continue shopping →
+            {t('continueShoppingArrow')} →
           </Link>
         </div>
 
         {(!orders || orders.length === 0) ? (
           <div style={{ textAlign: 'center', padding: '5rem 0', color: '#6B4820' }}>
             <div style={{ fontSize: '3.5rem', marginBottom: '1rem' }}>📦</div>
-            <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.4rem', marginBottom: '1.5rem' }}>No orders yet.</p>
+            <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.4rem', marginBottom: '1.5rem' }}>{t('noOrdersYet')}</p>
             <Link href="/shop" style={{ background: '#E8380A', color: '#fff', padding: '12px 28px', borderRadius: 5, fontWeight: 700, textDecoration: 'none' }}>
-              Shop GI Products →
+              {t('shopGiProducts')} →
             </Link>
           </div>
         ) : (
@@ -53,7 +71,7 @@ export default async function MyOrdersPage() {
                   <div style={{ background: '#FFE8A8', padding: '1rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
                     <div>
                       <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', color: '#6B4820' }}>
-                        Order #{order.order_number ?? order.id.slice(0, 8).toUpperCase()}
+                        {t('orderNumberLabel')}{order.order_number ?? order.id.slice(0, 8).toUpperCase()}
                       </div>
                       <div style={{ fontSize: '0.8rem', color: '#A07840', marginTop: 2 }}>
                         {new Date(order.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
@@ -61,7 +79,7 @@ export default async function MyOrdersPage() {
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                       <span style={{ padding: '4px 14px', borderRadius: 20, fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.08em', background: sc.bg, color: sc.color }}>
-                        {order.status.toUpperCase()}
+                        {statusLabel(order.status)}
                       </span>
                       <span style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.4rem', fontWeight: 700, color: '#E8380A' }}>
                         ₹{Number(order.total).toLocaleString('en-IN')}
@@ -84,7 +102,7 @@ export default async function MyOrdersPage() {
                                 {i < stepIndex ? '✓' : i + 1}
                               </div>
                               <span style={{ fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', color: i <= stepIndex ? '#E8380A' : '#A07840', whiteSpace: 'nowrap' }}>
-                                {step}
+                                {statusLabel(step)}
                               </span>
                             </div>
                             {i < STATUS_STEPS.length - 1 && (

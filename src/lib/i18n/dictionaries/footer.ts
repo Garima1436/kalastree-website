@@ -1,0 +1,36 @@
+const dict = {
+  en: {
+    tagline: '"Heritage by Her"',
+    brandBlurb: "India's first GI-native, women-first marketplace. Every purchase directly empowers a woman artisan.",
+    dedication: 'Dedicated to the memory of Late Shri S.B. Sharma',
+    shopHeading: 'Shop',
+    meetArtisans: 'Meet the Artisans',
+    aboutHeading: 'About',
+    ourMission: 'Our Mission',
+    research: 'Research',
+    ourStory: 'Our Story',
+    sellOnKalastree: 'Sell on KalaStree',
+    contactHeading: 'Contact',
+    instituteLine: 'IIT Patna, CSE Dept.',
+    copyright: '© 2025 KalaStree · All Rights Reserved',
+    publication: 'IIT Patna · Springer LNNS · ISMS 2025',
+  },
+  hi: {
+    tagline: '"हेरिटेज बाय हर"',
+    brandBlurb: 'भारत का पहला जीआई-नेटिव, महिला-प्रथम मार्केटप्लेस। हर खरीद सीधे एक महिला कारीगर को सशक्त बनाती है।',
+    dedication: 'स्वर्गीय श्री एस.बी. शर्मा की स्मृति को समर्पित',
+    shopHeading: 'शॉप',
+    meetArtisans: 'कारीगरों से मिलें',
+    aboutHeading: 'हमारे बारे में',
+    ourMission: 'हमारा मिशन',
+    research: 'शोध',
+    ourStory: 'हमारी कहानी',
+    sellOnKalastree: 'कलास्त्री पर बेचें',
+    contactHeading: 'संपर्क करें',
+    instituteLine: 'आईआईटी पटना, सीएसई विभाग',
+    copyright: '© 2025 कलास्त्री · सर्वाधिकार सुरक्षित',
+    publication: 'आईआईटी पटना · स्प्रिंगर एलएनएनएस · आईएसएमएस 2025',
+  },
+} as const
+
+export default dict

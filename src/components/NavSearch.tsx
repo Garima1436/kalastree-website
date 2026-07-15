@@ -3,6 +3,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase-browser'
 import { CATEGORY_META } from '@/lib/types'
+import { useTranslation } from '@/lib/i18n/useTranslation'
 
 interface SearchProduct {
   id: string
@@ -26,6 +27,7 @@ interface SearchArtisan {
 const POPULAR = ['Pashmina', 'Madhubani', 'Banarasi Silk', 'Kanchipuram', 'Phulkari', 'Rajasthan']
 
 export default function NavSearch({ onClose }: { onClose: () => void }) {
+  const { t } = useTranslation('shopping')
   const [query, setQuery] = useState('')
   const [products, setProducts] = useState<SearchProduct[]>([])
   const [artisans, setArtisans] = useState<SearchArtisan[]>([])
@@ -93,7 +95,7 @@ export default function NavSearch({ onClose }: { onClose: () => void }) {
             value={query}
             onChange={e => setQuery(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter' && q) go(`/shop?q=${encodeURIComponent(q)}`) }}
-            placeholder="Search products, artisans, states, crafts…"
+            placeholder={t('searchPlaceholder')}
             style={{ flex: 1, background: 'none', border: 'none', outline: 'none', fontSize: '1.05rem', fontFamily: "'Lato', sans-serif", color: '#1B2E4A' }}
           />
           {query && (
@@ -108,20 +110,20 @@ export default function NavSearch({ onClose }: { onClose: () => void }) {
         <div style={{ maxWidth: 760, margin: '0 auto', padding: '0.75rem 5% 1.25rem' }}>
 
           {/* Loading */}
-          {loading && <p style={{ color: '#A07840', fontSize: '0.85rem', padding: '0.5rem 0' }}>Searching…</p>}
+          {loading && <p style={{ color: '#A07840', fontSize: '0.85rem', padding: '0.5rem 0' }}>{t('searching')}</p>}
 
           {/* No results */}
           {!loading && q && !hasResults && (
             <div style={{ padding: '1.25rem 0', color: '#A07840', textAlign: 'center' }}>
-              <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.1rem', color: '#6B4820' }}>No results for "<strong>{q}</strong>"</p>
-              <p style={{ fontSize: '0.78rem', marginTop: 6 }}>Try a craft name, state, or material</p>
+              <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.1rem', color: '#6B4820' }}>{t('noResultsFor')} "<strong>{q}</strong>"</p>
+              <p style={{ fontSize: '0.78rem', marginTop: 6 }}>{t('tryCraftNameStateOrMaterial')}</p>
             </div>
           )}
 
           {/* Products */}
           {products.length > 0 && (
             <div style={{ marginBottom: '0.5rem' }}>
-              <div style={{ fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#D4A000', marginBottom: '0.5rem' }}>Products</div>
+              <div style={{ fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#D4A000', marginBottom: '0.5rem' }}>{t('productsLabel')}</div>
               {products.map(p => {
                 const cat = CATEGORY_META[p.category as keyof typeof CATEGORY_META] ?? { bg: '#FFE8A8', color: '#6B4820', icon: '🏺', label: p.category }
                 return (
@@ -145,7 +147,7 @@ export default function NavSearch({ onClose }: { onClose: () => void }) {
               {q && (
                 <button onClick={() => go(`/shop?q=${encodeURIComponent(q)}`)}
                   style={{ marginTop: '0.4rem', background: 'none', border: 'none', color: '#E8380A', fontFamily: "'Lato', sans-serif", fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer', padding: '4px 6px' }}>
-                  See all results for "{q}" →
+                  {t('seeAllResultsFor')} "{q}" →
                 </button>
               )}
             </div>
@@ -154,7 +156,7 @@ export default function NavSearch({ onClose }: { onClose: () => void }) {
           {/* Artisans */}
           {artisans.length > 0 && (
             <div style={{ marginTop: products.length > 0 ? '0.75rem' : 0 }}>
-              <div style={{ fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#D4A000', marginBottom: '0.5rem' }}>Artisans</div>
+              <div style={{ fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#D4A000', marginBottom: '0.5rem' }}>{t('artisansLabel')}</div>
               {artisans.map(a => (
                 <button key={a.id} onClick={() => go(`/artisans/${a.slug}`)}
                   style={{ display: 'flex', alignItems: 'center', gap: 12, width: '100%', background: 'none', border: 'none', borderBottom: '1px solid #FFE8A8', padding: '8px 6px', cursor: 'pointer', borderRadius: 6, textAlign: 'left' }}
@@ -167,7 +169,7 @@ export default function NavSearch({ onClose }: { onClose: () => void }) {
                     <div style={{ fontFamily: "'Lato', sans-serif", fontWeight: 700, fontSize: '0.9rem', color: '#1B2E4A' }}>{a.name}</div>
                     <div style={{ fontSize: '0.72rem', color: '#A07840', marginTop: 2 }}>{a.craft} · {a.state}</div>
                   </div>
-                  <span style={{ marginLeft: 'auto', fontSize: '0.72rem', color: '#E8380A', fontWeight: 700 }}>View →</span>
+                  <span style={{ marginLeft: 'auto', fontSize: '0.72rem', color: '#E8380A', fontWeight: 700 }}>{t('viewArrow')} →</span>
                 </button>
               ))}
             </div>
@@ -176,7 +178,7 @@ export default function NavSearch({ onClose }: { onClose: () => void }) {
           {/* Popular searches (empty state) */}
           {!q && (
             <div>
-              <div style={{ fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#D4A000', marginBottom: '0.6rem' }}>Popular Searches</div>
+              <div style={{ fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#D4A000', marginBottom: '0.6rem' }}>{t('popularSearches')}</div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                 {POPULAR.map(term => (
                   <button key={term} onClick={() => setQuery(term)}
