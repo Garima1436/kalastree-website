@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
 
   const { text } = await req.json()
   if (!text?.trim()) return NextResponse.json({ error: 'Text required' }, { status: 400 })
-  if (text.length > 2000) return NextResponse.json({ error: 'Text too long (max 2000 characters)' }, { status: 400 })
+  if (text.length > 8000) return NextResponse.json({ error: 'Text too long (max 8000 characters)' }, { status: 400 })
 
   try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
           { role: 'user', content: text },
         ],
       }),
-      signal: AbortSignal.timeout(20000),
+      signal: AbortSignal.timeout(30000),
     })
 
     if (!response.ok) {
