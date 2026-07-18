@@ -73,12 +73,22 @@ function ImageSlide({ src, priority }: { src: string; priority?: boolean }) {
 }
 
 const BRAND_PHOTOS = ['/hero/hero1.jpeg', '/hero/hero2.jpeg', '/hero/hero3.jpeg']
-const BRAND_PHOTO_POSITION = ['50% 30%', '50% 26%', '50% 15%']
+// Each entry is 'horizontal% vertical%' for photo 1/2/3 in order — this is your left/right and up/down control.
+//   Horizontal: 0% = shows the LEFT side of the photo (crops the right off) · 100% = shows the RIGHT side (crops the
+//   left off) · 50% = centered. To move a photo's visible content LEFT, LOWER the number; to move it RIGHT, RAISE it.
+//   Vertical: 0% = TOP of the photo · 100% = BOTTOM · 50% = centered. Same rule: lower = up, higher = down.
+const BRAND_PHOTO_POSITION = ['58% 40%', '50% 26%', '50% 15%']
 // Per-photo crop mode: 'cover' fills the slot edge-to-edge but crops whatever doesn't fit (use BRAND_PHOTO_POSITION to
 // choose which part survives). 'contain' shows the ENTIRE photo with nothing cropped, but leaves blank gaps on the
 // sides of that slot since the photo won't be wide enough to fill it — those gaps break the seamless full-bleed look,
 // so use 'contain' only if showing 100% of that one photo matters more than the seamless edge-to-edge band.
 const BRAND_PHOTO_FIT: Array<'cover' | 'contain'> = ['cover', 'cover', 'cover']
+// Extra zoom per photo (1 = no extra zoom). On wide desktop screens the photo box is often wider (relative to its
+// height) than the photo itself, so 'cover' shows the photo's FULL width with nothing left to pan through — at that
+// point BRAND_PHOTO_POSITION's left/right number has no effect because there's no slack. Raising a photo's zoom here
+// (e.g. 1.3, 1.5) crops in further on purpose, creating room to pan, and then BRAND_PHOTO_POSITION starts working
+// again. Zooms in from the same point BRAND_PHOTO_POSITION points at, so adjust position first, then zoom.
+const BRAND_PHOTO_ZOOM = [1.2, 1, 1]
 function BrandSlide() {
   const { t } = useTranslation('home')
   return (
@@ -92,18 +102,18 @@ function BrandSlide() {
         which photos are swapped in.
       */}
       <div style={{ position: 'absolute', inset: 0 }}>
-        <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, width: '50%', zIndex: 1 }}>
-          <Image src={BRAND_PHOTOS[0]} alt="" fill priority sizes="50vw" style={{ objectFit: BRAND_PHOTO_FIT[0], objectPosition: BRAND_PHOTO_POSITION[0] }} draggable={false} />
+        <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, width: '50%', zIndex: 1, overflow: 'hidden' }}>
+          <Image src={BRAND_PHOTOS[0]} alt="" fill priority sizes="50vw" style={{ objectFit: BRAND_PHOTO_FIT[0], objectPosition: BRAND_PHOTO_POSITION[0], transform: `scale(${BRAND_PHOTO_ZOOM[0]})`, transformOrigin: BRAND_PHOTO_POSITION[0] }} draggable={false} />
         </div>
-        <div style={{ position: 'absolute', top: 0, bottom: 0, right: 0, width: '50%', zIndex: 1 }}>
-          <Image src={BRAND_PHOTOS[2]} alt="" fill sizes="50vw" style={{ objectFit: BRAND_PHOTO_FIT[2], objectPosition: BRAND_PHOTO_POSITION[2] }} draggable={false} />
+        <div style={{ position: 'absolute', top: 0, bottom: 0, right: 0, width: '50%', zIndex: 1, overflow: 'hidden' }}>
+          <Image src={BRAND_PHOTOS[2]} alt="" fill sizes="50vw" style={{ objectFit: BRAND_PHOTO_FIT[2], objectPosition: BRAND_PHOTO_POSITION[2], transform: `scale(${BRAND_PHOTO_ZOOM[2]})`, transformOrigin: BRAND_PHOTO_POSITION[2] }} draggable={false} />
         </div>
         <div style={{
-          position: 'absolute', top: 0, bottom: 0, left: '25%', width: '50%', zIndex: 2,
+          position: 'absolute', top: 0, bottom: 0, left: '25%', width: '50%', zIndex: 2, overflow: 'hidden',
           maskImage: 'linear-gradient(to right, transparent 0%, black 30%, black 70%, transparent 100%)',
           WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 30%, black 70%, transparent 100%)',
         }}>
-          <Image src={BRAND_PHOTOS[1]} alt="" fill sizes="50vw" style={{ objectFit: BRAND_PHOTO_FIT[1], objectPosition: BRAND_PHOTO_POSITION[1] }} draggable={false} />
+          <Image src={BRAND_PHOTOS[1]} alt="" fill sizes="50vw" style={{ objectFit: BRAND_PHOTO_FIT[1], objectPosition: BRAND_PHOTO_POSITION[1], transform: `scale(${BRAND_PHOTO_ZOOM[1]})`, transformOrigin: BRAND_PHOTO_POSITION[1] }} draggable={false} />
         </div>
       </div>
 
