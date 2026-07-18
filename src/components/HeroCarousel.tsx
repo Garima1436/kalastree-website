@@ -72,29 +72,67 @@ function ImageSlide({ src, priority }: { src: string; priority?: boolean }) {
   )
 }
 
+const BRAND_PHOTOS = ['/hero/hero1.jpeg', '/hero/hero2.jpeg', '/hero/hero3.jpeg']
+const BRAND_PHOTO_POSITION = ['50% 30%', '50% 26%', '50% 15%']
+// Per-photo crop mode: 'cover' fills the slot edge-to-edge but crops whatever doesn't fit (use BRAND_PHOTO_POSITION to
+// choose which part survives). 'contain' shows the ENTIRE photo with nothing cropped, but leaves blank gaps on the
+// sides of that slot since the photo won't be wide enough to fill it — those gaps break the seamless full-bleed look,
+// so use 'contain' only if showing 100% of that one photo matters more than the seamless edge-to-edge band.
+const BRAND_PHOTO_FIT: Array<'cover' | 'contain'> = ['cover', 'cover', 'cover']
 function BrandSlide() {
   const { t } = useTranslation('home')
   return (
-    <div style={{ position: 'relative', height: 'clamp(220px, 62vw, 560px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0.5rem 5%', overflow: 'hidden' }}>
-      <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 70% 60% at 50% 45%, rgba(120,20,30,0.6) 0%, transparent 100%)', pointerEvents: 'none' }} />
-      <div style={{ maxWidth: 820, margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 2 }}>
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 'clamp(0.4rem, 1.4vw, 1rem)' }}>
-          <img src="/kalastree-logo.png" alt={`KalaStree — ${t('heritageByHer')}`}
-            style={{ height: 'clamp(90px, 22vw, 220px)', width: 'auto', objectFit: 'contain', display: 'block', filter: 'drop-shadow(0 0 40px rgba(212,160,0,0.3))' }} />
+    <div style={{ position: 'relative', height: 'clamp(220px, 62vw, 560px)', overflow: 'hidden' }}>
+      {/*
+        Three artisan photos fill the entire slide — same dimensions as the other slides. The outer two are full-
+        opacity rectangles (photo1: 0-50% width, photo3: 50-100%), and the middle photo sits centered on top
+        (25-75% width) with its own edges faded out. Because the outer photos' inner edges (50%) sit safely INSIDE
+        the middle photo's opaque zone (40-60%), there's always an opaque photo directly behind every pixel of the
+        fade — no gap can ever show through to the page background, so the seam always blends cleanly regardless of
+        which photos are swapped in.
+      */}
+      <div style={{ position: 'absolute', inset: 0 }}>
+        <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, width: '50%', zIndex: 1 }}>
+          <Image src={BRAND_PHOTOS[0]} alt="" fill priority sizes="50vw" style={{ objectFit: BRAND_PHOTO_FIT[0], objectPosition: BRAND_PHOTO_POSITION[0] }} draggable={false} />
         </div>
+        <div style={{ position: 'absolute', top: 0, bottom: 0, right: 0, width: '50%', zIndex: 1 }}>
+          <Image src={BRAND_PHOTOS[2]} alt="" fill sizes="50vw" style={{ objectFit: BRAND_PHOTO_FIT[2], objectPosition: BRAND_PHOTO_POSITION[2] }} draggable={false} />
+        </div>
+        <div style={{
+          position: 'absolute', top: 0, bottom: 0, left: '25%', width: '50%', zIndex: 2,
+          maskImage: 'linear-gradient(to right, transparent 0%, black 30%, black 70%, transparent 100%)',
+          WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 30%, black 70%, transparent 100%)',
+        }}>
+          <Image src={BRAND_PHOTOS[1]} alt="" fill sizes="50vw" style={{ objectFit: BRAND_PHOTO_FIT[1], objectPosition: BRAND_PHOTO_POSITION[1] }} draggable={false} />
+        </div>
+      </div>
 
-        <p className="hero-desc" style={{ fontSize: 'clamp(0.72rem, 1.4vw, 1rem)', lineHeight: 1.6, color: 'rgba(255,255,255,0.85)', maxWidth: 560, margin: '0 auto clamp(0.6rem, 1.5vw, 1.2rem)' }}>
-          {t('heroDescPrefix')}{' '}
-          <strong style={{ color: '#D4A000' }}>{t('heroDescHighlight')}</strong> {t('heroDescSuffix')}
-        </p>
+      {/* Subtle dark vignette — just enough for the logo/text to stay legible over any photo */}
+      <div style={{
+        position: 'absolute', inset: 0, zIndex: 3, pointerEvents: 'none',
+        background: 'radial-gradient(ellipse 60% 55% at 50% 45%, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.45) 100%)',
+      }} />
 
-        <div className="hero-btns" style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <Link href="/shop" style={{ background: '#D4A000', color: '#1A0800', padding: 'clamp(8px,1.5vw,14px) clamp(16px,3vw,34px)', borderRadius: 6, fontFamily: "'Lato', sans-serif", fontSize: 'clamp(0.75rem,1.3vw,0.95rem)', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8, boxShadow: '0 4px 24px rgba(212,160,0,0.4)' }}>
-            {t('shopTheCollection')} →
-          </Link>
-          <Link href="/artisans" style={{ background: 'transparent', color: '#fff', padding: 'clamp(8px,1.5vw,14px) clamp(16px,3vw,34px)', borderRadius: 6, border: '2px solid rgba(255,255,255,0.5)', fontFamily: "'Lato', sans-serif", fontSize: 'clamp(0.75rem,1.3vw,0.95rem)', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-            {t('meetTheArtisans')}
-          </Link>
+      <div style={{ position: 'absolute', inset: 0, zIndex: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0.5rem 5%' }}>
+        <div style={{ maxWidth: 820, margin: '0 auto', textAlign: 'center' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 'clamp(0.3rem, 1vw, 0.6rem)' }}>
+            <img src="/kalastree-logo.png" alt={`KalaStree — ${t('heritageByHer')}`}
+              style={{ height: 'clamp(70px, 16vw, 160px)', width: 'auto', objectFit: 'contain', display: 'block', filter: 'drop-shadow(0 2px 10px rgba(0,0,0,0.5))' }} />
+          </div>
+
+          <p className="hero-desc" style={{ fontSize: 'clamp(0.72rem, 1.4vw, 1rem)', lineHeight: 1.6, color: '#fff', textShadow: '0 1px 8px rgba(0,0,0,0.6)', maxWidth: 560, margin: '0 auto clamp(0.6rem, 1.5vw, 1.2rem)' }}>
+            {t('heroDescPrefix')}{' '}
+            <strong style={{ color: '#FFC24B' }}>{t('heroDescHighlight')}</strong> {t('heroDescSuffix')}
+          </p>
+
+          <div className="hero-btns" style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <Link href="/shop" style={{ background: '#E8380A', color: '#fff', padding: 'clamp(8px,1.5vw,14px) clamp(16px,3vw,34px)', borderRadius: 6, fontFamily: "'Lato', sans-serif", fontSize: 'clamp(0.75rem,1.3vw,0.95rem)', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8, boxShadow: '0 4px 20px rgba(0,0,0,0.35)' }}>
+              {t('shopTheCollection')} →
+            </Link>
+            <Link href="/artisans" style={{ background: 'rgba(0,0,0,0.15)', color: '#fff', padding: 'clamp(8px,1.5vw,14px) clamp(16px,3vw,34px)', borderRadius: 6, border: '2px solid rgba(255,255,255,0.8)', fontFamily: "'Lato', sans-serif", fontSize: 'clamp(0.75rem,1.3vw,0.95rem)', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+              {t('meetTheArtisans')}
+            </Link>
+          </div>
         </div>
       </div>
     </div>
@@ -110,11 +148,11 @@ export default function HeroSection({ heroImages, statsImages }: HeroSectionProp
   const { t } = useTranslation('home')
   const [index, setIndex] = useState(0)
   const [height, setHeight] = useState<number>()
+  const [paused, setPaused] = useState(false)
   const slideRefs = useRef<(HTMLDivElement | null)[]>([])
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const slideCount = 1 + heroImages.length
-  const onBrand = index === 0
 
   useEffect(() => {
     const el = slideRefs.current[index]
@@ -122,10 +160,10 @@ export default function HeroSection({ heroImages, statsImages }: HeroSectionProp
   }, [index])
 
   useEffect(() => {
-    if (slideCount <= 1) return
+    if (slideCount <= 1 || paused) return
     timerRef.current = setInterval(() => setIndex(i => (i + 1) % slideCount), AUTO_MS)
     return () => { if (timerRef.current) clearInterval(timerRef.current) }
-  }, [slideCount])
+  }, [slideCount, paused])
 
   const go = (next: number) => setIndex(((next % slideCount) + slideCount) % slideCount)
 
@@ -137,16 +175,22 @@ export default function HeroSection({ heroImages, statsImages }: HeroSectionProp
   }
 
   return (
-    <section style={{ background: onBrand ? '#5C0A14' : 'linear-gradient(135deg, #FFFFFF 0%, #FDFBF6 55%, #F3ECDD 100%)', transition: 'background 0.8s ease', position: 'relative', overflow: 'hidden' }}>
-      {/* Premium shine, fades in once past the brand slide */}
+    <section style={{ background: 'linear-gradient(135deg, #FFFFFF 0%, #FDFBF6 55%, #F3ECDD 100%)', position: 'relative', overflow: 'hidden' }}>
+      {/* Premium shine */}
       <div style={{
         position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 1,
-        opacity: onBrand ? 0 : 1, transition: 'opacity 0.8s ease',
         background: 'radial-gradient(ellipse 60% 45% at 22% 0%, rgba(255,255,255,0.95) 0%, transparent 60%), radial-gradient(ellipse 50% 40% at 100% 100%, rgba(212,160,0,0.1) 0%, transparent 60%)',
       }} />
 
-      <div style={{ position: 'relative', width: '100%', overflow: 'hidden', height, transition: 'height 0.5s ease', zIndex: 2 }}>
-        <div style={{ display: 'flex', width: '100%', transform: `translateX(-${index * 100}%)`, transition: 'transform 0.6s cubic-bezier(0.65,0,0.35,1)' }}>
+      <div
+        style={{ position: 'relative', width: '100%', overflow: 'hidden', height, transition: 'height 0.5s ease', zIndex: 2 }}
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+        onTouchStart={() => setPaused(true)}
+        onTouchEnd={() => setPaused(false)}
+        onTouchCancel={() => setPaused(false)}
+      >
+        <div style={{ display: 'flex', alignItems: 'flex-start', width: '100%', transform: `translateX(-${index * 100}%)`, transition: 'transform 0.6s cubic-bezier(0.65,0,0.35,1)' }}>
           <div ref={el => { slideRefs.current[0] = el }} style={{ flex: '0 0 100%', width: '100%', minWidth: 0 }}>
             <BrandSlide />
           </div>
@@ -196,7 +240,7 @@ export default function HeroSection({ heroImages, statsImages }: HeroSectionProp
                   onClick={() => go(i)}
                   style={{
                     width: i === index ? 22 : 8, height: 8, borderRadius: 4,
-                    background: i === index ? '#D4A000' : onBrand ? 'rgba(255,255,255,0.5)' : 'rgba(139,94,30,0.35)',
+                    background: i === index ? '#D4A000' : 'rgba(139,94,30,0.35)',
                     border: `1px solid ${i === index ? '#D4A000' : 'rgba(212,160,0,0.7)'}`,
                     padding: 0, cursor: 'pointer', transition: 'width 0.3s, background 0.3s, border-color 0.3s',
                   }}
@@ -208,7 +252,7 @@ export default function HeroSection({ heroImages, statsImages }: HeroSectionProp
       </div>
 
       {/* Stats bar — each cell shows its own background image with text overlaid */}
-      <div style={{ borderTop: `1px solid ${onBrand ? 'rgba(212,160,0,0.25)' : 'rgba(139,94,30,0.2)'}`, transition: 'border-color 0.8s ease', position: 'relative', zIndex: 2 }}>
+      <div style={{ borderTop: '1px solid rgba(139,94,30,0.2)', position: 'relative', zIndex: 2 }}>
         <div className="stats-grid" style={{ display: 'flex', width: '100%' }}>
           {STATS.map(({ key, num }, i) => {
             const bg = statsImages[key]
@@ -221,8 +265,7 @@ export default function HeroSection({ heroImages, statsImages }: HeroSectionProp
                 style={{
                   flex: '1 1 0', minWidth: 0, position: 'relative', overflow: 'hidden',
                   padding: 'clamp(0.9rem,2vw,1.5rem) clamp(0.5rem,1.5vw,1.2rem)',
-                  borderLeft: i > 0 ? `1px solid ${onBrand ? 'rgba(212,160,0,0.2)' : 'rgba(139,94,30,0.15)'}` : 'none',
-                  transition: 'border-color 0.8s ease',
+                  borderLeft: i > 0 ? '1px solid rgba(139,94,30,0.15)' : 'none',
                 }}
               >
                 {bg && (
@@ -233,8 +276,8 @@ export default function HeroSection({ heroImages, statsImages }: HeroSectionProp
                 )}
                 <div style={{ position: 'relative', minWidth: 0 }}>
                   <div style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.1rem,2.8vw,1.9rem)', fontWeight: 700, color: '#D4A000', lineHeight: 1, whiteSpace: 'nowrap' }}>{displayNum}</div>
-                  <div style={{ fontSize: 'clamp(0.48rem,1.1vw,0.65rem)', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: bg || onBrand ? '#fff' : '#3A1C08', transition: 'color 0.8s ease', marginTop: 3 }}>{label}</div>
-                  <div className="stat-sub" style={{ fontSize: 'clamp(0.48rem,1vw,0.6rem)', color: bg ? 'rgba(212,160,0,0.85)' : onBrand ? 'rgba(212,160,0,0.65)' : 'rgba(139,94,30,0.8)', transition: 'color 0.8s ease', marginTop: 2, fontStyle: 'italic', whiteSpace: 'nowrap' }}>{sub}</div>
+                  <div style={{ fontSize: 'clamp(0.48rem,1.1vw,0.65rem)', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: bg ? '#fff' : '#3A1C08', marginTop: 3 }}>{label}</div>
+                  <div className="stat-sub" style={{ fontSize: 'clamp(0.48rem,1vw,0.6rem)', color: bg ? 'rgba(212,160,0,0.85)' : 'rgba(139,94,30,0.8)', marginTop: 2, fontStyle: 'italic', whiteSpace: 'nowrap' }}>{sub}</div>
                 </div>
               </div>
             )

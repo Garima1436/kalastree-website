@@ -16,7 +16,7 @@ function getHeroImages(): string[] {
     const dir = path.join(process.cwd(), 'public', 'hero')
     if (!fs.existsSync(dir)) return []
     return fs.readdirSync(dir)
-      .filter(f => /\.(jpe?g|png|webp|avif|gif)$/i.test(f))
+      .filter(f => /\.(jpe?g|png|webp|avif|gif)$/i.test(f) && !/^hero\d+\./i.test(f))
       .sort()
       .map(f => `/hero/${f}`)
   } catch {
