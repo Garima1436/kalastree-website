@@ -73,6 +73,10 @@ export default function ProductForm({ artisans, initialData, mode = 'new' }: Pro
     is_featured: initialData?.is_featured ?? false,
     artisan_id: initialData?.artisan_id ?? artisans[0]?.id ?? '',
     image_url: initialData?.images?.[0] ?? '',
+    weight_grams: initialData?.weight_grams?.toString() ?? '',
+    length_cm: initialData?.length_cm?.toString() ?? '',
+    width_cm: initialData?.width_cm?.toString() ?? '',
+    height_cm: initialData?.height_cm?.toString() ?? '',
   })
 
   const set = (field: string, value: any) => setForm(f => ({ ...f, [field]: value }))
@@ -91,6 +95,10 @@ export default function ProductForm({ artisans, initialData, mode = 'new' }: Pro
       category: form.category, state: form.state || null,
       stock: parseInt(form.stock), is_featured: form.is_featured,
       artisan_id: form.artisan_id || null, images,
+      weight_grams: form.weight_grams ? parseInt(form.weight_grams) : null,
+      length_cm: form.length_cm ? parseInt(form.length_cm) : null,
+      width_cm: form.width_cm ? parseInt(form.width_cm) : null,
+      height_cm: form.height_cm ? parseInt(form.height_cm) : null,
     }
 
     const res = await fetch('/api/admin/products', {
@@ -228,6 +236,23 @@ export default function ProductForm({ artisans, initialData, mode = 'new' }: Pro
                 {t('noArtisansFound')} <a href="/admin/artisans/new" style={{ color: '#E8380A', fontWeight: 700 }}>{t('addArtisanFirstArrow')}</a>
               </p>
             )}
+          </div>
+
+          <div>
+            <label style={labelStyle}>Shipping weight & dimensions</label>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '0.75rem' }}>
+              <input style={inputStyle} type="number" min="0" placeholder="Weight (g)"
+                value={form.weight_grams} onChange={e => set('weight_grams', e.target.value)} />
+              <input style={inputStyle} type="number" min="0" placeholder="Length (cm)"
+                value={form.length_cm} onChange={e => set('length_cm', e.target.value)} />
+              <input style={inputStyle} type="number" min="0" placeholder="Width (cm)"
+                value={form.width_cm} onChange={e => set('width_cm', e.target.value)} />
+              <input style={inputStyle} type="number" min="0" placeholder="Height (cm)"
+                value={form.height_cm} onChange={e => set('height_cm', e.target.value)} />
+            </div>
+            <p style={{ fontSize: '0.72rem', color: '#A07840', marginTop: 4 }}>
+              Required to auto-generate a shipping label via iThink Logistics when this product ships.
+            </p>
           </div>
 
           <div>

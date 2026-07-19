@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase-server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { Resend } from 'resend'
 import { NextRequest, NextResponse } from 'next/server'
+import { createShipment } from '@/lib/ithink'
 
 function generateOTP(): string {
   return String(Math.floor(1000 + Math.random() * 9000))
@@ -78,14 +79,101 @@ export async function PATCH(req: NextRequest) {
   }
 
   const updates: any = { status }
-  if (body.tracking_number) updates.tracking_number = body.tracking_number
-  if (body.tracking_url) updates.tracking_url = body.tracking_url
 
-  // When shipping: generate OTP as fallback and email customer with tracking
+  // When shipping: auto-create the shipment with iThink Logistics to get a real
+  // AWB, generate the delivery OTP, and email the customer with tracking info.
   if (status === 'shipped') {
+    const { data: artisan } = await supabaseAdmin
+      .from('artisans')
+      .select('name, ithink_pickup_address_id, ithink_return_address_id')
+      .eq('user_id', user.id)
+      .single()
+
+    if (!artisan?.ithink_pickup_address_id) {
+      return NextResponse.json({
+        error: 'Your pickup address isn’t registered with iThink Logistics yet. Ask an admin to add your Warehouse ID in Artisan settings before shipping.',
+      }, { status: 400 })
+    }
+
+    const { data: order } = await supabaseAdmin
+      .from('orders')
+      .select('user_name, address_line, city, state, pincode, phone, created_at')
+      .eq('id', orderId)
+      .single()
+
+    if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
+    if (!order.phone) {
+      return NextResponse.json({ error: 'This order has no customer phone number on file — required to create a shipment' }, { status: 400 })
+    }
+
+    const { data: myItems } = await supabaseAdmin
+      .from('order_items')
+      .select('product_name, quantity, price, product_id')
+      .eq('order_id', orderId)
+      .in('product_id', myProductIds)
+
+    if (!myItems?.length) return NextResponse.json({ error: 'No items found for your products on this order' }, { status: 400 })
+
+    const { data: productDims } = await supabaseAdmin
+      .from('products')
+      .select('id, weight_grams, length_cm, width_cm, height_cm')
+      .in('id', myItems.map((i: any) => i.product_id))
+
+    const dimsById = new Map((productDims ?? []).map((p: any) => [p.id, p]))
+    const missingDims = myItems
+      .filter((i: any) => {
+        const d = dimsById.get(i.product_id)
+        return !d?.weight_grams || !d?.length_cm || !d?.width_cm || !d?.height_cm
+      })
+      .map((i: any) => i.product_name)
+
+    if (missingDims.length > 0) {
+      return NextResponse.json({
+        error: `Missing weight/dimensions for: ${[...new Set(missingDims)].join(', ')}. Add these in the product edit form before shipping.`,
+      }, { status: 400 })
+    }
+
+    // Sum weight across items; use the largest single-item footprint as the
+    // parcel dimensions (a reasonable approximation absent real box-packing).
+    let weightGrams = 0, lengthCm = 0, widthCm = 0, heightCm = 0
+    for (const item of myItems) {
+      const d = dimsById.get(item.product_id)!
+      weightGrams += d.weight_grams * item.quantity
+      lengthCm = Math.max(lengthCm, d.length_cm)
+      widthCm = Math.max(widthCm, d.width_cm)
+      heightCm = Math.max(heightCm, d.height_cm)
+    }
+    const totalAmount = myItems.reduce((sum: number, i: any) => sum + Number(i.price) * i.quantity, 0)
+
+    let shipment
+    try {
+      shipment = await createShipment({
+        orderNumber: orderId.slice(0, 8).toUpperCase(),
+        orderDate: new Date(order.created_at),
+        totalAmount,
+        customerName: order.user_name,
+        addressLine: order.address_line,
+        city: order.city,
+        state: order.state,
+        pincode: order.pincode,
+        phone: order.phone,
+        items: myItems.map((i: any) => ({ product_name: i.product_name, product_quantity: i.quantity, product_price: i.price })),
+        weightGrams, lengthCm, widthCm, heightCm,
+        pickupAddressId: artisan.ithink_pickup_address_id,
+        returnAddressId: artisan.ithink_return_address_id ?? artisan.ithink_pickup_address_id,
+      })
+    } catch (err: any) {
+      console.error('iThink createShipment failed:', err)
+      return NextResponse.json({ error: `Could not create shipment with iThink Logistics: ${err.message}` }, { status: 502 })
+    }
+
+    updates.tracking_number = shipment.waybill
+    updates.tracking_url = shipment.trackingUrl
+
     const otp = generateOTP()
     updates.delivery_otp = otp
     updates.delivery_otp_sent_at = new Date().toISOString()
+    updates.delivery_otp_attempts = 0
 
     const { error: dbError } = await supabaseAdmin.from('orders').update(updates).eq('id', orderId)
     if (dbError) return NextResponse.json({ error: dbError.message }, { status: 500 })

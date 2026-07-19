@@ -43,6 +43,10 @@ export default function ArtisanProductForm({ artisanId, initialData, mode = 'new
     state: initialData?.state ?? '',
     stock: initialData?.stock?.toString() ?? '1',
     image_url: initialData?.images?.[0] ?? '',
+    weight_grams: initialData?.weight_grams?.toString() ?? '',
+    length_cm: initialData?.length_cm?.toString() ?? '',
+    width_cm: initialData?.width_cm?.toString() ?? '',
+    height_cm: initialData?.height_cm?.toString() ?? '',
   })
   const set = (k: string, v: any) => setForm(f => ({ ...f, [k]: v }))
 
@@ -73,6 +77,10 @@ export default function ArtisanProductForm({ artisanId, initialData, mode = 'new
       price: parseFloat(form.price), gi_tag: form.gi_tag || null,
       category: form.category, state: form.state || null,
       stock: parseInt(form.stock), artisan_id: artisanId, images,
+      weight_grams: form.weight_grams ? parseInt(form.weight_grams) : null,
+      length_cm: form.length_cm ? parseInt(form.length_cm) : null,
+      width_cm: form.width_cm ? parseInt(form.width_cm) : null,
+      height_cm: form.height_cm ? parseInt(form.height_cm) : null,
     }
     const res = await fetch('/api/artisan/products', {
       method: mode === 'edit' && initialData?.id ? 'PATCH' : 'POST',
@@ -179,6 +187,23 @@ export default function ArtisanProductForm({ artisanId, initialData, mode = 'new
                 {INDIAN_STATES.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
+          </div>
+
+          <div>
+            <label style={labelStyle}>Shipping weight & dimensions</label>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '0.75rem' }}>
+              <input style={inputStyle} type="number" min="0" placeholder="Weight (g)"
+                value={form.weight_grams} onChange={e => set('weight_grams', e.target.value)} />
+              <input style={inputStyle} type="number" min="0" placeholder="Length (cm)"
+                value={form.length_cm} onChange={e => set('length_cm', e.target.value)} />
+              <input style={inputStyle} type="number" min="0" placeholder="Width (cm)"
+                value={form.width_cm} onChange={e => set('width_cm', e.target.value)} />
+              <input style={inputStyle} type="number" min="0" placeholder="Height (cm)"
+                value={form.height_cm} onChange={e => set('height_cm', e.target.value)} />
+            </div>
+            <p style={{ fontSize: '0.72rem', color: '#A07840', marginTop: 4 }}>
+              Needed to auto-generate your shipping label when this order ships.
+            </p>
           </div>
 
           <div>

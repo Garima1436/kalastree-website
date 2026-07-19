@@ -1,10 +1,32 @@
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { NextRequest, NextResponse } from 'next/server'
+import { timingSafeEqual } from 'crypto'
 
 // iThink Logistics webhook — fires on every shipment status change
 // Register this URL in iThink dashboard: https://kalastree.com/api/webhooks/ithink
+// with header  x-webhook-secret: <ITHINK_WEBHOOK_SECRET>  (mirrors Shiprocket's
+// x-api-key / Delhivery's client-defined auth header — iThink doesn't publish its
+// own scheme, so this follows the same-category convention). If iThink's dashboard
+// can't send custom headers, fall back to appending ?secret=<ITHINK_WEBHOOK_SECRET>
+// to the registered URL instead — the query param is checked too.
+function isAuthorized(req: NextRequest): boolean {
+  const expected = process.env.ITHINK_WEBHOOK_SECRET
+  if (!expected) return false
+
+  const provided = req.headers.get('x-webhook-secret') ?? req.nextUrl.searchParams.get('secret')
+  if (!provided) return false
+
+  const a = Buffer.from(provided)
+  const b = Buffer.from(expected)
+  return a.length === b.length && timingSafeEqual(a, b)
+}
+
 export async function POST(req: NextRequest) {
   try {
+    if (!isAuthorized(req)) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const body = await req.json()
 
     // iThink sends AWB number and status in the payload

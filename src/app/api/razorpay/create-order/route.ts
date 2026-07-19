@@ -53,6 +53,7 @@ export async function POST(req: NextRequest) {
         user_id: user?.id ?? null,
         user_email: email,
         user_name: name,
+        phone,
         total: amount,
         status: 'pending',
         address_line: address,

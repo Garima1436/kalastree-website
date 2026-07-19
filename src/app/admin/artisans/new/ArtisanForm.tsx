@@ -55,6 +55,8 @@ export default function ArtisanForm({ initialData, mode = 'new' }: Props) {
     photo_url: initialData?.photo_url ?? '',
     is_verified: initialData?.is_verified ?? false,
     is_featured: initialData?.is_featured ?? false,
+    ithink_pickup_address_id: initialData?.ithink_pickup_address_id?.toString() ?? '',
+    ithink_return_address_id: initialData?.ithink_return_address_id?.toString() ?? '',
   })
 
   const set = (field: string, value: any) => setForm(f => ({ ...f, [field]: value }))
@@ -73,6 +75,10 @@ export default function ArtisanForm({ initialData, mode = 'new' }: Props) {
       photo_url: form.photo_url || null,
       is_verified: form.is_verified,
       is_featured: form.is_featured,
+      ithink_pickup_address_id: form.ithink_pickup_address_id ? parseInt(form.ithink_pickup_address_id) : null,
+      ithink_return_address_id: form.ithink_return_address_id
+        ? parseInt(form.ithink_return_address_id)
+        : (form.ithink_pickup_address_id ? parseInt(form.ithink_pickup_address_id) : null),
     }
 
     const res = await fetch('/api/admin/artisans', {
@@ -190,6 +196,22 @@ export default function ArtisanForm({ initialData, mode = 'new' }: Props) {
             <p style={{ fontSize: '0.72rem', color: '#A07840', marginTop: 4 }}>
               {t('markdownHelp')}
             </p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div>
+              <label style={labelStyle}>iThink Pickup Warehouse ID</label>
+              <input style={inputStyle} type="number" value={form.ithink_pickup_address_id}
+                onChange={e => set('ithink_pickup_address_id', e.target.value)} placeholder="e.g. 24" />
+              <p style={{ fontSize: '0.72rem', color: '#A07840', marginTop: 4 }}>
+                From iThink dashboard → Warehouse, for this artisan&apos;s pickup location. Required before this artisan can auto-generate a shipping label.
+              </p>
+            </div>
+            <div>
+              <label style={labelStyle}>iThink Return Warehouse ID</label>
+              <input style={inputStyle} type="number" value={form.ithink_return_address_id}
+                onChange={e => set('ithink_return_address_id', e.target.value)} placeholder="Same as pickup if blank" />
+            </div>
           </div>
 
           <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', fontSize: '0.9rem', color: '#1B2E4A', fontWeight: 600 }}>
