@@ -75,6 +75,7 @@ export async function createShipment(input: CreateShipmentInput): Promise<Create
         shipment_height: String(input.heightCm),
         weight: String(input.weightGrams),
         return_address_id: String(input.returnAddressId),
+        shipment_service_type: 'b2c',
       }],
       pickup_address_id: String(input.pickupAddressId),
       access_token,

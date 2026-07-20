@@ -1,6 +1,36 @@
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { NextRequest, NextResponse } from 'next/server'
 import { timingSafeEqual } from 'crypto'
+import { Resend } from 'resend'
+
+async function sendDeliveredEmail(order: any, shortId: string) {
+  const apiKey = process.env.RESEND_API_KEY
+  if (!apiKey || !order.user_email) return
+  const resend = new Resend(apiKey)
+  await resend.emails.send({
+    from: 'KalaStree <team@kalastree.com>',
+    to: order.user_email,
+    subject: `Delivered! Order #${shortId} has arrived — KalaStree`,
+    html: `
+      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;padding:32px;background:#FFF8EE;border:1.5px solid #DDB840;border-radius:10px;">
+        <div style="text-align:center;margin-bottom:24px;">
+          <h1 style="font-size:26px;color:#E8380A;margin:0;">Kala<em style="color:#D4A000;">Stree</em></h1>
+          <p style="color:#6B4820;font-size:11px;letter-spacing:2px;text-transform:uppercase;margin:4px 0 0;">Heritage by Her</p>
+        </div>
+        <h2 style="color:#1B2E4A;font-size:20px;margin-bottom:8px;">Your order has arrived! 🎉</h2>
+        <p style="color:#6B4820;line-height:1.8;margin-bottom:8px;">
+          Hi ${order.user_name ?? ''}, our courier partner confirms order <strong>#${shortId}</strong> has been delivered.
+        </p>
+        <p style="color:#6B4820;line-height:1.8;">
+          Thank you for supporting India's women artisans — we hope you love what you received.
+        </p>
+        <p style="color:#A07840;font-size:12px;text-align:center;margin-top:24px;">Questions? Write to <a href="mailto:garima@kalastree.com" style="color:#E8380A;">garima@kalastree.com</a></p>
+        <hr style="border:none;border-top:1px solid #DDB840;margin:20px 0;"/>
+        <p style="color:#A07840;font-size:11px;text-align:center;">KalaStree · India's first GI-verified marketplace for women artisans</p>
+      </div>
+    `,
+  })
+}
 
 // iThink Logistics webhook — fires on every shipment status change
 // Register this URL in iThink dashboard: https://kalastree.com/api/webhooks/ithink
@@ -51,7 +81,7 @@ export async function POST(req: NextRequest) {
     // Find order by tracking number
     const { data: order } = await supabaseAdmin
       .from('orders')
-      .select('id, status')
+      .select('id, status, user_name, user_email')
       .eq('tracking_number', awb)
       .single()
 
@@ -72,6 +102,16 @@ export async function POST(req: NextRequest) {
     if (orderStatus === 'delivered') updates.delivery_otp = null
 
     await supabaseAdmin.from('orders').update(updates).eq('id', order.id)
+
+    // Notify the customer their order has actually arrived (courier-confirmed,
+    // independent of the OTP flow — that email only fires when it ships).
+    if (orderStatus === 'delivered') {
+      try {
+        await sendDeliveredEmail(order, order.id.slice(0, 8).toUpperCase())
+      } catch (e) {
+        console.error('Delivered email failed:', e)
+      }
+    }
 
     return NextResponse.json({ received: true })
   } catch (err: any) {
