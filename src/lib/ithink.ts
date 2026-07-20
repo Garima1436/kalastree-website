@@ -96,7 +96,8 @@ export async function createShipment(input: CreateShipmentInput): Promise<Create
   // Response is keyed by shipment index — we only ever send one shipment ("1")
   const result = json.data?.['1']
   if (json.status !== 'success' || !result || result.status !== 'Success' || !result.waybill) {
-    const reason = result?.remark || result?.status || json.message || 'unknown error'
+    console.error('iThink create-shipment raw response:', JSON.stringify(json))
+    const reason = result?.remark || result?.status || json.message || JSON.stringify(json).slice(0, 300)
     throw new Error(`iThink rejected shipment: ${reason}`)
   }
 
