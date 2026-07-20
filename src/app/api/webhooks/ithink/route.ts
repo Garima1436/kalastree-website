@@ -58,6 +58,9 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json()
+    // Log every hit (not just failures) so a real payload can be inspected in
+    // CloudWatch — iThink's public docs never confirmed the exact field names.
+    console.log('iThink webhook payload:', JSON.stringify(body))
 
     // iThink sends AWB number and status in the payload
     // Exact field names — confirm in iThink dashboard → Webhooks → Sample Payload
@@ -65,6 +68,7 @@ export async function POST(req: NextRequest) {
     const rawStatus: string = (body.current_status ?? body.status ?? '').toLowerCase()
 
     if (!awb || !rawStatus) {
+      console.warn('iThink webhook: could not find awb/status fields in payload above')
       return NextResponse.json({ error: 'Missing awb or status' }, { status: 400 })
     }
 
