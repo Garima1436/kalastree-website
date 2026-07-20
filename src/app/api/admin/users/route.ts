@@ -45,6 +45,11 @@ export async function PATCH(req: NextRequest) {
         })
         if (insertError) return NextResponse.json({ error: 'artisans insert: ' + insertError.message }, { status: 500 })
       }
+    } else {
+      // Demoting away from artisan: remove the linked `artisans` row so the
+      // user disappears from the public/admin artisan listings.
+      const { error: deleteError } = await supabaseAdmin.from('artisans').delete().eq('user_id', userId)
+      if (deleteError) return NextResponse.json({ error: 'artisans delete: ' + deleteError.message }, { status: 500 })
     }
 
     // Use supabaseAdmin to bypass RLS
