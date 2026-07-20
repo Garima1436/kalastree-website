@@ -75,9 +75,12 @@ export async function createShipment(input: CreateShipmentInput): Promise<Create
         shipment_height: String(input.heightCm),
         weight: String(input.weightGrams),
         return_address_id: String(input.returnAddressId),
+        // KalaStree orders are paid in full before shipping (Razorpay/Stripe) —
+        // never COD — so this is always Prepaid with a zero collectible amount.
+        payment_mode: 'Prepaid',
+        cod_amount: '0',
       }],
       pickup_address_id: String(input.pickupAddressId),
-      shipment_service_type: 'b2c',
       access_token,
       secret_key,
     },
