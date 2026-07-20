@@ -19,6 +19,7 @@ import adminHome from './dictionaries/adminHome'
 import adminProducts from './dictionaries/adminProducts'
 import adminOrders from './dictionaries/adminOrders'
 import adminUsers from './dictionaries/adminUsers'
+import adminRemittance from './dictionaries/adminRemittance'
 
 export const registry = {
   common,
@@ -42,6 +43,7 @@ export const registry = {
   adminProducts,
   adminOrders,
   adminUsers,
+  adminRemittance,
 }
 
 export type Namespace = keyof typeof registry

@@ -3,6 +3,7 @@
 
 const CREATE_URL = 'https://my.ithinklogistics.com/api_v3/order/add.json'
 const TRACK_URL = 'https://api.ithinklogistics.com/api_v3/order/track.json'
+const REMITTANCE_DETAILS_URL = 'https://my.ithinklogistics.com/api_v3/remittance/get_details.json'
 
 function credentials() {
   const access_token = process.env.ITHINK_ACCESS_TOKEN
@@ -192,4 +193,33 @@ export async function trackShipment(awb: string): Promise<TrackedStatus | null> 
     currentStatusCode: entry.current_status_code ?? '',
     logistic: entry.logistic ?? '',
   }
+}
+
+export interface RemittanceRecord {
+  awb: string
+  orderNo: string
+  amount: number
+  deliveredDate: string
+}
+
+// remittance_date is a single calendar day per call — no range parameter
+// exists, so reconciling a window means one call per day in that window.
+export async function getRemittanceDetails(date: string): Promise<RemittanceRecord[]> {
+  const { access_token, secret_key } = credentials()
+
+  const res = await fetch(REMITTANCE_DETAILS_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ data: { remittance_date: date, access_token, secret_key } }),
+  })
+
+  const json: any = await res.json().catch(() => null)
+  if (!res.ok || !json?.data) return []
+
+  return json.data.map((r: any) => ({
+    awb: r.airway_bill_no,
+    orderNo: r.order_no,
+    amount: Number(r.price),
+    deliveredDate: r.delivered_date,
+  }))
 }
