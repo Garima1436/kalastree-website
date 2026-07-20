@@ -19,10 +19,6 @@ export interface ShipmentItem {
   product_price: number
 }
 
-// NOTE: the exact string iThink expects for a COD shipment ('COD' vs 'cod',
-// as seen in their sample payload) hasn't been confirmed against a real COD
-// shipment yet — verify with iThink support or a sandbox call before the
-// first live COD order ships, same class of issue as the earlier s_type field.
 export interface CreateShipmentInput {
   orderNumber: string
   orderDate: Date
@@ -113,6 +109,10 @@ export async function createShipment(input: CreateShipmentInput): Promise<Create
         shipment_length: String(input.lengthCm),
         shipment_width: String(input.widthCm),
         shipment_height: String(input.heightCm),
+        // iThink's docs annotate this field "#in Kg" in one example, but the
+        // sample value (400 for two t-shirts) only makes physical sense as
+        // grams — treating that annotation as a doc typo. If a real shipment
+        // gets rejected/mispriced for weight, check this first.
         weight: String(input.weightGrams),
         shipping_charges: '0',
         giftwrap_charges: '0',
@@ -126,6 +126,11 @@ export async function createShipment(input: CreateShipmentInput): Promise<Create
         gst_number: '',
         what3words: '',
         return_address_id: String(input.returnAddressId),
+        // api_source: 1 = own website (we call the API directly, not via a
+        // marketplace connector like Uinware/Easyecom). store_id is Kalastree's
+        // confirmed Store ID from the iThink dashboard (Configure → Store Integration).
+        api_source: '1',
+        store_id: '31747',
       }],
       pickup_address_id: String(input.pickupAddressId),
       access_token,
