@@ -17,6 +17,16 @@ export default async function OrderConfirmationPage({ params }: { params: Promis
 
   if (!order) notFound()
 
+  const isCod = order.payment_method === 'cod'
+
+  const { data: siblingOrders } = order.checkout_group_id
+    ? await supabase
+        .from('orders')
+        .select('id, total, payment_method')
+        .eq('checkout_group_id', order.checkout_group_id)
+        .neq('id', order.id)
+    : { data: null }
+
   return (
     <div style={{ minHeight: '80vh', background: 'var(--parchment)', padding: '3rem 5%', display: 'flex', alignItems: 'flex-start', justifyContent: 'center' }}>
       <div style={{ maxWidth: 600, width: '100%' }}>
@@ -26,9 +36,23 @@ export default async function OrderConfirmationPage({ params }: { params: Promis
             {t('orderConfirmed')}
           </h1>
           <p style={{ color: '#6B4820', fontSize: '1rem', lineHeight: 1.7 }}>
-            {t('thankYouPrefix')} <strong>{order.user_name}</strong>. {t('orderPlacedMessage')}
+            {t('thankYouPrefix')} <strong>{order.user_name}</strong>. {isCod ? t('codOrderPlacedMessage') : t('orderPlacedMessage')}
           </p>
         </div>
+
+        {siblingOrders && siblingOrders.length > 0 && (
+          <div style={{ background: '#E0EAFF', border: '1px solid #1B2E4A', borderRadius: 8, padding: '1rem', marginBottom: '1.5rem', fontSize: '0.85rem', color: '#1B2E4A', lineHeight: 1.7 }}>
+            📦 {t('splitOrderNoticePrefix')}{' '}
+            {siblingOrders.map((sib: any, i: number) => (
+              <span key={sib.id}>
+                {i > 0 && ', '}
+                <a href={`/order/${sib.id}`} style={{ color: '#E8380A', fontWeight: 700, textDecoration: 'underline' }}>
+                  #{sib.id.slice(0, 8).toUpperCase()} — ₹{Number(sib.total).toLocaleString('en-IN')} ({sib.payment_method === 'cod' ? t('codLabel') : t('paidOnlineLabel')})
+                </a>
+              </span>
+            ))}
+          </div>
+        )}
 
         <div style={{ background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 12, padding: '2rem', marginBottom: '1.5rem' }}>
           <div style={{ fontFamily: 'monospace', fontSize: '0.78rem', color: '#6B4820', marginBottom: '1.25rem', padding: '8px 12px', background: '#FFE8A8', borderRadius: 6, display: 'inline-block' }}>
@@ -45,7 +69,7 @@ export default async function OrderConfirmationPage({ params }: { params: Promis
           </div>
 
           <div style={{ borderTop: '1.5px solid #DDB840', paddingTop: '1rem', display: 'flex', justifyContent: 'space-between', fontFamily: "'EB Garamond', serif", fontSize: '1.4rem', fontWeight: 700, marginBottom: '1rem' }}>
-            <span>{t('totalPaid')}</span>
+            <span>{isCod ? t('amountDueOnDelivery') : t('totalPaid')}</span>
             <span style={{ color: '#E8380A' }}>₹{Number(order.total).toLocaleString('en-IN')}</span>
           </div>
 

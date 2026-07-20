@@ -10,6 +10,7 @@ function getT(lang: Lang) {
 
 const STATUS_COLOR: Record<string, { bg: string; color: string }> = {
   pending:    { bg: '#FFF3A8', color: '#D4A000' },
+  confirmed:  { bg: '#C8F5D8', color: '#1A7A32' },
   paid:       { bg: '#C8F5D8', color: '#1A7A32' },
   processing: { bg: '#E0EAFF', color: '#1B2E4A' },
   shipped:    { bg: '#dbeafe', color: '#1d4ed8' },
@@ -22,6 +23,7 @@ export default async function AdminOrdersPage() {
   const t = getT(lang)
   const statusLabel: Record<string, string> = {
     pending: t('statusPending'),
+    confirmed: t('statusConfirmed'),
     paid: t('statusPaid'),
     processing: t('statusProcessing'),
     shipped: t('statusShipped'),
@@ -71,9 +73,14 @@ export default async function AdminOrdersPage() {
                     <div style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.7rem', fontWeight: 700, color: '#E8380A' }}>
                       ₹{Number(order.total).toLocaleString('en-IN')}
                     </div>
-                    <span style={{ padding: '3px 12px', borderRadius: 20, fontSize: '0.7rem', fontWeight: 700, background: sc.bg, color: sc.color }}>
-                      {(statusLabel[order.status] ?? order.status).toUpperCase()}
-                    </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'flex-end' }}>
+                      <span style={{ fontSize: '0.68rem', fontWeight: 700, color: '#6B4820' }}>
+                        {order.payment_method === 'cod' ? '💵 COD' : '💳 Online'}
+                      </span>
+                      <span style={{ padding: '3px 12px', borderRadius: 20, fontSize: '0.7rem', fontWeight: 700, background: sc.bg, color: sc.color }}>
+                        {(statusLabel[order.status] ?? order.status).toUpperCase()}
+                      </span>
+                    </div>
                   </div>
                 </div>
 

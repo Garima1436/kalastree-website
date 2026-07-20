@@ -30,7 +30,7 @@ export default function ArtisanOrderActions({ orderId, status }: { orderId: stri
     router.refresh()
   }
 
-  if (status === 'paid') return (
+  if (status === 'paid' || status === 'confirmed') return (
     <div style={{ display: 'flex', gap: 8 }}>
       <button onClick={() => update('processing')} disabled={loading} style={{
         padding: '7px 16px', borderRadius: 6, border: 'none', cursor: loading ? 'not-allowed' : 'pointer',

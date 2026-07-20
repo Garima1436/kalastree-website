@@ -97,7 +97,7 @@ export async function PATCH(req: NextRequest) {
 
     const { data: order } = await supabaseAdmin
       .from('orders')
-      .select('user_name, address_line, city, state, pincode, phone, created_at')
+      .select('user_name, user_email, address_line, city, state, pincode, phone, created_at, payment_method')
       .eq('id', orderId)
       .single()
 
@@ -157,10 +157,13 @@ export async function PATCH(req: NextRequest) {
         state: order.state,
         pincode: order.pincode,
         phone: order.phone,
+        email: order.user_email,
         items: myItems.map((i: any) => ({ product_name: i.product_name, product_quantity: i.quantity, product_price: i.price })),
         weightGrams, lengthCm, widthCm, heightCm,
         pickupAddressId: artisan.ithink_pickup_address_id,
         returnAddressId: artisan.ithink_return_address_id ?? artisan.ithink_pickup_address_id,
+        paymentMode: order.payment_method === 'cod' ? 'COD' : 'Prepaid',
+        codAmount: order.payment_method === 'cod' ? totalAmount : 0,
       })
     } catch (err: any) {
       console.error('iThink createShipment failed:', err)

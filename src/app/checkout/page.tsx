@@ -14,7 +14,8 @@ export default function CheckoutPage() {
   const { t } = useTranslation('shopping')
   const { t: tc } = useTranslation('common')
   const [cart, setCart] = useState<CartItem[]>([])
-  const [loading] = useState(false)
+  const [codMap, setCodMap] = useState<Record<string, boolean>>({})
+  const [checkoutGroupId] = useState(() => crypto.randomUUID())
   const [form, setForm] = useState({
     name: '', email: '', phone: '',
     address: '', city: '', state: '', pincode: '',
@@ -45,7 +46,23 @@ export default function CheckoutPage() {
     })
   }, [])
 
-  const total = cart.reduce((s, i) => s + i.price * i.qty, 0)
+  // Look up COD eligibility fresh whenever the cart changes (rather than
+  // persisting it on the cart item) so a flag toggled after add-to-cart is
+  // always honored at checkout time.
+  useEffect(() => {
+    if (cart.length === 0) { setCodMap({}); return }
+    const supabase = createClient()
+    supabase.from('products').select('id, cod_available').in('id', cart.map(i => i.id))
+      .then(({ data }) => {
+        if (data) setCodMap(Object.fromEntries(data.map((p: any) => [p.id, !!p.cod_available])))
+      })
+  }, [cart])
+
+  const codItems = cart.filter(i => codMap[i.id])
+  const onlineOnlyItems = cart.filter(i => !codMap[i.id])
+  const isSplit = codItems.length > 0 && onlineOnlyItems.length > 0
+  const groupIdIfSplit = isSplit ? checkoutGroupId : undefined
+
   const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }))
 
   const loadRazorpay = () => new Promise<boolean>(resolve => {
@@ -57,16 +74,33 @@ export default function CheckoutPage() {
     document.body.appendChild(s)
   })
 
-  const [loadingMethod, setLoadingMethod] = useState<'razorpay' | 'stripe' | null>(null)
+  const [loadingMethod, setLoadingMethod] = useState<'razorpay' | 'stripe' | 'cod' | null>(null)
 
-  const handleRazorpay = async () => {
-    if (cart.length === 0) return
+  // Removes only this panel's items from the persisted cart. If nothing is
+  // left afterward, this was the last panel to complete — send the customer
+  // to the confirmation page for the order they just finished.
+  const finishPanel = (orderId: string, panelItems: CartItem[]) => {
+    const remaining = cart.filter(c => !panelItems.some(p => p.id === c.id))
+    if (remaining.length === 0) {
+      localStorage.removeItem('kalastree_cart')
+    } else {
+      localStorage.setItem('kalastree_cart', JSON.stringify(remaining))
+    }
+    window.dispatchEvent(new Event('cart_updated'))
+    setCart(remaining)
+    if (remaining.length === 0) {
+      router.push(`/order/${orderId}`)
+    }
+  }
+
+  const handleRazorpay = async (panelItems: CartItem[], panelTotal: number, groupId?: string) => {
+    if (panelItems.length === 0) return
     setLoadingMethod('razorpay')
 
     const res = await fetch('/api/razorpay/create-order', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ amount: total, items: cart, ...form }),
+      body: JSON.stringify({ amount: panelTotal, items: panelItems, checkoutGroupId: groupId, ...form }),
     })
     const { razorpayOrderId, orderId, error: createError } = await res.json()
     if (createError) { alert(createError); setLoadingMethod(null); return }
@@ -76,7 +110,7 @@ export default function CheckoutPage() {
 
     const rzp = new window.Razorpay({
       key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-      amount: total * 100,
+      amount: panelTotal * 100,
       currency: 'INR',
       name: 'KalaStree',
       description: 'GI-verified artisan products',
@@ -96,13 +130,11 @@ export default function CheckoutPage() {
           }),
         })
         const { success } = await verifyRes.json()
+        setLoadingMethod(null)
         if (success) {
-          localStorage.removeItem('kalastree_cart')
-          window.dispatchEvent(new Event('cart_updated'))
-          router.push(`/order/${orderId}`)
+          finishPanel(orderId, panelItems)
         } else {
           alert(t('paymentVerificationFailed'))
-          setLoadingMethod(null)
         }
       },
       modal: { ondismiss: () => setLoadingMethod(null) },
@@ -110,19 +142,37 @@ export default function CheckoutPage() {
     rzp.open()
   }
 
-  const handleStripe = async () => {
-    if (cart.length === 0) return
+  const handleStripe = async (panelItems: CartItem[], panelTotal: number, groupId?: string) => {
+    if (panelItems.length === 0) return
     setLoadingMethod('stripe')
     const res = await fetch('/api/stripe/create-session', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items: cart, ...form }),
+      body: JSON.stringify({ items: panelItems, checkoutGroupId: groupId, ...form }),
     })
     const { url, error } = await res.json()
     if (error) { alert(error); setLoadingMethod(null); return }
-    localStorage.removeItem('kalastree_cart')
+    // Stripe takes the browser away entirely — strip this panel's items
+    // optimistically now, same as the pre-split single-panel flow did.
+    const remaining = cart.filter(c => !panelItems.some(p => p.id === c.id))
+    if (remaining.length === 0) localStorage.removeItem('kalastree_cart')
+    else localStorage.setItem('kalastree_cart', JSON.stringify(remaining))
     window.dispatchEvent(new Event('cart_updated'))
     window.location.href = url
+  }
+
+  const handleCOD = async (panelItems: CartItem[], panelTotal: number, groupId?: string) => {
+    if (panelItems.length === 0) return
+    setLoadingMethod('cod')
+    const res = await fetch('/api/orders/cod', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ items: panelItems, checkoutGroupId: groupId, ...form }),
+    })
+    const { orderId, error } = await res.json()
+    setLoadingMethod(null)
+    if (error) { alert(error); return }
+    finishPanel(orderId, panelItems)
   }
 
   const handleCheckout = async (e: React.FormEvent) => {
@@ -145,6 +195,88 @@ export default function CheckoutPage() {
       <Link href="/shop" style={{ color: '#E8380A', fontWeight: 700, textDecoration: 'none' }}>{t('browseProducts')} →</Link>
     </div>
   )
+
+  const renderPanel = (title: string, items: CartItem[], showCod: boolean) => {
+    const panelTotal = items.reduce((s, i) => s + i.price * i.qty, 0)
+    const groupId = isSplit ? checkoutGroupId : undefined
+    return (
+      <div style={{ background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 12, padding: '1.75rem' }}>
+        {isSplit && (
+          <div style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#1A7A32', marginBottom: 8 }}>
+            {title}
+          </div>
+        )}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: '1.25rem' }}>
+          {items.map(item => (
+            <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.88rem' }}>
+              <span style={{ color: '#6B4820' }}>{item.name} ×{item.qty}</span>
+              <span style={{ fontWeight: 700, color: '#1B2E4A' }}>₹{(item.price * item.qty).toLocaleString('en-IN')}</span>
+            </div>
+          ))}
+        </div>
+        <div style={{ borderTop: '1.5px solid #DDB840', paddingTop: '1rem', display: 'flex', justifyContent: 'space-between', fontFamily: "'EB Garamond', serif", fontSize: '1.4rem', fontWeight: 700 }}>
+          <span>{tc('total')}</span>
+          <span style={{ color: '#E8380A' }}>₹{panelTotal.toLocaleString('en-IN')}</span>
+        </div>
+        <div style={{ marginTop: '0.75rem', padding: '0.75rem', background: '#C8F5D8', borderRadius: 6, fontSize: '0.75rem', color: '#1A7A32', lineHeight: 1.6 }}>
+          🚚 {t('freeShipping')} &nbsp;·&nbsp; 🔒 {t('securedPayment')} &nbsp;·&nbsp; ✅ {t('giVerified')}
+        </div>
+
+        <button
+          type="button"
+          onClick={() => handleRazorpay(items, panelTotal, groupId)}
+          disabled={!!loadingMethod}
+          style={{
+            width: '100%', background: '#072654', color: '#fff', padding: '13px',
+            border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '0.95rem',
+            cursor: loadingMethod ? 'not-allowed' : 'pointer',
+            opacity: loadingMethod && loadingMethod !== 'razorpay' ? 0.5 : 1,
+            marginTop: '1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+          }}
+        >
+          {loadingMethod === 'razorpay' ? t('openingRazorpay') : (
+            <><span>🇮🇳</span><span>{t('payWithRazorpay')}</span><span style={{ fontSize: '0.75rem', opacity: 0.75 }}>{t('razorpayMethods')}</span></>
+          )}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => handleStripe(items, panelTotal, groupId)}
+          disabled={!!loadingMethod}
+          style={{
+            width: '100%', background: '#635BFF', color: '#fff', padding: '13px',
+            border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '0.95rem',
+            cursor: loadingMethod ? 'not-allowed' : 'pointer',
+            opacity: loadingMethod && loadingMethod !== 'stripe' ? 0.5 : 1,
+            marginTop: '0.6rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+          }}
+        >
+          {loadingMethod === 'stripe' ? t('redirectingToStripe') : (
+            <><span>🌍</span><span>{t('payWithCard')}</span><span style={{ fontSize: '0.75rem', opacity: 0.75 }}>{t('stripeMethods')}</span></>
+          )}
+        </button>
+
+        {showCod && (
+          <button
+            type="button"
+            onClick={() => handleCOD(items, panelTotal, groupId)}
+            disabled={!!loadingMethod}
+            style={{
+              width: '100%', background: '#1A7A32', color: '#fff', padding: '13px',
+              border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '0.95rem',
+              cursor: loadingMethod ? 'not-allowed' : 'pointer',
+              opacity: loadingMethod && loadingMethod !== 'cod' ? 0.5 : 1,
+              marginTop: '0.6rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            }}
+          >
+            {loadingMethod === 'cod' ? t('savingLabel') : (
+              <><span>💵</span><span>Cash on Delivery</span></>
+            )}
+          </button>
+        )}
+      </div>
+    )
+  }
 
   return (
     <div style={{ minHeight: '80vh', background: 'var(--parchment)', padding: '3rem 5%' }}>
@@ -198,63 +330,13 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            {/* Order summary */}
-            <div style={{ background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 12, padding: '1.75rem', position: 'sticky', top: 90 }}>
-              <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.4rem', fontWeight: 600, color: '#1B2E4A', marginBottom: '1.25rem' }}>
-                {t('orderSummary')}
-              </h2>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: '1.25rem' }}>
-                {cart.map(item => (
-                  <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.88rem' }}>
-                    <span style={{ color: '#6B4820' }}>{item.name} ×{item.qty}</span>
-                    <span style={{ fontWeight: 700, color: '#1B2E4A' }}>₹{(item.price * item.qty).toLocaleString('en-IN')}</span>
-                  </div>
-                ))}
-              </div>
-              <div style={{ borderTop: '1.5px solid #DDB840', paddingTop: '1rem', display: 'flex', justifyContent: 'space-between', fontFamily: "'EB Garamond', serif", fontSize: '1.4rem', fontWeight: 700 }}>
-                <span>{tc('total')}</span>
-                <span style={{ color: '#E8380A' }}>₹{total.toLocaleString('en-IN')}</span>
-              </div>
-              <div style={{ marginTop: '0.75rem', padding: '0.75rem', background: '#C8F5D8', borderRadius: 6, fontSize: '0.75rem', color: '#1A7A32', lineHeight: 1.6 }}>
-                🚚 {t('freeShipping')} &nbsp;·&nbsp; 🔒 {t('securedPayment')} &nbsp;·&nbsp; ✅ {t('giVerified')}
-              </div>
-
-              {/* Razorpay — India */}
-              <button
-                type="button"
-                onClick={handleRazorpay}
-                disabled={!!loadingMethod}
-                style={{
-                  width: '100%', background: '#072654', color: '#fff', padding: '13px',
-                  border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '0.95rem',
-                  cursor: loadingMethod ? 'not-allowed' : 'pointer',
-                  opacity: loadingMethod && loadingMethod !== 'razorpay' ? 0.5 : 1,
-                  marginTop: '1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                }}
-              >
-                {loadingMethod === 'razorpay' ? t('openingRazorpay') : (
-                  <><span>🇮🇳</span><span>{t('payWithRazorpay')}</span><span style={{ fontSize: '0.75rem', opacity: 0.75 }}>{t('razorpayMethods')}</span></>
-                )}
-              </button>
-
-              {/* Stripe — International */}
-              <button
-                type="button"
-                onClick={handleStripe}
-                disabled={!!loadingMethod}
-                style={{
-                  width: '100%', background: '#635BFF', color: '#fff', padding: '13px',
-                  border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '0.95rem',
-                  cursor: loadingMethod ? 'not-allowed' : 'pointer',
-                  opacity: loadingMethod && loadingMethod !== 'stripe' ? 0.5 : 1,
-                  marginTop: '0.6rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                }}
-              >
-                {loadingMethod === 'stripe' ? t('redirectingToStripe') : (
-                  <><span>🌍</span><span>{t('payWithCard')}</span><span style={{ fontSize: '0.75rem', opacity: 0.75 }}>{t('stripeMethods')}</span></>
-                )}
-              </button>
-              <Link href="/cart" style={{ display: 'block', textAlign: 'center', marginTop: '0.75rem', fontSize: '0.82rem', color: '#6B4820', textDecoration: 'none' }}>
+            {/* Order summary — one panel per payment-eligibility group. Most
+                carts render exactly one (either fully COD-eligible or fully
+                not); only a mixed cart shows two. */}
+            <div style={{ position: 'sticky', top: 90, display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+              {onlineOnlyItems.length > 0 && renderPanel(t('paidOnlineLabel'), onlineOnlyItems, false)}
+              {codItems.length > 0 && renderPanel(t('codLabel'), codItems, true)}
+              <Link href="/cart" style={{ display: 'block', textAlign: 'center', fontSize: '0.82rem', color: '#6B4820', textDecoration: 'none' }}>
                 ← {t('editCart')}
               </Link>
             </div>

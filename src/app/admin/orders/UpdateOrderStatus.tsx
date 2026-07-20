@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useLanguage } from '@/lib/i18n/LanguageContext'
 import dict from '@/lib/i18n/dictionaries/adminOrders'
 
-const STATUSES = ['pending', 'paid', 'processing', 'shipped', 'delivered', 'cancelled']
+const STATUSES = ['pending', 'confirmed', 'paid', 'processing', 'shipped', 'delivered', 'cancelled']
 
 export default function UpdateOrderStatus({ id, currentStatus }: { id: string; currentStatus: string }) {
   const router = useRouter()
@@ -12,6 +12,7 @@ export default function UpdateOrderStatus({ id, currentStatus }: { id: string; c
   const t = (key: keyof typeof dict.en): string => dict[lang]?.[key] ?? dict.en[key]
   const statusLabel: Record<string, string> = {
     pending: t('statusPending'),
+    confirmed: t('statusConfirmed'),
     paid: t('statusPaid'),
     processing: t('statusProcessing'),
     shipped: t('statusShipped'),

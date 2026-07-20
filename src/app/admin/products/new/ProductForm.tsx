@@ -77,6 +77,7 @@ export default function ProductForm({ artisans, initialData, mode = 'new' }: Pro
     length_cm: initialData?.length_cm?.toString() ?? '',
     width_cm: initialData?.width_cm?.toString() ?? '',
     height_cm: initialData?.height_cm?.toString() ?? '',
+    cod_available: initialData?.cod_available ?? false,
   })
 
   const set = (field: string, value: any) => setForm(f => ({ ...f, [field]: value }))
@@ -99,6 +100,7 @@ export default function ProductForm({ artisans, initialData, mode = 'new' }: Pro
       length_cm: form.length_cm ? parseInt(form.length_cm) : null,
       width_cm: form.width_cm ? parseInt(form.width_cm) : null,
       height_cm: form.height_cm ? parseInt(form.height_cm) : null,
+      cod_available: form.cod_available,
     }
 
     const res = await fetch('/api/admin/products', {
@@ -254,6 +256,12 @@ export default function ProductForm({ artisans, initialData, mode = 'new' }: Pro
               Required to auto-generate a shipping label via iThink Logistics when this product ships.
             </p>
           </div>
+
+          <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', fontSize: '0.9rem', color: '#1B2E4A', fontWeight: 600 }}>
+            <input type="checkbox" checked={form.cod_available} onChange={e => set('cod_available', e.target.checked)}
+              style={{ width: 17, height: 17, accentColor: '#1A7A32' }} />
+            Eligible for Cash on Delivery (COD)
+          </label>
 
           <div>
             <label style={labelStyle}>{t('productImageLabel')}</label>

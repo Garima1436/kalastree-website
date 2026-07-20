@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
   const razorpay = new Razorpay({ key_id: keyId, key_secret: keySecret })
   try {
     const body = await req.json()
-    const { items, name, email, phone, address, city, state, pincode } = body
+    const { items, name, email, phone, address, city, state, pincode, checkoutGroupId } = body
 
     if (!items?.length) return NextResponse.json({ error: 'Cart is empty' }, { status: 400 })
 
@@ -58,6 +58,8 @@ export async function POST(req: NextRequest) {
         status: 'pending',
         address_line: address,
         city, state, pincode,
+        payment_method: 'online',
+        checkout_group_id: checkoutGroupId ?? null,
       })
       .select()
       .single()

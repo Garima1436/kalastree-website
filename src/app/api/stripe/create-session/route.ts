@@ -7,7 +7,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
 
 export async function POST(req: NextRequest) {
   try {
-    const { items, name, email, phone, address, city, state, pincode } = await req.json()
+    const { items, name, email, phone, address, city, state, pincode, checkoutGroupId } = await req.json()
 
     if (!items?.length) return NextResponse.json({ error: 'Cart is empty' }, { status: 400 })
 
@@ -43,6 +43,8 @@ export async function POST(req: NextRequest) {
       status: 'pending',
       address_line: address,
       city, state, pincode,
+      payment_method: 'online',
+      checkout_group_id: checkoutGroupId ?? null,
     }).select().single()
 
     if (orderError || !order) return NextResponse.json({ error: orderError?.message ?? 'Failed to create order' }, { status: 500 })

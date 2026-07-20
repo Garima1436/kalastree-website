@@ -4,6 +4,7 @@ import { getServerLang, getT } from '@/lib/i18n/server'
 
 const STATUS_COLOR: Record<string, { bg: string; color: string }> = {
   pending:    { bg: '#FFF3A8', color: '#D4A000' },
+  confirmed:  { bg: '#C8F5D8', color: '#1A7A32' },
   paid:       { bg: '#C8F5D8', color: '#1A7A32' },
   processing: { bg: '#E0EAFF', color: '#1B2E4A' },
   shipped:    { bg: '#dbeafe', color: '#1d4ed8' },
@@ -11,10 +12,14 @@ const STATUS_COLOR: Record<string, { bg: string; color: string }> = {
   cancelled:  { bg: '#FEE2E2', color: '#B91C1C' },
 }
 
-const STATUS_STEPS = ['pending', 'paid', 'processing', 'shipped', 'delivered']
+// COD orders skip the online payment step entirely, so their progress bar
+// starts at "Confirmed" instead of "Pending → Paid".
+const STATUS_STEPS_ONLINE = ['pending', 'paid', 'processing', 'shipped', 'delivered']
+const STATUS_STEPS_COD = ['confirmed', 'processing', 'shipped', 'delivered']
 
 const STATUS_LABEL_KEY = {
   pending: 'statusPending',
+  confirmed: 'statusConfirmed',
   paid: 'statusPaid',
   processing: 'statusProcessing',
   shipped: 'statusShipped',
@@ -64,7 +69,9 @@ export default async function MyOrdersPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             {orders.map((order: any) => {
               const sc = STATUS_COLOR[order.status] ?? STATUS_COLOR.pending
-              const stepIndex = STATUS_STEPS.indexOf(order.status)
+              const isCod = order.payment_method === 'cod'
+              const steps = isCod ? STATUS_STEPS_COD : STATUS_STEPS_ONLINE
+              const stepIndex = steps.indexOf(order.status)
               return (
                 <div key={order.id} style={{ background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 12, overflow: 'hidden' }}>
                   {/* Header */}
@@ -78,6 +85,9 @@ export default async function MyOrdersPage() {
                       </div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                      <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#6B4820' }}>
+                        {isCod ? `💵 ${t('codLabel')}` : `💳 ${t('paidOnlineLabel')}`}
+                      </span>
                       <span style={{ padding: '4px 14px', borderRadius: 20, fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.08em', background: sc.bg, color: sc.color }}>
                         {statusLabel(order.status)}
                       </span>
@@ -91,8 +101,8 @@ export default async function MyOrdersPage() {
                     {/* Progress bar */}
                     {order.status !== 'cancelled' && (
                       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1.25rem', gap: 0 }}>
-                        {STATUS_STEPS.map((step, i) => (
-                          <div key={step} style={{ display: 'flex', alignItems: 'center', flex: i < STATUS_STEPS.length - 1 ? 1 : 0 }}>
+                        {steps.map((step, i) => (
+                          <div key={step} style={{ display: 'flex', alignItems: 'center', flex: i < steps.length - 1 ? 1 : 0 }}>
                             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
                               <div style={{
                                 width: 24, height: 24, borderRadius: '50%', border: `2px solid ${i <= stepIndex ? '#E8380A' : '#DDB840'}`,
@@ -105,7 +115,7 @@ export default async function MyOrdersPage() {
                                 {statusLabel(step)}
                               </span>
                             </div>
-                            {i < STATUS_STEPS.length - 1 && (
+                            {i < steps.length - 1 && (
                               <div style={{ flex: 1, height: 2, background: i < stepIndex ? '#E8380A' : '#DDB840', margin: '0 4px', marginBottom: 16 }} />
                             )}
                           </div>

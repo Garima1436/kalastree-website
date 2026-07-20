@@ -31,6 +31,7 @@ export interface Product {
   state: string | null
   stock: number
   is_featured: boolean
+  cod_available: boolean
   created_at: string
   artisan?: Artisan
 }

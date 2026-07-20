@@ -7,6 +7,9 @@ import common from '@/lib/i18n/dictionaries/common'
 
 const STATUS_STYLE: Record<string, { bg: string; color: string; labelKey: keyof typeof artisanDashboard.en }> = {
   pending:    { bg: '#FFF3CD', color: '#D4A000',  labelKey: 'statusPendingWord' },
+  // COD orders skip the online-payment step and land here directly, but from
+  // an artisan's perspective it's the same "new order, ready to accept" state.
+  confirmed:  { bg: '#C8F5D8', color: '#1A7A32',  labelKey: 'statusNewOrder' },
   paid:       { bg: '#C8F5D8', color: '#1A7A32',  labelKey: 'statusNewOrder' },
   processing: { bg: '#E0EAFF', color: '#1B2E4A',  labelKey: 'statusAccepted' },
   shipped:    { bg: '#dbeafe', color: '#1d4ed8',  labelKey: 'statusShipped' },
@@ -59,7 +62,7 @@ export default async function ArtisanOrdersPage() {
     itemsByOrder[item.order_id].push(item)
   }
 
-  const newOrders = (orders ?? []).filter((o: any) => o.status === 'paid')
+  const newOrders = (orders ?? []).filter((o: any) => o.status === 'paid' || o.status === 'confirmed')
   const activeOrders = (orders ?? []).filter((o: any) => ['processing', 'shipped'].includes(o.status))
   const pastOrders = (orders ?? []).filter((o: any) => ['delivered', 'cancelled'].includes(o.status))
 
@@ -89,9 +92,14 @@ export default async function ArtisanOrdersPage() {
             <div style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.6rem', fontWeight: 700, color: '#E8380A' }}>
               ₹{Number(order.total).toLocaleString('en-IN')}
             </div>
-            <span style={{ padding: '3px 12px', borderRadius: 20, fontSize: '0.7rem', fontWeight: 700, background: sc.bg, color: sc.color }}>
-              {scLabel}
-            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'flex-end' }}>
+              <span style={{ fontSize: '0.68rem', fontWeight: 700, color: '#6B4820' }}>
+                {order.payment_method === 'cod' ? '💵 COD' : '💳 Online'}
+              </span>
+              <span style={{ padding: '3px 12px', borderRadius: 20, fontSize: '0.7rem', fontWeight: 700, background: sc.bg, color: sc.color }}>
+                {scLabel}
+              </span>
+            </div>
           </div>
         </div>
 
