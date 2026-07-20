@@ -18,6 +18,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: 'Invalid signature' })
     }
 
+    // Idempotent — skip if the webhook already processed this payment
+    const { data: existingPayment } = await supabaseAdmin
+      .from('payments').select('status').eq('razorpay_order_id', razorpay_order_id).single()
+    if (existingPayment?.status === 'captured') {
+      return NextResponse.json({ success: true })
+    }
+
     await supabaseAdmin.from('payments').update({
       razorpay_payment_id, razorpay_signature, status: 'captured',
     }).eq('razorpay_order_id', razorpay_order_id)
