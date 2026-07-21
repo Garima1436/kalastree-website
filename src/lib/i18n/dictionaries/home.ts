@@ -40,7 +40,7 @@ const dict = {
     shopGiProductsFrom: 'Shop GI products from {state}',
     shopNow: 'SHOP NOW',
     heritageByHer: 'Heritage by Her',
-    heroDescPrefix: "India's first GI-verified marketplace where every purchase goes",
+    heroDescPrefix: "India's first women based GI-verified marketplace where every purchase goes",
     heroDescHighlight: 'directly to the woman who made it',
     heroDescSuffix: '— no middlemen, no compromise.',
     shopTheCollection: 'Shop the Collection',
