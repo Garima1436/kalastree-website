@@ -28,30 +28,24 @@ function stateNameFromSrc(src: string): string {
   return STATE_NAME_MAP[key] || (key.length <= 3 ? key.toUpperCase() : key.charAt(0).toUpperCase() + key.slice(1))
 }
 
-function ImageSlide({ src, priority }: { src: string; priority?: boolean }) {
+function ImageSlide({ src, aspectRatio, priority }: { src: string; aspectRatio: string; priority?: boolean }) {
   const { t } = useTranslation('home')
   const stateName = stateNameFromSrc(src)
   return (
-    <div style={{ position: 'relative', width: '100%', height: 'clamp(220px, 62vw, 560px)', background: '#3D0810', overflow: 'hidden' }}>
-      <Image
-        src={src}
-        alt=""
-        fill
-        aria-hidden
-        style={{ objectFit: 'cover', objectPosition: 'center', filter: 'blur(28px) brightness(0.7) saturate(1.2)', transform: 'scale(1.15)' }}
-        sizes="100vw"
-        draggable={false}
-      />
-      <Image
-        src={src}
-        alt={stateName}
-        fill
-        priority={priority}
-        style={{ objectFit: 'contain', objectPosition: 'center' }}
-        sizes="100vw"
-        draggable={false}
-      />
-      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(26,8,0,0.55) 0%, rgba(26,8,0,0.1) 45%, transparent 72%)', pointerEvents: 'none' }} />
+    <div style={{ position: 'relative', width: '100%', height: 'clamp(220px, 62vw, 560px)', background: '#FFFFFF', overflow: 'hidden' }}>
+      {/* Sized to the photo's own ratio and centered — keeps the photo AND its gradient from ever painting over the white margins */}
+      <div style={{ position: 'absolute', inset: 0, margin: 'auto', width: 'auto', height: '100%', maxWidth: '100%', aspectRatio }}>
+        <Image
+          src={src}
+          alt={stateName}
+          fill
+          priority={priority}
+          style={{ objectFit: 'cover', objectPosition: 'center' }}
+          sizes="100vw"
+          draggable={false}
+        />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(26,8,0,0.55) 0%, rgba(26,8,0,0.1) 45%, transparent 72%)', pointerEvents: 'none' }} />
+      </div>
       <Link
         href={`/shop?state=${encodeURIComponent(stateName)}`}
         style={{ position: 'absolute', inset: 0, zIndex: 2 }}
@@ -73,20 +67,22 @@ function ImageSlide({ src, priority }: { src: string; priority?: boolean }) {
 }
 
 const BRAND_PHOTO = '/hero/hero-main.png'
-const BRAND_PHOTO_ASPECT = '1672 / 941'
 function BrandSlide() {
   const { t } = useTranslation('home')
   return (
-    <div style={{ position: 'relative', width: '100%', aspectRatio: BRAND_PHOTO_ASPECT, overflow: 'hidden' }}>
-      <Image src={BRAND_PHOTO} alt="" fill priority sizes="100vw" style={{ objectFit: 'cover', objectPosition: 'center' }} draggable={false} />
+    <div style={{ position: 'relative', width: '100%', height: 'clamp(220px, 62vw, 560px)', background: '#FFFFFF', overflow: 'hidden' }}>
+      {/* Sized to the photo's own ratio and centered — keeps the photo AND its vignette from ever painting over the white margins */}
+      <div style={{ position: 'absolute', inset: 0, margin: 'auto', width: 'auto', height: '100%', maxWidth: '100%', aspectRatio: '1672 / 941' }}>
+        <Image src={BRAND_PHOTO} alt="" fill priority sizes="100vw" style={{ objectFit: 'cover', objectPosition: 'center' }} draggable={false} />
 
-      {/* Subtle dark vignette — just enough for the logo/text to stay legible over any photo */}
-      <div style={{
-        position: 'absolute', inset: 0, zIndex: 3, pointerEvents: 'none',
-        background: 'radial-gradient(ellipse 60% 55% at 50% 45%, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.45) 100%)',
-      }} />
+        {/* Subtle dark vignette — just enough for the logo/text to stay legible over the photo */}
+        <div style={{
+          position: 'absolute', inset: 0, zIndex: 3, pointerEvents: 'none',
+          background: 'radial-gradient(ellipse 60% 55% at 50% 45%, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.45) 100%)',
+        }} />
+      </div>
 
-      <div style={{ position: 'absolute', inset: 0, zIndex: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0.5rem 5%' }}>
+      <div style={{ position: 'absolute', inset: 0, zIndex: 4, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', padding: '0.5rem 5% clamp(1rem, 5vw, 3rem)' }}>
         <div style={{ maxWidth: 820, margin: '0 auto', textAlign: 'center' }}>
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 'clamp(0.3rem, 1vw, 0.6rem)' }}>
             <img src="/kalastree-logo.png" alt={`KalaStree — ${t('heritageByHer')}`}
@@ -113,7 +109,7 @@ function BrandSlide() {
 }
 
 interface HeroSectionProps {
-  heroImages: string[]
+  heroImages: { src: string; aspectRatio: string }[]
   statsImages: Partial<Record<StatKey, string>>
 }
 
@@ -167,9 +163,9 @@ export default function HeroSection({ heroImages, statsImages }: HeroSectionProp
           <div ref={el => { slideRefs.current[0] = el }} style={{ flex: '0 0 100%', width: '100%', minWidth: 0 }}>
             <BrandSlide />
           </div>
-          {heroImages.map((src, i) => (
+          {heroImages.map(({ src, aspectRatio }, i) => (
             <div key={src} ref={el => { slideRefs.current[i + 1] = el }} style={{ flex: '0 0 100%', width: '100%', minWidth: 0 }}>
-              <ImageSlide src={src} priority={i === 0} />
+              <ImageSlide src={src} aspectRatio={aspectRatio} priority={i === 0} />
             </div>
           ))}
         </div>
