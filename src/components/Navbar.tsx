@@ -31,12 +31,6 @@ export default function Navbar() {
     tNav('stateTamilNadu'), tNav('stateGujarat'), tNav('stateMadhyaPradesh'), tNav('stateKarnataka'),
   ]
 
-  const TICKER_ITEMS = [
-    tNav('tickerScholar'), tNav('tickerWomen'),
-    tNav('tickerFintech'), tNav('tickerBrand'), tNav('tickerGiCount'),
-    tNav('tickerStates'), tNav('tickerVoices'), tNav('tickerCrafts'),
-  ]
-
   const [menuOpen, setMenuOpen] = useState(false)
   const [userDropdown, setUserDropdown] = useState(false)
   const [shopDropdown, setShopDropdown] = useState(false)
@@ -381,24 +375,11 @@ export default function Navbar() {
         )}
       </nav>
 
-      {/* Ticker */}
-      <div style={{ background: '#1B2E4A', padding: '7px 0', overflow: 'hidden', borderBottom: '2px solid #D4A000' }}>
-        <div className="ticker-track">
-          {[...TICKER_ITEMS, ...TICKER_ITEMS].map((item, i) => (
-            <span key={i} style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#D4A000', padding: '0 2rem', whiteSpace: 'nowrap' }}>
-              {i !== 0 ? <><img src="/gi-logo.png" alt="" style={{ width: 34, height: 34, objectFit: 'contain', verticalAlign: 'middle', margin: '0 0.5rem', display: 'inline-block' }} />{item}</> : item}
-            </span>
-          ))}
-        </div>
-      </div>
-
       <style>{`
         .nav-link { font-family:'Lato',sans-serif;font-size:0.78rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:#6B4820;text-decoration:none;padding:5px 8px;border-bottom:2px solid transparent;transition:color 0.2s,border-color 0.2s;white-space:nowrap; }
         .nav-link:hover { color:#E8380A;border-bottom-color:#E8380A; }
         .nav-cta { font-family:'Lato',sans-serif;font-size:0.78rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;background:#E8380A;color:#fff!important;padding:7px 16px;border-radius:4px;text-decoration:none;white-space:nowrap;transition:background 0.2s; }
         .nav-cta:hover { background:#C12808; }
-        .ticker-track { display:flex;white-space:nowrap;animation:ticker 40s linear infinite; }
-        @keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
         @media(max-width:768px) { .nav-desktop{display:none!important;} .nav-mobile-right{display:flex!important;} }
       `}</style>
 
