@@ -3,6 +3,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useTranslation } from '@/lib/i18n/useTranslation'
 import { SOCIAL_LINKS } from '@/lib/socialLinks'
+import { PAYMENT_METHODS } from '@/lib/paymentMethods'
 
 export default function Footer() {
   const { t: tCommon } = useTranslation('common')
@@ -88,6 +89,20 @@ export default function Footer() {
               </a>
             ))}
           </div>
+        </div>
+      </div>
+
+      {/* Payment methods */}
+      <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 5% 2rem', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '1.75rem' }}>
+        <div style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#D4A000', marginBottom: '1rem' }}>
+          {tFooter('paymentMethodsHeading')}
+        </div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '1.5rem' }}>
+          {PAYMENT_METHODS.map(({ name, icon }) => (
+            <div key={name} title={name} className="footer-social-icon" style={{ display: 'flex', alignItems: 'center' }}>
+              {icon}
+            </div>
+          ))}
         </div>
       </div>
 
