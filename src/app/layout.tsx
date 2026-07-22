@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import Navbar from '@/components/Navbar'
+import SocialBar from '@/components/SocialBar'
 import Footer from '@/components/Footer'
 import ChatWidget from '@/components/ChatWidget'
 import { LanguageProvider } from '@/lib/i18n/LanguageContext'
@@ -25,6 +26,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body>
         <LanguageProvider initialLang={lang}>
           <div className="folk-band" />
+          <SocialBar />
           <Navbar />
           <main>{children}</main>
           <Footer />
