@@ -4,7 +4,6 @@ import Image from 'next/image'
 import { useState, useEffect, useRef } from 'react'
 import CartIcon from './CartIcon'
 import NavSearch from './NavSearch'
-import LanguageSwitcher from './LanguageSwitcher'
 import { createClient } from '@/lib/supabase-browser'
 import { useTranslation } from '@/lib/i18n/useTranslation'
 
@@ -174,9 +173,6 @@ export default function Navbar() {
             ))}
             <li><Link href="/about#contact" className="nav-cta">{tCommon('contact')}</Link></li>
             <li style={{ marginLeft: '0.25rem' }}>
-              <LanguageSwitcher />
-            </li>
-            <li style={{ marginLeft: '0.25rem' }}>
               <button onClick={() => setSearchOpen(true)} aria-label="Search"
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 36, height: 36, background: 'none', border: '1.5px solid #DDB840', borderRadius: 8, cursor: 'pointer', color: '#6B4820', transition: 'all 0.15s' }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor = '#E8380A'; e.currentTarget.style.color = '#E8380A' }}
@@ -264,7 +260,6 @@ export default function Navbar() {
               </svg>
             </button>
             <CartIcon />
-            <LanguageSwitcher compact />
             <button onClick={() => setMenuOpen(!menuOpen)} style={{ display: 'flex', flexDirection: 'column', gap: 5, background: 'none', border: 'none', cursor: 'pointer', padding: 4 }} aria-label="Menu">
               {[0, 1, 2].map(i => <span key={i} style={{ display: 'block', width: 24, height: 2, background: '#E8380A', borderRadius: 2 }} />)}
             </button>
@@ -320,9 +315,6 @@ export default function Navbar() {
               style={{ fontFamily: "'Lato', sans-serif", fontWeight: 700, color: '#fff', background: '#E8380A', textDecoration: 'none', fontSize: '0.95rem', padding: '8px 14px', borderRadius: 4, textAlign: 'center' }}>
               {tCommon('contact')}
             </Link>
-            <div style={{ display: 'flex', justifyContent: 'center', padding: '4px 0' }}>
-              <LanguageSwitcher />
-            </div>
             {user ? (
               <>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: '1px solid #EDD060' }}>
