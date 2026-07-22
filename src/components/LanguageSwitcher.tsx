@@ -2,7 +2,7 @@
 
 import { useLanguage } from '@/lib/i18n/LanguageContext'
 
-export default function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
+export default function LanguageSwitcher({ compact = false, tiny = false }: { compact?: boolean; tiny?: boolean }) {
   const { lang, setLang } = useLanguage()
 
   return (
@@ -11,11 +11,11 @@ export default function LanguageSwitcher({ compact = false }: { compact?: boolea
       aria-label="Toggle language / भाषा बदलें"
       style={{
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        height: compact ? 34 : 36,
-        padding: '0 12px',
-        background: 'none', border: '1.5px solid #DDB840', borderRadius: 8,
+        height: tiny ? 20 : compact ? 34 : 36,
+        padding: tiny ? '0 8px' : '0 12px',
+        background: 'none', border: '1.5px solid #DDB840', borderRadius: tiny ? 5 : 8,
         cursor: 'pointer', color: '#6B4820',
-        fontFamily: "'Lato', sans-serif", fontSize: '0.78rem', fontWeight: 700,
+        fontFamily: "'Lato', sans-serif", fontSize: tiny ? '0.65rem' : '0.78rem', fontWeight: 700,
         letterSpacing: '0.03em', whiteSpace: 'nowrap', transition: 'all 0.15s',
       }}
       onMouseEnter={e => { e.currentTarget.style.borderColor = '#E8380A'; e.currentTarget.style.color = '#E8380A' }}
