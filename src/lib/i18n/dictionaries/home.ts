@@ -22,7 +22,7 @@ const dict = {
     missionWomenTitle: 'Women First',
     missionWomenBody: '60–80% of GI sector work is done by women. We make sure they get paid for it.',
     missionAiTitle: 'AI Powered',
-    missionAiBody: 'Ask our RAG chatbot anything about GI crafts, regions, or product history.',
+    missionAiBody: 'Ask KalaSakhi anything about GI crafts, regions, or product history.',
 
     // Artisans section
     artisansEyebrow: 'The Hands Behind the Craft',
