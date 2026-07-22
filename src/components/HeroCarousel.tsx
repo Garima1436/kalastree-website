@@ -71,34 +71,33 @@ function BrandSlide() {
   const { t } = useTranslation('home')
   return (
     <div style={{ position: 'relative', width: '100%', height: 'clamp(220px, 62vw, 560px)', background: '#FFFFFF', overflow: 'hidden' }}>
-      {/* Sized to the photo's own ratio and centered — keeps the photo AND its vignette from ever painting over the white margins */}
+      {/* Sized to the photo's own ratio and centered — keeps the photo from ever painting over the white margins */}
       <div style={{ position: 'absolute', inset: 0, margin: 'auto', width: 'auto', height: '100%', maxWidth: '100%', aspectRatio: '1672 / 941' }}>
         <Image src={BRAND_PHOTO} alt="" fill priority sizes="100vw" style={{ objectFit: 'cover', objectPosition: 'center' }} draggable={false} />
 
-        {/* Subtle dark vignette — just enough for the logo/text to stay legible over the photo */}
-        <div style={{
-          position: 'absolute', inset: 0, zIndex: 3, pointerEvents: 'none',
-          background: 'radial-gradient(ellipse 60% 55% at 50% 45%, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.45) 100%)',
-        }} />
+        {/* White wave panel — gives the logo/description/buttons a clean backdrop instead of sitting over the busy photo */}
+        <svg viewBox="0 0 1000 560" preserveAspectRatio="none" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 3, pointerEvents: 'none' }}>
+          <path d="M0,400 C160,420 250,396 360,368 C470,340 560,405 690,375 C800,350 880,430 1000,390 L1000,560 L0,560 Z" fill="#fff" />
+        </svg>
       </div>
 
-      <div style={{ position: 'absolute', inset: 0, zIndex: 4, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', padding: '0.5rem 5% clamp(1rem, 5vw, 3rem)' }}>
+      <div style={{ position: 'absolute', inset: 0, zIndex: 4, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', padding: '0 5% clamp(0.6rem, 2vw, 1.25rem)' }}>
         <div style={{ maxWidth: 820, margin: '0 auto', textAlign: 'center' }}>
-          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 'clamp(0.3rem, 1vw, 0.6rem)' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 'clamp(0.15rem, 0.6vw, 0.35rem)' }}>
             <img src="/kalastree-logo.png" alt={`KalaStree — ${t('heritageByHer')}`}
-              style={{ height: 'clamp(70px, 16vw, 160px)', width: 'auto', objectFit: 'contain', display: 'block', filter: 'drop-shadow(0 2px 10px rgba(0,0,0,0.5))' }} />
+              style={{ height: 'clamp(44px, 8vw, 84px)', width: 'auto', objectFit: 'contain', display: 'block' }} />
           </div>
 
-          <p className="hero-desc" style={{ fontSize: 'clamp(0.72rem, 1.4vw, 1rem)', lineHeight: 1.6, color: '#fff', textShadow: '0 1px 8px rgba(0,0,0,0.6)', maxWidth: 560, margin: '0 auto clamp(0.6rem, 1.5vw, 1.2rem)' }}>
+          <p className="hero-desc" style={{ fontSize: 'clamp(0.6rem, 1.1vw, 0.85rem)', lineHeight: 1.45, color: '#3A1C08', maxWidth: 560, margin: '0 auto clamp(0.35rem, 1vw, 0.7rem)' }}>
             {t('heroDescPrefix')}{' '}
-            <strong style={{ color: '#FFC24B' }}>{t('heroDescHighlight')}</strong> {t('heroDescSuffix')}
+            <strong style={{ color: '#E8380A' }}>{t('heroDescHighlight')}</strong> {t('heroDescSuffix')}
           </p>
 
-          <div className="hero-btns" style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link href="/shop" style={{ background: '#E8380A', color: '#fff', padding: 'clamp(8px,1.5vw,14px) clamp(16px,3vw,34px)', borderRadius: 6, fontFamily: "'Lato', sans-serif", fontSize: 'clamp(0.75rem,1.3vw,0.95rem)', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8, boxShadow: '0 4px 20px rgba(0,0,0,0.35)' }}>
+          <div className="hero-btns" style={{ display: 'flex', gap: '0.6rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <Link href="/shop" style={{ background: '#E8380A', color: '#fff', padding: 'clamp(6px,1vw,10px) clamp(12px,2.2vw,24px)', borderRadius: 6, fontFamily: "'Lato', sans-serif", fontSize: 'clamp(0.65rem,1vw,0.82rem)', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6, boxShadow: '0 4px 16px rgba(232,56,10,0.3)' }}>
               {t('shopTheCollection')} →
             </Link>
-            <Link href="/artisans" style={{ background: 'rgba(0,0,0,0.15)', color: '#fff', padding: 'clamp(8px,1.5vw,14px) clamp(16px,3vw,34px)', borderRadius: 6, border: '2px solid rgba(255,255,255,0.8)', fontFamily: "'Lato', sans-serif", fontSize: 'clamp(0.75rem,1.3vw,0.95rem)', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+            <Link href="/artisans" style={{ background: 'transparent', color: '#1B2E4A', padding: 'clamp(6px,1vw,10px) clamp(12px,2.2vw,24px)', borderRadius: 6, border: '2px solid #1B2E4A', fontFamily: "'Lato', sans-serif", fontSize: 'clamp(0.65rem,1vw,0.82rem)', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
               {t('meetTheArtisans')}
             </Link>
           </div>
