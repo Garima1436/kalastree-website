@@ -56,6 +56,8 @@ const dict = {
     splitOrderNoticePrefix: 'This order was split based on delivery method — view your other order:',
     paidOnlineLabel: 'Paid Online',
     codLabel: 'Cash on Delivery',
+    trackingNumberLabel: 'AWB / Tracking Number',
+    trackPackage: 'Track Package',
 
     // Account: orders
     continueShoppingArrow: 'Continue shopping',
@@ -152,6 +154,8 @@ const dict = {
     splitOrderNoticePrefix: 'यह ऑर्डर डिलीवरी विधि के आधार पर विभाजित किया गया था — अपना अन्य ऑर्डर देखें:',
     paidOnlineLabel: 'ऑनलाइन भुगतान किया गया',
     codLabel: 'कैश ऑन डिलीवरी',
+    trackingNumberLabel: 'AWB / ट्रैकिंग नंबर',
+    trackPackage: 'पैकेज ट्रैक करें',
 
     // Account: orders
     continueShoppingArrow: 'खरीदारी जारी रखें',

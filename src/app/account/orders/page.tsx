@@ -123,6 +123,18 @@ export default async function MyOrdersPage() {
                       </div>
                     )}
 
+                    {/* Tracking */}
+                    {order.tracking_number && (
+                      <div style={{ padding: '0.8rem 1rem', background: '#E0EAFF', borderRadius: 8, fontSize: '0.82rem', color: '#1B2E4A', marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+                        <span>🚚 {t('trackingNumberLabel')}: <strong style={{ fontFamily: 'monospace' }}>{order.tracking_number}</strong></span>
+                        {order.tracking_url && (
+                          <a href={order.tracking_url} target="_blank" rel="noopener noreferrer" style={{ background: '#1B2E4A', color: '#D4A000', fontWeight: 700, padding: '6px 14px', borderRadius: 6, textDecoration: 'none', fontSize: '0.78rem' }}>
+                            {t('trackPackage')} →
+                          </a>
+                        )}
+                      </div>
+                    )}
+
                     {/* Items */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                       {(order.order_items ?? []).map((item: any) => (
