@@ -3,6 +3,7 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { Resend } from 'resend'
 import { supabaseAdmin } from '@/lib/supabase-admin'
+import { missingShippingFields } from '@/lib/checkoutValidation'
 
 // Cash-on-Delivery order creation — the COD analog of
 // razorpay/create-order + razorpay/verify combined into one synchronous
@@ -12,6 +13,9 @@ export async function POST(req: NextRequest) {
     const { items, name, email, phone, address, city, state, pincode, checkoutGroupId } = await req.json()
 
     if (!items?.length) return NextResponse.json({ error: 'Cart is empty' }, { status: 400 })
+
+    const missingFieldsError = missingShippingFields({ name, email, phone, address, city, state, pincode })
+    if (missingFieldsError) return NextResponse.json({ error: missingFieldsError }, { status: 400 })
 
     const cookieStore = await cookies()
     const supabase = createServerClient(

@@ -77,7 +77,7 @@ function BrandSlide() {
 
         {/* White wave panel — gives the logo/description/buttons a clean backdrop instead of sitting over the busy photo */}
         <svg viewBox="0 0 1000 560" preserveAspectRatio="none" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 3, pointerEvents: 'none' }}>
-          <path d="M0,400 C160,420 250,396 360,368 C470,340 560,405 690,375 C800,350 880,430 1000,390 L1000,560 L0,560 Z" fill="#fff" />
+          <path d="M130,560 L130,415 C220,378 280,452 380,402 C480,352 520,432 600,392 C680,352 760,422 870,412 L870,560 Z" fill="#fff" />
         </svg>
       </div>
 

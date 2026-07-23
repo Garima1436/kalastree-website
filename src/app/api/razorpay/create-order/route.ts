@@ -4,6 +4,7 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { getSecret } from '@/lib/secrets'
+import { missingShippingFields } from '@/lib/checkoutValidation'
 
 export async function POST(req: NextRequest) {
   const [keyId, keySecret] = await Promise.all([
@@ -20,6 +21,9 @@ export async function POST(req: NextRequest) {
     const { items, name, email, phone, address, city, state, pincode, checkoutGroupId } = body
 
     if (!items?.length) return NextResponse.json({ error: 'Cart is empty' }, { status: 400 })
+
+    const missingFieldsError = missingShippingFields({ name, email, phone, address, city, state, pincode })
+    if (missingFieldsError) return NextResponse.json({ error: missingFieldsError }, { status: 400 })
 
     const cookieStore = await cookies()
     const supabase = createServerClient(

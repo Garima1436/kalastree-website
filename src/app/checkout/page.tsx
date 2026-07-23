@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { createClient } from '@/lib/supabase-browser'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -21,6 +21,7 @@ export default function CheckoutPage() {
     address: '', city: '', state: '', pincode: '',
   })
   const router = useRouter()
+  const formRef = useRef<HTMLFormElement>(null)
 
   useEffect(() => {
     const stored = JSON.parse(localStorage.getItem('kalastree_cart') || '[]')
@@ -95,6 +96,7 @@ export default function CheckoutPage() {
 
   const handleRazorpay = async (panelItems: CartItem[], panelTotal: number, groupId?: string) => {
     if (panelItems.length === 0) return
+    if (!formRef.current?.reportValidity()) return
     setLoadingMethod('razorpay')
 
     const res = await fetch('/api/razorpay/create-order', {
@@ -144,6 +146,7 @@ export default function CheckoutPage() {
 
   const handleStripe = async (panelItems: CartItem[], panelTotal: number, groupId?: string) => {
     if (panelItems.length === 0) return
+    if (!formRef.current?.reportValidity()) return
     setLoadingMethod('stripe')
     const res = await fetch('/api/stripe/create-session', {
       method: 'POST',
@@ -163,6 +166,7 @@ export default function CheckoutPage() {
 
   const handleCOD = async (panelItems: CartItem[], panelTotal: number, groupId?: string) => {
     if (panelItems.length === 0) return
+    if (!formRef.current?.reportValidity()) return
     setLoadingMethod('cod')
     const res = await fetch('/api/orders/cod', {
       method: 'POST',
@@ -285,7 +289,7 @@ export default function CheckoutPage() {
           {t('checkoutTitle')}
         </h1>
 
-        <form onSubmit={handleCheckout}>
+        <form ref={formRef} onSubmit={handleCheckout}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: '2rem', alignItems: 'start' }}>
 
             {/* Shipping form */}

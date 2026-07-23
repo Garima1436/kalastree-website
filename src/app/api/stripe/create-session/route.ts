@@ -2,6 +2,7 @@ import Stripe from 'stripe'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { createClient } from '@/lib/supabase-server'
 import { NextRequest, NextResponse } from 'next/server'
+import { missingShippingFields } from '@/lib/checkoutValidation'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
 
@@ -10,6 +11,9 @@ export async function POST(req: NextRequest) {
     const { items, name, email, phone, address, city, state, pincode, checkoutGroupId } = await req.json()
 
     if (!items?.length) return NextResponse.json({ error: 'Cart is empty' }, { status: 400 })
+
+    const missingFieldsError = missingShippingFields({ name, email, phone, address, city, state, pincode })
+    if (missingFieldsError) return NextResponse.json({ error: missingFieldsError }, { status: 400 })
 
     // Get logged-in user (optional — guest checkout is fine)
     const supabase = await createClient()
