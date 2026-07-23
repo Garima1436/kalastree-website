@@ -102,13 +102,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ received: true })
     }
 
-    const updates: any = { status: orderStatus }
-    if (orderStatus === 'delivered') updates.delivery_otp = null
+    await supabaseAdmin.from('orders').update({ status: orderStatus }).eq('id', order.id)
 
-    await supabaseAdmin.from('orders').update(updates).eq('id', order.id)
-
-    // Notify the customer their order has actually arrived (courier-confirmed,
-    // independent of the OTP flow — that email only fires when it ships).
+    // Notify the customer their order has actually arrived (courier-confirmed —
+    // this webhook is now the sole source of truth for delivery status).
     if (orderStatus === 'delivered') {
       try {
         await sendDeliveredEmail(order, order.id.slice(0, 8).toUpperCase())
