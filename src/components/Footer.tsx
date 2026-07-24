@@ -30,7 +30,7 @@ export default function Footer() {
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 5% 2rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '2.5rem' }}>
         {/* Brand */}
         <div>
-          <Image src="/kalastree-logo.png" alt={`KalaStree — ${tFooter('tagline')}`} width={220} height={120} style={{ height: 70, width: 'auto', objectFit: 'contain', marginBottom: '1rem' }} />
+          <Image src="/kalastree-logo.png" alt={`KalaStree — ${tFooter('tagline')}`} width={256} height={120} style={{ height: 70, width: 'auto', objectFit: 'contain', marginBottom: '1rem' }} />
           <p style={{ fontSize: '0.85rem', lineHeight: 1.75, color: '#fff', marginBottom: '1rem' }}>
             {tFooter('brandBlurb')}
           </p>

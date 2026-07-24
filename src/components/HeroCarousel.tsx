@@ -74,21 +74,27 @@ function BrandSlide() {
       {/* Sized to the photo's own ratio and centered — keeps the photo from ever painting over the white margins */}
       <div style={{ position: 'absolute', inset: 0, margin: 'auto', width: 'auto', height: '100%', maxWidth: '100%', aspectRatio: '1672 / 941' }}>
         <Image src={BRAND_PHOTO} alt="" fill priority sizes="100vw" style={{ objectFit: 'cover', objectPosition: 'center' }} draggable={false} />
-
-        {/* White wave panel — gives the logo/description/buttons a clean backdrop instead of sitting over the busy photo */}
-        <svg viewBox="0 0 1000 560" preserveAspectRatio="none" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 3, pointerEvents: 'none' }}>
-          <path d="M130,560 L130,415 C220,378 280,452 380,402 C480,352 520,432 600,392 C680,352 760,422 870,412 L870,560 Z" fill="#fff" />
-        </svg>
       </div>
 
       <div style={{ position: 'absolute', inset: 0, zIndex: 4, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', padding: '0 5% clamp(0.6rem, 2vw, 1.25rem)' }}>
-        <div style={{ maxWidth: 820, margin: '0 auto', textAlign: 'center' }}>
+        {/* Sized to its own content (not the photo) so the wave backdrop always
+            hugs the logo/description/buttons regardless of viewport width. */}
+        <div style={{ position: 'relative', maxWidth: 820, textAlign: 'center', padding: 'clamp(1.5rem, 4.5vw, 2.5rem) clamp(1.75rem, 6vw, 3.5rem)' }}>
+          {/* Soft feathered glow, not a shape with an edge — fades all the way to
+              transparent with no hard boundary anywhere, so there's nothing for a
+              busy photo to clash against. Sized via the padding above, tight to the
+              actual logo/description/buttons rather than a large fixed card. */}
+          <div style={{
+            position: 'absolute', inset: '-8%', zIndex: -1, pointerEvents: 'none',
+            background: 'radial-gradient(ellipse farthest-corner at 50% 46%, rgba(255,255,255,0.99) 0%, rgba(255,255,255,0.95) 25%, rgba(255,255,255,0.65) 42%, rgba(255,255,255,0.15) 57%, rgba(255,255,255,0) 78%)',
+          }} />
+
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 'clamp(0.15rem, 0.6vw, 0.35rem)' }}>
             <img src="/kalastree-logo.png" alt={`KalaStree — ${t('heritageByHer')}`}
-              style={{ height: 'clamp(44px, 8vw, 84px)', width: 'auto', objectFit: 'contain', display: 'block' }} />
+              style={{ height: 'clamp(50px, 8.8vw, 92px)', width: 'auto', objectFit: 'contain', display: 'block' }} />
           </div>
 
-          <p className="hero-desc" style={{ fontSize: 'clamp(0.6rem, 1.1vw, 0.85rem)', lineHeight: 1.45, color: '#3A1C08', maxWidth: 560, margin: '0 auto clamp(0.35rem, 1vw, 0.7rem)' }}>
+          <p className="hero-desc" style={{ fontSize: 'clamp(0.85rem, 1.2vw, 0.94rem)', lineHeight: 1.45, color: '#030303', maxWidth: 560, margin: '0 auto clamp(0.35rem, 1vw, 0.7rem)' }}>
             {t('heroDescPrefix')}{' '}
             <strong style={{ color: '#E8380A' }}>{t('heroDescHighlight')}</strong> {t('heroDescSuffix')}
           </p>
@@ -97,7 +103,7 @@ function BrandSlide() {
             <Link href="/shop" style={{ background: '#E8380A', color: '#fff', padding: 'clamp(6px,1vw,10px) clamp(12px,2.2vw,24px)', borderRadius: 6, fontFamily: "'Lato', sans-serif", fontSize: 'clamp(0.65rem,1vw,0.82rem)', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6, boxShadow: '0 4px 16px rgba(232,56,10,0.3)' }}>
               {t('shopTheCollection')} →
             </Link>
-            <Link href="/artisans" style={{ background: 'transparent', color: '#1B2E4A', padding: 'clamp(6px,1vw,10px) clamp(12px,2.2vw,24px)', borderRadius: 6, border: '2px solid #1B2E4A', fontFamily: "'Lato', sans-serif", fontSize: 'clamp(0.65rem,1vw,0.82rem)', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <Link href="/artisans" style={{ background: '#E8380A', color: '#fff', padding: 'clamp(6px,1vw,10px) clamp(12px,2.2vw,24px)', borderRadius: 6, border: '2px solid #E8380A', fontFamily: "'Lato', sans-serif", fontSize: 'clamp(0.65rem,1vw,0.82rem)', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
               {t('meetTheArtisans')}
             </Link>
           </div>
