@@ -1,6 +1,10 @@
 import { createClient } from '@/lib/supabase-server'
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import { getServerLang, getT } from '@/lib/i18n/server'
+import CancelOrder from './CancelOrder'
+
+const CANCELLABLE_STATUSES = ['paid', 'confirmed', 'processing']
 
 const STATUS_COLOR: Record<string, { bg: string; color: string }> = {
   pending:    { bg: '#FFF3A8', color: '#D4A000' },
@@ -33,11 +37,12 @@ export default async function MyOrdersPage() {
   const tc = getT('common', lang)
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login?redirect=/account/orders')
 
   const { data: orders } = await supabase
     .from('orders')
     .select('*, order_items(*)')
-    .eq('user_id', user!.id)
+    .eq('user_id', user.id)
     .order('created_at', { ascending: false })
 
   const statusLabel = (status: string) => {
@@ -144,6 +149,10 @@ export default async function MyOrdersPage() {
                         </div>
                       ))}
                     </div>
+
+                    {CANCELLABLE_STATUSES.includes(order.status) && (
+                      <CancelOrder orderId={order.id} createdAt={order.created_at} />
+                    )}
                   </div>
                 </div>
               )
