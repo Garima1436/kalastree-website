@@ -86,12 +86,12 @@ function BrandSlide() {
               actual logo/description/buttons rather than a large fixed card. */}
           <div style={{
             position: 'absolute', inset: '-8%', zIndex: -1, pointerEvents: 'none',
-            background: 'radial-gradient(ellipse farthest-corner at 50% 46%, rgba(255,255,255,0.99) 0%, rgba(255,255,255,0.95) 25%, rgba(255,255,255,0.65) 42%, rgba(255,255,255,0.15) 57%, rgba(255,255,255,0) 78%)',
+            background: 'radial-gradient(ellipse farthest-corner at 50% 54%, rgba(255,255,255,0.99) 0%, rgba(255,255,255,0.95) 25%, rgba(255,255,255,0.65) 42%, rgba(255,255,255,0.15) 57%, rgba(255,255,255,0) 78%)',
           }} />
 
-          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 'clamp(0.15rem, 0.6vw, 0.35rem)' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: 'clamp(0.4rem, 1.2vw, 0.9rem)', marginBottom: 'clamp(0.15rem, 0.6vw, 0.35rem)' }}>
             <img src="/kalastree-logo.png" alt={`KalaStree — ${t('heritageByHer')}`}
-              style={{ height: 'clamp(50px, 8.8vw, 92px)', width: 'auto', objectFit: 'contain', display: 'block' }} />
+              style={{ height: 'clamp(65px, 11.5vw, 120px)', width: 'auto', objectFit: 'contain', display: 'block' }} />
           </div>
 
           <p className="hero-desc" style={{ fontSize: 'clamp(0.85rem, 1.2vw, 0.94rem)', lineHeight: 1.45, color: '#030303', maxWidth: 560, margin: '0 auto clamp(0.35rem, 1vw, 0.7rem)' }}>
