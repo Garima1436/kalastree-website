@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Lato:wght@300;400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@400;600;700&display=swap');
 @import "tailwindcss";
 
 :root {
@@ -38,7 +38,7 @@
   --color-cream: #FFFFFF;
   --color-text-muted: #6B4820;
   --color-border: #DDB840;
-  --font-sans: 'Lato', sans-serif;
+  --font-sans: 'Inter', sans-serif;
   --font-serif: 'EB Garamond', serif;
 }
 
@@ -48,7 +48,7 @@ html { scroll-behavior: smooth; }
 body {
   background: var(--parchment);
   color: var(--text);
-  font-family: 'Lato', sans-serif;
+  font-family: 'Inter', sans-serif;
   overflow-x: hidden;
 }
 

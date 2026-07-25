@@ -167,7 +167,7 @@ export default function ProductMediaManager({ productId }: { productId: string }
                 {item.type === 'video' && item.source === 'upload' && (
                   <div style={{ width: '100%', height: '100%', background: '#1B2E4A', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 4 }}>
                     <span style={{ fontSize: '1.8rem' }}>🎥</span>
-                    <span style={{ fontSize: '0.62rem', color: 'rgba(255,255,255,0.6)', fontFamily: "'Lato', sans-serif" }}>VIDEO</span>
+                    <span style={{ fontSize: '0.62rem', color: 'rgba(255,255,255,0.6)', fontFamily: "'Inter', sans-serif" }}>VIDEO</span>
                   </div>
                 )}
               </div>

@@ -28,7 +28,7 @@ export const PAYMENT_METHODS = [
   {
     name: 'RuPay',
     icon: (
-      <span style={{ fontFamily: "'Lato', sans-serif", fontWeight: 800, fontSize: '1.15rem' }}>
+      <span style={{ fontFamily: "'Inter', sans-serif", fontWeight: 800, fontSize: '1.15rem' }}>
         <span style={{ color: '#F58220' }}>Ru</span><span style={{ color: '#4CAF50' }}>Pay</span>
       </span>
     ),
@@ -36,7 +36,7 @@ export const PAYMENT_METHODS = [
   {
     name: 'UPI',
     icon: (
-      <span style={{ background: '#fff', borderRadius: 6, padding: '6px 12px', display: 'inline-flex', alignItems: 'center', fontFamily: "'Lato', sans-serif", fontWeight: 800, fontSize: '1rem', color: '#1B2E4A' }}>
+      <span style={{ background: '#fff', borderRadius: 6, padding: '6px 12px', display: 'inline-flex', alignItems: 'center', fontFamily: "'Inter', sans-serif", fontWeight: 800, fontSize: '1rem', color: '#1B2E4A' }}>
         UPI
       </span>
     ),
@@ -44,7 +44,7 @@ export const PAYMENT_METHODS = [
   {
     name: 'Cash on Delivery',
     icon: (
-      <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontFamily: "'Lato', sans-serif", fontWeight: 800, fontSize: '0.95rem', color: '#fff', letterSpacing: '0.03em' }}>
+      <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontFamily: "'Inter', sans-serif", fontWeight: 800, fontSize: '0.95rem', color: '#fff', letterSpacing: '0.03em' }}>
         💵 COD
       </span>
     ),

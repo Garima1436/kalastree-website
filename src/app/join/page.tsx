@@ -41,7 +41,7 @@ export default function JoinPage() {
     setStatus('success')
   }
 
-  const inp = { width: '100%', background: 'rgba(253,246,227,0.8)', border: '1.5px solid #DDB840', borderRadius: 6, padding: '12px 16px', fontFamily: "'Lato', sans-serif", fontSize: '0.95rem', color: '#1A1A1A', outline: 'none' }
+  const inp = { width: '100%', background: 'rgba(253,246,227,0.8)', border: '1.5px solid #DDB840', borderRadius: 6, padding: '12px 16px', fontFamily: "'Inter', sans-serif", fontSize: '0.95rem', color: '#1A1A1A', outline: 'none' }
 
   return (
     <div style={{ background: 'var(--parchment)', minHeight: '80vh' }}>

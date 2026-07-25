@@ -137,7 +137,7 @@ export default function Navbar() {
                     <div style={{ fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#D4A000', marginBottom: '0.75rem' }}>{tCommon('shopByCategory')}</div>
                     {SHOP_CATEGORIES.map(({ href, label, icon }) => (
                       <Link key={href} href={href} onClick={() => setShopDropdown(false)}
-                        style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', textDecoration: 'none', borderBottom: '1px solid #FFE8A8', color: '#1B2E4A', fontSize: '0.88rem', fontWeight: 600, fontFamily: "'Lato', sans-serif" }}
+                        style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', textDecoration: 'none', borderBottom: '1px solid #FFE8A8', color: '#1B2E4A', fontSize: '0.88rem', fontWeight: 600, fontFamily: "'Inter', sans-serif" }}
                         onMouseEnter={e => (e.currentTarget.style.color = '#E8380A')}
                         onMouseLeave={e => (e.currentTarget.style.color = '#1B2E4A')}>
                         <span>{icon}</span>{label}
@@ -154,7 +154,7 @@ export default function Navbar() {
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2px 8px' }}>
                       {SHOP_STATES.map(state => (
                         <Link key={state} href={`/shop?state=${encodeURIComponent(state)}`} onClick={() => setShopDropdown(false)}
-                          style={{ padding: '5px 0', textDecoration: 'none', color: '#6B4820', fontSize: '0.82rem', fontFamily: "'Lato', sans-serif", whiteSpace: 'nowrap' }}
+                          style={{ padding: '5px 0', textDecoration: 'none', color: '#6B4820', fontSize: '0.82rem', fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap' }}
                           onMouseEnter={e => (e.currentTarget.style.color = '#E8380A')}
                           onMouseLeave={e => (e.currentTarget.style.color = '#6B4820')}>
                           {state}
@@ -187,7 +187,7 @@ export default function Navbar() {
             {user ? (
               <li style={{ position: 'relative' }} ref={dropdownRef}>
                 <button onClick={() => setUserDropdown(v => !v)}
-                  style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'none', border: '1.5px solid #DDB840', borderRadius: 24, padding: '5px 14px 5px 6px', cursor: 'pointer', fontFamily: "'Lato', sans-serif" }}>
+                  style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'none', border: '1.5px solid #DDB840', borderRadius: 24, padding: '5px 14px 5px 6px', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
                   <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'linear-gradient(135deg, #E8380A, #D4A000)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 700, color: '#fff', flexShrink: 0 }}>
                     {(user.user_metadata?.full_name || user.email || 'U').split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2)}
                   </div>
@@ -200,7 +200,7 @@ export default function Navbar() {
                 {userDropdown && (
                   <div style={{ position: 'absolute', top: 'calc(100% + 10px)', right: 0, background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 10, boxShadow: '0 8px 32px rgba(26,10,0,0.12)', minWidth: 200, zIndex: 200, overflow: 'hidden' }}>
                     <div style={{ padding: '12px 16px', borderBottom: '1px solid #EDD060', background: '#FFF5E0' }}>
-                      <div style={{ fontFamily: "'Lato', sans-serif", fontWeight: 700, fontSize: '0.88rem', color: '#1B2E4A' }}>{user.user_metadata?.full_name || 'User'}</div>
+                      <div style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, fontSize: '0.88rem', color: '#1B2E4A' }}>{user.user_metadata?.full_name || 'User'}</div>
                       <div style={{ fontSize: '0.75rem', color: '#A07840', marginTop: 2 }}>{user.email}</div>
                     </div>
                     {[
@@ -208,7 +208,7 @@ export default function Navbar() {
                       { href: '/account/orders', icon: '📦', label: tCommon('myOrders') },
                     ].map(({ href, icon, label }) => (
                       <Link key={href} href={href} onClick={() => setUserDropdown(false)}
-                        style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '11px 16px', fontFamily: "'Lato', sans-serif", fontSize: '0.88rem', fontWeight: 600, color: '#1B2E4A', textDecoration: 'none', borderBottom: '1px solid #FFE8A8' }}
+                        style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '11px 16px', fontFamily: "'Inter', sans-serif", fontSize: '0.88rem', fontWeight: 600, color: '#1B2E4A', textDecoration: 'none', borderBottom: '1px solid #FFE8A8' }}
                         onMouseEnter={e => (e.currentTarget.style.background = '#FFE8A8')}
                         onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                         <span>{icon}</span>{label}
@@ -216,7 +216,7 @@ export default function Navbar() {
                     ))}
                     {isArtisan && (
                       <Link href="/artisan" onClick={() => setUserDropdown(false)}
-                        style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '11px 16px', fontFamily: "'Lato', sans-serif", fontSize: '0.88rem', fontWeight: 700, color: '#1A7A32', textDecoration: 'none', borderBottom: '1px solid #FFE8A8', background: '#F0FFF4' }}
+                        style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '11px 16px', fontFamily: "'Inter', sans-serif", fontSize: '0.88rem', fontWeight: 700, color: '#1A7A32', textDecoration: 'none', borderBottom: '1px solid #FFE8A8', background: '#F0FFF4' }}
                         onMouseEnter={e => (e.currentTarget.style.background = '#C8F5D8')}
                         onMouseLeave={e => (e.currentTarget.style.background = '#F0FFF4')}>
                         <span>🎨</span>{tCommon('artisanPanel')}
@@ -224,14 +224,14 @@ export default function Navbar() {
                     )}
                     {isAdmin && (
                       <Link href="/admin" onClick={() => setUserDropdown(false)}
-                        style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '11px 16px', fontFamily: "'Lato', sans-serif", fontSize: '0.88rem', fontWeight: 700, color: '#D4A000', textDecoration: 'none', borderBottom: '1px solid #FFE8A8', background: '#FFFBF0' }}
+                        style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '11px 16px', fontFamily: "'Inter', sans-serif", fontSize: '0.88rem', fontWeight: 700, color: '#D4A000', textDecoration: 'none', borderBottom: '1px solid #FFE8A8', background: '#FFFBF0' }}
                         onMouseEnter={e => (e.currentTarget.style.background = '#FFF3A8')}
                         onMouseLeave={e => (e.currentTarget.style.background = '#FFFBF0')}>
                         <span>⚙️</span>{tCommon('adminPanel')}
                       </Link>
                     )}
                     <button onClick={handleLogout}
-                      style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '11px 16px', width: '100%', background: 'none', border: 'none', fontFamily: "'Lato', sans-serif", fontSize: '0.88rem', fontWeight: 600, color: '#E8380A', cursor: 'pointer', textAlign: 'left' }}
+                      style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '11px 16px', width: '100%', background: 'none', border: 'none', fontFamily: "'Inter', sans-serif", fontSize: '0.88rem', fontWeight: 600, color: '#E8380A', cursor: 'pointer', textAlign: 'left' }}
                       onMouseEnter={e => (e.currentTarget.style.background = '#FEE2E2')}
                       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                       <span>🚪</span>{tCommon('signOut')}
@@ -241,10 +241,10 @@ export default function Navbar() {
               </li>
             ) : (
               <li style={{ display: 'flex', gap: 8 }}>
-                <Link href="/login" style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', background: 'none', border: '1.5px solid #DDB840', color: '#6B4820', padding: '6px 14px', borderRadius: 4, textDecoration: 'none', whiteSpace: 'nowrap' }}>
+                <Link href="/login" style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', background: 'none', border: '1.5px solid #DDB840', color: '#6B4820', padding: '6px 14px', borderRadius: 4, textDecoration: 'none', whiteSpace: 'nowrap' }}>
                   {tCommon('signIn')}
                 </Link>
-                <Link href="/signup" style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', background: '#E8380A', color: '#fff', padding: '6px 14px', borderRadius: 4, textDecoration: 'none', whiteSpace: 'nowrap' }}>
+                <Link href="/signup" style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', background: '#E8380A', color: '#fff', padding: '6px 14px', borderRadius: 4, textDecoration: 'none', whiteSpace: 'nowrap' }}>
                   {tCommon('signUp')}
                 </Link>
               </li>
@@ -270,13 +270,13 @@ export default function Navbar() {
         {menuOpen && (
           <div style={{ background: 'rgba(253,246,227,0.99)', borderTop: '1px solid #DDB840', padding: '1.25rem 5%', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
             <Link href="/" onClick={() => setMenuOpen(false)}
-              style={{ fontFamily: "'Lato', sans-serif", fontWeight: 700, color: '#1B2E4A', textDecoration: 'none', fontSize: '0.95rem', letterSpacing: '0.04em', padding: '4px 0', borderBottom: '1px solid #EDD060' }}>
+              style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, color: '#1B2E4A', textDecoration: 'none', fontSize: '0.95rem', letterSpacing: '0.04em', padding: '4px 0', borderBottom: '1px solid #EDD060' }}>
               {tCommon('home')}
             </Link>
             {/* Shop expandable */}
             <div>
               <button onClick={() => setMobileShopOpen(v => !v)}
-                style={{ width: '100%', background: 'none', border: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontFamily: "'Lato', sans-serif", fontWeight: 700, color: '#1B2E4A', fontSize: '0.95rem', padding: '4px 0', borderBottom: '1px solid #EDD060', cursor: 'pointer' }}>
+                style={{ width: '100%', background: 'none', border: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontFamily: "'Inter', sans-serif", fontWeight: 700, color: '#1B2E4A', fontSize: '0.95rem', padding: '4px 0', borderBottom: '1px solid #EDD060', cursor: 'pointer' }}>
                 {tCommon('shop')} <span style={{ fontSize: '0.7rem', color: '#A07840' }}>{mobileShopOpen ? '▲' : '▼'}</span>
               </button>
               {mobileShopOpen && (
@@ -284,7 +284,7 @@ export default function Navbar() {
                   <div style={{ fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#D4A000', marginBottom: 2 }}>{tCommon('shopByCategory')}</div>
                   {SHOP_CATEGORIES.map(({ href, label, icon }) => (
                     <Link key={href} href={href} onClick={() => { setMenuOpen(false); setMobileShopOpen(false) }}
-                      style={{ fontFamily: "'Lato', sans-serif", color: '#1B2E4A', textDecoration: 'none', fontSize: '0.88rem', padding: '3px 0' }}>
+                      style={{ fontFamily: "'Inter', sans-serif", color: '#1B2E4A', textDecoration: 'none', fontSize: '0.88rem', padding: '3px 0' }}>
                       {icon} {label}
                     </Link>
                   ))}
@@ -292,7 +292,7 @@ export default function Navbar() {
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px 12px' }}>
                     {SHOP_STATES.map(state => (
                       <Link key={state} href={`/shop?state=${encodeURIComponent(state)}`} onClick={() => { setMenuOpen(false); setMobileShopOpen(false) }}
-                        style={{ color: '#6B4820', textDecoration: 'none', fontSize: '0.82rem', fontFamily: "'Lato', sans-serif" }}>
+                        style={{ color: '#6B4820', textDecoration: 'none', fontSize: '0.82rem', fontFamily: "'Inter', sans-serif" }}>
                         {state}
                       </Link>
                     ))}
@@ -307,12 +307,12 @@ export default function Navbar() {
 
             {NAV_LINKS.map(({ href, label }) => (
               <Link key={href} href={href} onClick={() => setMenuOpen(false)}
-                style={{ fontFamily: "'Lato', sans-serif", fontWeight: 700, color: '#1B2E4A', textDecoration: 'none', fontSize: '0.95rem', letterSpacing: '0.04em', padding: '4px 0', borderBottom: '1px solid #EDD060' }}>
+                style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, color: '#1B2E4A', textDecoration: 'none', fontSize: '0.95rem', letterSpacing: '0.04em', padding: '4px 0', borderBottom: '1px solid #EDD060' }}>
                 {label}
               </Link>
             ))}
             <Link href="/about#contact" onClick={() => setMenuOpen(false)}
-              style={{ fontFamily: "'Lato', sans-serif", fontWeight: 700, color: '#fff', background: '#E8380A', textDecoration: 'none', fontSize: '0.95rem', padding: '8px 14px', borderRadius: 4, textAlign: 'center' }}>
+              style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, color: '#fff', background: '#E8380A', textDecoration: 'none', fontSize: '0.95rem', padding: '8px 14px', borderRadius: 4, textAlign: 'center' }}>
               {tCommon('contact')}
             </Link>
             {user ? (
@@ -322,43 +322,43 @@ export default function Navbar() {
                     {(user.user_metadata?.full_name || user.email || 'U').split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2)}
                   </div>
                   <div>
-                    <div style={{ fontFamily: "'Lato', sans-serif", fontWeight: 700, fontSize: '0.9rem', color: '#1B2E4A' }}>{user.user_metadata?.full_name || 'User'}</div>
+                    <div style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, fontSize: '0.9rem', color: '#1B2E4A' }}>{user.user_metadata?.full_name || 'User'}</div>
                     <div style={{ fontSize: '0.75rem', color: '#A07840' }}>{user.email}</div>
                   </div>
                 </div>
                 <Link href="/account/profile" onClick={() => setMenuOpen(false)}
-                  style={{ fontFamily: "'Lato', sans-serif", fontWeight: 700, color: '#1B2E4A', textDecoration: 'none', fontSize: '0.95rem', padding: '4px 0', borderBottom: '1px solid #EDD060' }}>
+                  style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, color: '#1B2E4A', textDecoration: 'none', fontSize: '0.95rem', padding: '4px 0', borderBottom: '1px solid #EDD060' }}>
                   👤 {tCommon('myProfile')}
                 </Link>
                 <Link href="/account/orders" onClick={() => setMenuOpen(false)}
-                  style={{ fontFamily: "'Lato', sans-serif", fontWeight: 700, color: '#1B2E4A', textDecoration: 'none', fontSize: '0.95rem', padding: '4px 0', borderBottom: '1px solid #EDD060' }}>
+                  style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, color: '#1B2E4A', textDecoration: 'none', fontSize: '0.95rem', padding: '4px 0', borderBottom: '1px solid #EDD060' }}>
                   📦 {tCommon('myOrders')}
                 </Link>
                 {isArtisan && (
                   <Link href="/artisan" onClick={() => setMenuOpen(false)}
-                    style={{ fontFamily: "'Lato', sans-serif", fontWeight: 700, color: '#1A7A32', textDecoration: 'none', fontSize: '0.95rem', padding: '4px 0', borderBottom: '1px solid #EDD060' }}>
+                    style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, color: '#1A7A32', textDecoration: 'none', fontSize: '0.95rem', padding: '4px 0', borderBottom: '1px solid #EDD060' }}>
                     🎨 {tCommon('artisanPanel')}
                   </Link>
                 )}
                 {isAdmin && (
                   <Link href="/admin" onClick={() => setMenuOpen(false)}
-                    style={{ fontFamily: "'Lato', sans-serif", fontWeight: 700, color: '#D4A000', textDecoration: 'none', fontSize: '0.95rem', padding: '4px 0', borderBottom: '1px solid #EDD060' }}>
+                    style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, color: '#D4A000', textDecoration: 'none', fontSize: '0.95rem', padding: '4px 0', borderBottom: '1px solid #EDD060' }}>
                     ⚙️ {tCommon('adminPanel')}
                   </Link>
                 )}
                 <button onClick={() => { handleLogout(); setMenuOpen(false) }}
-                  style={{ background: 'none', border: 'none', fontFamily: "'Lato', sans-serif", fontWeight: 700, color: '#E8380A', fontSize: '0.95rem', padding: '4px 0', textAlign: 'left', cursor: 'pointer' }}>
+                  style={{ background: 'none', border: 'none', fontFamily: "'Inter', sans-serif", fontWeight: 700, color: '#E8380A', fontSize: '0.95rem', padding: '4px 0', textAlign: 'left', cursor: 'pointer' }}>
                   🚪 {tCommon('signOut')}
                 </button>
               </>
             ) : (
               <>
                 <Link href="/login" onClick={() => setMenuOpen(false)}
-                  style={{ fontFamily: "'Lato', sans-serif", fontWeight: 700, color: '#1B2E4A', textDecoration: 'none', fontSize: '0.95rem', padding: '4px 0', borderBottom: '1px solid #EDD060' }}>
+                  style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, color: '#1B2E4A', textDecoration: 'none', fontSize: '0.95rem', padding: '4px 0', borderBottom: '1px solid #EDD060' }}>
                   {tCommon('signIn')}
                 </Link>
                 <Link href="/signup" onClick={() => setMenuOpen(false)}
-                  style={{ fontFamily: "'Lato', sans-serif", fontWeight: 700, color: '#E8380A', textDecoration: 'none', fontSize: '0.95rem', padding: '4px 0' }}>
+                  style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, color: '#E8380A', textDecoration: 'none', fontSize: '0.95rem', padding: '4px 0' }}>
                   {tCommon('signUp')}
                 </Link>
               </>
@@ -368,9 +368,9 @@ export default function Navbar() {
       </nav>
 
       <style>{`
-        .nav-link { font-family:'Lato',sans-serif;font-size:0.78rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:#6B4820;text-decoration:none;padding:5px 8px;border-bottom:2px solid transparent;transition:color 0.2s,border-color 0.2s;white-space:nowrap; }
+        .nav-link { font-family:'Inter',sans-serif;font-size:0.78rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:#6B4820;text-decoration:none;padding:5px 8px;border-bottom:2px solid transparent;transition:color 0.2s,border-color 0.2s;white-space:nowrap; }
         .nav-link:hover { color:#E8380A;border-bottom-color:#E8380A; }
-        .nav-cta { font-family:'Lato',sans-serif;font-size:0.78rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;background:#E8380A;color:#fff!important;padding:7px 16px;border-radius:4px;text-decoration:none;white-space:nowrap;transition:background 0.2s; }
+        .nav-cta { font-family:'Inter',sans-serif;font-size:0.78rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;background:#E8380A;color:#fff!important;padding:7px 16px;border-radius:4px;text-decoration:none;white-space:nowrap;transition:background 0.2s; }
         .nav-cta:hover { background:#C12808; }
         @media(max-width:768px) { .nav-desktop{display:none!important;} .nav-mobile-right{display:flex!important;} }
       `}</style>

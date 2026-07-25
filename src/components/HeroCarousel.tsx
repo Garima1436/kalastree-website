@@ -52,7 +52,7 @@ function ImageSlide({ src, aspectRatio, priority }: { src: string; aspectRatio: 
         aria-label={t('shopGiProductsFrom').replace('{state}', stateName)}
       />
       <div style={{ position: 'absolute', left: '6%', bottom: '10%', maxWidth: 420, pointerEvents: 'none' }}>
-        <p style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.25em', textTransform: 'uppercase', color: '#D4A000', marginBottom: 8 }}>
+        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.25em', textTransform: 'uppercase', color: '#D4A000', marginBottom: 8 }}>
           {t('giHeritageOf')}
         </p>
         <h3 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.5rem, 4vw, 2.6rem)', fontWeight: 700, color: '#fff', margin: '0 0 1rem', lineHeight: 1.1, textShadow: '0 2px 12px rgba(0,0,0,0.5)' }}>
@@ -100,10 +100,10 @@ function BrandSlide() {
           </p>
 
           <div className="hero-btns" style={{ display: 'flex', gap: '0.6rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link href="/shop" style={{ background: '#E8380A', color: '#fff', padding: 'clamp(6px,1vw,10px) clamp(12px,2.2vw,24px)', borderRadius: 6, fontFamily: "'Lato', sans-serif", fontSize: 'clamp(0.65rem,1vw,0.82rem)', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6, boxShadow: '0 4px 16px rgba(232,56,10,0.3)' }}>
+            <Link href="/shop" style={{ background: '#E8380A', color: '#fff', padding: 'clamp(6px,1vw,10px) clamp(12px,2.2vw,24px)', borderRadius: 6, fontFamily: "'Inter', sans-serif", fontSize: 'clamp(0.65rem,1vw,0.82rem)', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6, boxShadow: '0 4px 16px rgba(232,56,10,0.3)' }}>
               {t('shopTheCollection')} →
             </Link>
-            <Link href="/artisans" style={{ background: '#E8380A', color: '#fff', padding: 'clamp(6px,1vw,10px) clamp(12px,2.2vw,24px)', borderRadius: 6, border: '2px solid #E8380A', fontFamily: "'Lato', sans-serif", fontSize: 'clamp(0.65rem,1vw,0.82rem)', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <Link href="/artisans" style={{ background: '#E8380A', color: '#fff', padding: 'clamp(6px,1vw,10px) clamp(12px,2.2vw,24px)', borderRadius: 6, border: '2px solid #E8380A', fontFamily: "'Inter', sans-serif", fontSize: 'clamp(0.65rem,1vw,0.82rem)', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
               {t('meetTheArtisans')}
             </Link>
           </div>

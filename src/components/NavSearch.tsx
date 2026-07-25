@@ -96,12 +96,12 @@ export default function NavSearch({ onClose }: { onClose: () => void }) {
             onChange={e => setQuery(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter' && q) go(`/shop?q=${encodeURIComponent(q)}`) }}
             placeholder={t('searchPlaceholder')}
-            style={{ flex: 1, background: 'none', border: 'none', outline: 'none', fontSize: '1.05rem', fontFamily: "'Lato', sans-serif", color: '#1B2E4A' }}
+            style={{ flex: 1, background: 'none', border: 'none', outline: 'none', fontSize: '1.05rem', fontFamily: "'Inter', sans-serif", color: '#1B2E4A' }}
           />
           {query && (
             <button onClick={() => setQuery('')} style={{ background: 'none', border: 'none', color: '#A07840', cursor: 'pointer', fontSize: '1rem', lineHeight: 1, padding: 4 }}>✕</button>
           )}
-          <button onClick={onClose} style={{ flexShrink: 0, background: 'none', border: '1.5px solid #DDB840', borderRadius: 5, padding: '4px 10px', cursor: 'pointer', color: '#6B4820', fontSize: '0.72rem', fontFamily: "'Lato', sans-serif", fontWeight: 700, letterSpacing: '0.05em' }}>
+          <button onClick={onClose} style={{ flexShrink: 0, background: 'none', border: '1.5px solid #DDB840', borderRadius: 5, padding: '4px 10px', cursor: 'pointer', color: '#6B4820', fontSize: '0.72rem', fontFamily: "'Inter', sans-serif", fontWeight: 700, letterSpacing: '0.05em' }}>
             ESC
           </button>
         </div>
@@ -137,7 +137,7 @@ export default function NavSearch({ onClose }: { onClose: () => void }) {
                         : <span style={{ fontSize: '1.3rem' }}>{cat.icon}</span>}
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontFamily: "'Lato', sans-serif", fontWeight: 700, fontSize: '0.9rem', color: '#1B2E4A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</div>
+                      <div style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, fontSize: '0.9rem', color: '#1B2E4A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</div>
                       <div style={{ fontSize: '0.72rem', color: '#A07840', marginTop: 2 }}>{p.state} · {cat.label}</div>
                     </div>
                     <div style={{ fontFamily: "'EB Garamond', serif", fontWeight: 700, fontSize: '1rem', color: '#E8380A', flexShrink: 0 }}>₹{p.price.toLocaleString('en-IN')}</div>
@@ -146,7 +146,7 @@ export default function NavSearch({ onClose }: { onClose: () => void }) {
               })}
               {q && (
                 <button onClick={() => go(`/shop?q=${encodeURIComponent(q)}`)}
-                  style={{ marginTop: '0.4rem', background: 'none', border: 'none', color: '#E8380A', fontFamily: "'Lato', sans-serif", fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer', padding: '4px 6px' }}>
+                  style={{ marginTop: '0.4rem', background: 'none', border: 'none', color: '#E8380A', fontFamily: "'Inter', sans-serif", fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer', padding: '4px 6px' }}>
                   {t('seeAllResultsFor')} "{q}" →
                 </button>
               )}
@@ -166,7 +166,7 @@ export default function NavSearch({ onClose }: { onClose: () => void }) {
                     {a.photo_url ? <img src={a.photo_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span>👩‍🎨</span>}
                   </div>
                   <div>
-                    <div style={{ fontFamily: "'Lato', sans-serif", fontWeight: 700, fontSize: '0.9rem', color: '#1B2E4A' }}>{a.name}</div>
+                    <div style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, fontSize: '0.9rem', color: '#1B2E4A' }}>{a.name}</div>
                     <div style={{ fontSize: '0.72rem', color: '#A07840', marginTop: 2 }}>{a.craft} · {a.state}</div>
                   </div>
                   <span style={{ marginLeft: 'auto', fontSize: '0.72rem', color: '#E8380A', fontWeight: 700 }}>{t('viewArrow')} →</span>
@@ -182,7 +182,7 @@ export default function NavSearch({ onClose }: { onClose: () => void }) {
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                 {POPULAR.map(term => (
                   <button key={term} onClick={() => setQuery(term)}
-                    style={{ background: '#FFE8A8', border: '1px solid #DDB840', borderRadius: 20, padding: '5px 14px', fontSize: '0.8rem', fontFamily: "'Lato', sans-serif", color: '#6B4820', cursor: 'pointer', fontWeight: 600 }}
+                    style={{ background: '#FFE8A8', border: '1px solid #DDB840', borderRadius: 20, padding: '5px 14px', fontSize: '0.8rem', fontFamily: "'Inter', sans-serif", color: '#6B4820', cursor: 'pointer', fontWeight: 600 }}
                     onMouseEnter={e => { e.currentTarget.style.background = '#F5D888'; e.currentTarget.style.color = '#E8380A' }}
                     onMouseLeave={e => { e.currentTarget.style.background = '#FFE8A8'; e.currentTarget.style.color = '#6B4820' }}>
                     🔍 {term}

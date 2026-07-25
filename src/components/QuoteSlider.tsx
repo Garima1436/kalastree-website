@@ -79,8 +79,8 @@ export default function QuoteSlider() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <div style={{ width: 28, height: 2, background: '#D4A000', borderRadius: 2, flexShrink: 0 }} />
           <div>
-            <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#E8380A', fontFamily: "'Lato', sans-serif" }}>Garima Awasthi</div>
-            <div style={{ fontSize: '0.7rem', color: '#A07840', fontFamily: "'Lato', sans-serif", marginTop: 1 }}>{t('founderRole')}</div>
+            <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#E8380A', fontFamily: "'Inter', sans-serif" }}>Garima Awasthi</div>
+            <div style={{ fontSize: '0.7rem', color: '#A07840', fontFamily: "'Inter', sans-serif", marginTop: 1 }}>{t('founderRole')}</div>
           </div>
         </div>
       </div>

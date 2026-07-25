@@ -8,7 +8,7 @@ export default function SocialBar() {
       <div style={{ maxWidth: 1400, margin: '0 auto', padding: '3px 4%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
         <LanguageSwitcher tiny />
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-        <span style={{ fontFamily: "'Lato', sans-serif", fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#A07840', marginRight: 2 }}>
+        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#A07840', marginRight: 2 }}>
           Follow Us
         </span>
         {SOCIAL_LINKS.map(({ name, href, bg, icon }) => (

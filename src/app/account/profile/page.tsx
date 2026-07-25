@@ -53,7 +53,7 @@ export default function ProfilePage() {
 
   if (loading) return (
     <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--parchment)' }}>
-      <div style={{ color: '#6B4820', fontFamily: "'Lato', sans-serif" }}>{t('loadingProfile')}</div>
+      <div style={{ color: '#6B4820', fontFamily: "'Inter', sans-serif" }}>{t('loadingProfile')}</div>
     </div>
   )
 
@@ -82,7 +82,7 @@ export default function ProfilePage() {
             { label: `📦 ${tc('myOrders')}`, href: '/account/orders' },
             { label: `🛒 ${t('continueShopping')}`, href: '/shop' },
           ].map(({ label, href }) => (
-            <a key={href} href={href} style={{ padding: '8px 18px', background: '#FFE8A8', border: '1.5px solid #DDB840', borderRadius: 6, fontSize: '0.85rem', fontWeight: 700, color: '#1B2E4A', textDecoration: 'none', fontFamily: "'Lato', sans-serif" }}>
+            <a key={href} href={href} style={{ padding: '8px 18px', background: '#FFE8A8', border: '1.5px solid #DDB840', borderRadius: 6, fontSize: '0.85rem', fontWeight: 700, color: '#1B2E4A', textDecoration: 'none', fontFamily: "'Inter', sans-serif" }}>
               {label}
             </a>
           ))}
@@ -120,7 +120,7 @@ export default function ProfilePage() {
             <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.2rem', fontWeight: 700, color: '#1B2E4A', marginBottom: '0.25rem' }}>
               {t('defaultShippingAddress')}
             </h2>
-            <p style={{ fontSize: '0.8rem', color: '#A07840', marginBottom: '1.25rem', fontFamily: "'Lato', sans-serif" }}>
+            <p style={{ fontSize: '0.8rem', color: '#A07840', marginBottom: '1.25rem', fontFamily: "'Inter', sans-serif" }}>
               {t('autoFilledAtCheckout')}
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
@@ -152,11 +152,11 @@ export default function ProfilePage() {
           {/* Save */}
           <div style={{ padding: '1.25rem 1.5rem', background: '#FFF5E0', borderTop: '1px solid #EDD060', display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <button type="submit" disabled={saving}
-              style={{ background: saving ? '#A07840' : '#E8380A', color: '#fff', padding: '11px 28px', border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '0.95rem', cursor: saving ? 'not-allowed' : 'pointer', fontFamily: "'Lato', sans-serif", transition: 'background 0.2s' }}>
+              style={{ background: saving ? '#A07840' : '#E8380A', color: '#fff', padding: '11px 28px', border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '0.95rem', cursor: saving ? 'not-allowed' : 'pointer', fontFamily: "'Inter', sans-serif", transition: 'background 0.2s' }}>
               {saving ? t('savingLabel') : t('saveChanges')}
             </button>
             {saved && (
-              <span style={{ color: '#1A7A32', fontWeight: 700, fontSize: '0.9rem', fontFamily: "'Lato', sans-serif" }}>
+              <span style={{ color: '#1A7A32', fontWeight: 700, fontSize: '0.9rem', fontFamily: "'Inter', sans-serif" }}>
                 ✓ {t('profileUpdatedSuccess')}
               </span>
             )}
@@ -176,13 +176,13 @@ export default function ProfilePage() {
 }
 
 const labelStyle: React.CSSProperties = {
-  display: 'block', fontFamily: "'Lato', sans-serif", fontSize: '0.78rem',
+  display: 'block', fontFamily: "'Inter', sans-serif", fontSize: '0.78rem',
   fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase',
   color: '#6B4820', marginBottom: 6,
 }
 const inputStyle: React.CSSProperties = {
   width: '100%', padding: '10px 14px', border: '1.5px solid #DDB840',
-  borderRadius: 6, fontSize: '0.95rem', fontFamily: "'Lato', sans-serif",
+  borderRadius: 6, fontSize: '0.95rem', fontFamily: "'Inter', sans-serif",
   color: '#1B2E4A', background: '#FFFFFF', boxSizing: 'border-box',
   outline: 'none',
 }

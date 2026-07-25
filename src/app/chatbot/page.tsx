@@ -139,7 +139,7 @@ export default function ChatbotPage() {
             onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); ask() } }}
             placeholder={t('askPlaceholderFull')}
             rows={3}
-            style={{ width: '100%', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(212,160,0,0.25)', borderRadius: 8, padding: '12px 16px', fontFamily: "'Lato', sans-serif", fontSize: '0.9rem', color: '#fff', outline: 'none', resize: 'none', marginBottom: '0.75rem' }}
+            style={{ width: '100%', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(212,160,0,0.25)', borderRadius: 8, padding: '12px 16px', fontFamily: "'Inter', sans-serif", fontSize: '0.9rem', color: '#fff', outline: 'none', resize: 'none', marginBottom: '0.75rem' }}
           />
           <button
             onClick={() => ask()}
@@ -159,7 +159,7 @@ export default function ChatbotPage() {
                 <button
                   key={q}
                   onClick={() => ask(q)}
-                  style={{ background: '#FFE8A8', border: '1px solid #DDB840', borderRadius: 20, padding: '6px 14px', fontSize: '0.8rem', color: '#6B4820', cursor: 'pointer', fontFamily: "'Lato', sans-serif", textAlign: 'left' }}
+                  style={{ background: '#FFE8A8', border: '1px solid #DDB840', borderRadius: 20, padding: '6px 14px', fontSize: '0.8rem', color: '#6B4820', cursor: 'pointer', fontFamily: "'Inter', sans-serif", textAlign: 'left' }}
                 >
                   {q}
                 </button>

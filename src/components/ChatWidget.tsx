@@ -85,7 +85,7 @@ export default function ChatWidget() {
               🌾
             </div>
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#fff', fontFamily: "'Lato', sans-serif" }}>KalaStree AI</div>
+              <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#fff', fontFamily: "'Inter', sans-serif" }}>KalaStree AI</div>
               <div style={{ fontSize: '0.68rem', color: '#4CAF50', fontWeight: 700, letterSpacing: '0.05em' }}>● {t('giResearchAssistant')}</div>
             </div>
             <button onClick={() => setOpen(false)}
@@ -102,7 +102,7 @@ export default function ChatWidget() {
                   maxWidth: '82%', padding: '9px 13px', borderRadius: msg.role === 'user' ? '14px 14px 2px 14px' : '14px 14px 14px 2px',
                   background: msg.role === 'user' ? '#E8380A' : '#FFE8A8',
                   color: msg.role === 'user' ? '#fff' : '#1B2E4A',
-                  fontSize: '0.85rem', lineHeight: 1.55, fontFamily: "'Lato', sans-serif",
+                  fontSize: '0.85rem', lineHeight: 1.55, fontFamily: "'Inter', sans-serif",
                 }} className="chat-bubble">
                   {msg.role === 'ai' ? <ReactMarkdown>{msg.text}</ReactMarkdown> : msg.text}
                 </div>
@@ -129,7 +129,7 @@ export default function ChatWidget() {
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 4 }}>
                 {SUGGESTED.map(q => (
                   <button key={q} onClick={() => { setInput(q); inputRef.current?.focus() }}
-                    style={{ background: '#fff', border: '1px solid #DDB840', borderRadius: 14, padding: '5px 11px', fontSize: '0.75rem', color: '#6B4820', cursor: 'pointer', fontFamily: "'Lato', sans-serif", textAlign: 'left', lineHeight: 1.3 }}>
+                    style={{ background: '#fff', border: '1px solid #DDB840', borderRadius: 14, padding: '5px 11px', fontSize: '0.75rem', color: '#6B4820', cursor: 'pointer', fontFamily: "'Inter', sans-serif", textAlign: 'left', lineHeight: 1.3 }}>
                     {q}
                   </button>
                 ))}
@@ -151,7 +151,7 @@ export default function ChatWidget() {
                 rows={1}
                 style={{
                   flex: 1, resize: 'none', border: '1.5px solid #DDB840', borderRadius: 10,
-                  padding: '9px 12px', fontFamily: "'Lato', sans-serif", fontSize: '0.85rem',
+                  padding: '9px 12px', fontFamily: "'Inter', sans-serif", fontSize: '0.85rem',
                   background: '#FFF8EE', outline: 'none', color: '#1B2E4A', lineHeight: 1.4,
                   maxHeight: 80, overflowY: 'auto',
                 }}
@@ -167,7 +167,7 @@ export default function ChatWidget() {
                 ↑
               </button>
             </div>
-            <div style={{ fontSize: '0.65rem', color: '#C0A050', marginTop: 6, textAlign: 'center', fontFamily: "'Lato', sans-serif" }}>
+            <div style={{ fontSize: '0.65rem', color: '#C0A050', marginTop: 6, textAlign: 'center', fontFamily: "'Inter', sans-serif" }}>
               {t('poweredByLabel')} Gemini 2.5 Flash · KalaStree PhD Research
             </div>
           </div>
