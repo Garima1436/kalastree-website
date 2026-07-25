@@ -28,24 +28,43 @@ function stateNameFromSrc(src: string): string {
   return STATE_NAME_MAP[key] || (key.length <= 3 ? key.toUpperCase() : key.charAt(0).toUpperCase() + key.slice(1))
 }
 
-function ImageSlide({ src, aspectRatio, priority }: { src: string; aspectRatio: string; priority?: boolean }) {
-  const { t } = useTranslation('home')
-  const stateName = stateNameFromSrc(src)
+// Blurred, oversized copy of the photo fills the full box — so wherever the sharp photo
+// (rendered on top, sized to its own ratio) doesn't reach edge-to-edge, it's never blank space.
+function FullBleedPhoto({ src, aspectRatio, priority, alt, tint }: { src: string; aspectRatio: string; priority?: boolean; alt: string; tint: number }) {
   return (
-    <div style={{ position: 'relative', width: '100%', height: 'clamp(220px, 62vw, 560px)', background: '#FFFFFF', overflow: 'hidden' }}>
-      {/* Sized to the photo's own ratio and centered — keeps the photo AND its gradient from ever painting over the white margins */}
+    <>
+      <Image
+        src={src}
+        alt=""
+        fill
+        aria-hidden
+        style={{ objectFit: 'cover', objectPosition: 'center', filter: 'blur(40px) saturate(1.15)', transform: 'scale(1.15)' }}
+        sizes="100vw"
+        draggable={false}
+      />
+      <div style={{ position: 'absolute', inset: 0, background: `rgba(26,8,0,${tint})`, pointerEvents: 'none' }} />
+      {/* Sized to the photo's own ratio and centered — shows the photo whole, never cropped */}
       <div style={{ position: 'absolute', inset: 0, margin: 'auto', width: 'auto', height: '100%', maxWidth: '100%', aspectRatio }}>
         <Image
           src={src}
-          alt={stateName}
+          alt={alt}
           fill
           priority={priority}
           style={{ objectFit: 'cover', objectPosition: 'center' }}
           sizes="100vw"
           draggable={false}
         />
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(26,8,0,0.55) 0%, rgba(26,8,0,0.1) 45%, transparent 72%)', pointerEvents: 'none' }} />
       </div>
+    </>
+  )
+}
+
+function ImageSlide({ src, aspectRatio, priority }: { src: string; aspectRatio: string; priority?: boolean }) {
+  const { t } = useTranslation('home')
+  const stateName = stateNameFromSrc(src)
+  return (
+    <div style={{ position: 'relative', width: '100%', height: 'clamp(220px, 62vw, 560px)', background: '#1A0800', overflow: 'hidden' }}>
+      <FullBleedPhoto src={src} aspectRatio={aspectRatio} priority={priority} alt={stateName} tint={0.35} />
       <Link
         href={`/shop?state=${encodeURIComponent(stateName)}`}
         style={{ position: 'absolute', inset: 0, zIndex: 2 }}
@@ -66,15 +85,21 @@ function ImageSlide({ src, aspectRatio, priority }: { src: string; aspectRatio: 
   )
 }
 
+// General banners/posters — no state name, no GI-heritage label, no /shop?state= link.
+function PromoSlide({ src, aspectRatio, priority }: { src: string; aspectRatio: string; priority?: boolean }) {
+  return (
+    <div style={{ position: 'relative', width: '100%', height: 'clamp(220px, 62vw, 560px)', background: '#1A0800', overflow: 'hidden' }}>
+      <FullBleedPhoto src={src} aspectRatio={aspectRatio} priority={priority} alt="" tint={0.35} />
+    </div>
+  )
+}
+
 const BRAND_PHOTO = '/hero/hero-main.png'
 function BrandSlide() {
   const { t } = useTranslation('home')
   return (
-    <div style={{ position: 'relative', width: '100%', height: 'clamp(220px, 62vw, 560px)', background: '#FFFFFF', overflow: 'hidden' }}>
-      {/* Sized to the photo's own ratio and centered — keeps the photo from ever painting over the white margins */}
-      <div style={{ position: 'absolute', inset: 0, margin: 'auto', width: 'auto', height: '100%', maxWidth: '100%', aspectRatio: '1672 / 941' }}>
-        <Image src={BRAND_PHOTO} alt="" fill priority sizes="100vw" style={{ objectFit: 'cover', objectPosition: 'center' }} draggable={false} />
-      </div>
+    <div style={{ position: 'relative', width: '100%', height: 'clamp(220px, 62vw, 560px)', background: '#1A0800', overflow: 'hidden' }}>
+      <FullBleedPhoto src={BRAND_PHOTO} aspectRatio="1672 / 941" priority alt="" tint={0.25} />
 
       <div style={{ position: 'absolute', inset: 0, zIndex: 4, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', padding: '0 5% clamp(0.6rem, 2vw, 1.25rem)' }}>
         {/* Sized to its own content (not the photo) so the wave backdrop always
@@ -114,7 +139,7 @@ function BrandSlide() {
 }
 
 interface HeroSectionProps {
-  heroImages: { src: string; aspectRatio: string }[]
+  heroImages: { src: string; aspectRatio: string; kind: 'state' | 'promo' }[]
   statsImages: Partial<Record<StatKey, string>>
 }
 
@@ -168,9 +193,11 @@ export default function HeroSection({ heroImages, statsImages }: HeroSectionProp
           <div ref={el => { slideRefs.current[0] = el }} style={{ flex: '0 0 100%', width: '100%', minWidth: 0 }}>
             <BrandSlide />
           </div>
-          {heroImages.map(({ src, aspectRatio }, i) => (
+          {heroImages.map(({ src, aspectRatio, kind }, i) => (
             <div key={src} ref={el => { slideRefs.current[i + 1] = el }} style={{ flex: '0 0 100%', width: '100%', minWidth: 0 }}>
-              <ImageSlide src={src} aspectRatio={aspectRatio} priority={i === 0} />
+              {kind === 'promo'
+                ? <PromoSlide src={src} aspectRatio={aspectRatio} priority={i === 0} />
+                : <ImageSlide src={src} aspectRatio={aspectRatio} priority={i === 0} />}
             </div>
           ))}
         </div>

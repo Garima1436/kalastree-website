@@ -38,14 +38,20 @@ function getImageAspectRatio(filePath: string): string {
   return '16 / 9'
 }
 
-function getHeroImages(): { src: string; aspectRatio: string }[] {
+function getHeroImages(): { src: string; aspectRatio: string; kind: 'state' | 'promo' }[] {
   try {
     const dir = path.join(process.cwd(), 'public', 'hero')
     if (!fs.existsSync(dir)) return []
     return fs.readdirSync(dir)
       .filter(f => /\.(jpe?g|png|webp|avif|gif)$/i.test(f) && !/^hero(\d+|-main)\./i.test(f))
       .sort()
-      .map(f => ({ src: `/hero/${f}`, aspectRatio: getImageAspectRatio(path.join(dir, f)) }))
+      .map(f => ({
+        src: `/hero/${f}`,
+        aspectRatio: getImageAspectRatio(path.join(dir, f)),
+        // Filenames prefixed "promo-" are general banners/posters, not state photos —
+        // they skip the "GI Heritage of [State]" label and /shop?state= link.
+        kind: /^promo-/i.test(f) ? 'promo' : 'state',
+      }))
   } catch {
     return []
   }
