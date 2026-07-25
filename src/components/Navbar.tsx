@@ -117,7 +117,7 @@ export default function Navbar() {
 
           {/* Logo */}
           <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', flexShrink: 0 }}>
-            <Image src="/kalastree_l3.png" alt="KalaStree" width={160} height={56} style={{ objectFit: 'contain', height: 56, width: 'auto' }} priority />
+            <Image src="/kalastree_l3.png" alt="KalaStree" width={90} height={90} style={{ objectFit: 'contain', height: 80, width: 'auto' }} priority />
           </Link>
 
           {/* Desktop nav */}
