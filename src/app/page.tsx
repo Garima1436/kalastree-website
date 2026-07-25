@@ -11,34 +11,7 @@ import { getServerLang, getT } from '@/lib/i18n/server'
 
 export const revalidate = 300
 
-// Reads just enough of a JPEG/PNG file's header to get its pixel dimensions — avoids pulling in an image-processing
-// dependency just to read two numbers. Falls back to a 16:9 guess for formats it doesn't parse (webp/avif/gif).
-function getImageAspectRatio(filePath: string): string {
-  try {
-    const fd = fs.openSync(filePath, 'r')
-    const buffer = Buffer.alloc(65536)
-    const bytesRead = fs.readSync(fd, buffer, 0, buffer.length, 0)
-    fs.closeSync(fd)
-
-    if (buffer.toString('ascii', 1, 4) === 'PNG') {
-      return `${buffer.readUInt32BE(16)} / ${buffer.readUInt32BE(20)}`
-    }
-    if (buffer[0] === 0xFF && buffer[1] === 0xD8) {
-      let offset = 2
-      while (offset < bytesRead - 9) {
-        if (buffer[offset] !== 0xFF) { offset++; continue }
-        const marker = buffer[offset + 1]
-        if (marker >= 0xC0 && marker <= 0xCF && marker !== 0xC4 && marker !== 0xC8 && marker !== 0xCC) {
-          return `${buffer.readUInt16BE(offset + 7)} / ${buffer.readUInt16BE(offset + 5)}`
-        }
-        offset += 2 + buffer.readUInt16BE(offset + 2)
-      }
-    }
-  } catch {}
-  return '16 / 9'
-}
-
-function getHeroImages(): { src: string; aspectRatio: string; kind: 'state' | 'promo' }[] {
+function getHeroImages(): { src: string; kind: 'state' | 'promo' }[] {
   try {
     const dir = path.join(process.cwd(), 'public', 'hero')
     if (!fs.existsSync(dir)) return []
@@ -47,10 +20,9 @@ function getHeroImages(): { src: string; aspectRatio: string; kind: 'state' | 'p
       .sort()
       .map(f => ({
         src: `/hero/${f}`,
-        aspectRatio: getImageAspectRatio(path.join(dir, f)),
         // Filenames prefixed "promo-" are general banners/posters, not state photos —
         // they skip the "GI Heritage of [State]" label and /shop?state= link.
-        kind: /^promo-/i.test(f) ? 'promo' : 'state',
+        kind: /^promo-/i.test(f) ? 'promo' as const : 'state' as const,
       }))
   } catch {
     return []
