@@ -46,10 +46,6 @@ const dict = {
     storyFooterCred: 'PhD Scholar, IIT Patna · Springer LNNS Author',
     storyClosingQuote: 'The woman who made India beautiful deserves to know what that is worth.\nKalaStree exists until she does.',
 
-    publicationsEyebrow: 'Research Publications',
-    publicationsTitlePart1: 'Published',
-    publicationsTitlePart2: 'Work & Presentations',
-
     memorialEyebrow: 'In Loving Memory',
     memorialTitlePart1: 'Late Shri',
     memorialQuote: '"Every word I write, every woman\'s story I tell, every step I take — I take it hoping you are watching, and that it makes you proud."',
@@ -107,10 +103,6 @@ const dict = {
     storyFooterRole: 'संस्थापक, KalaStree — हेरिटेज बाय हर',
     storyFooterCred: 'पीएचडी स्कॉलर, आईआईटी पटना · स्प्रिंगर एलएनएनएस लेखक',
     storyClosingQuote: 'जिस महिला ने भारत को सुंदर बनाया, वह जानने की हकदार है कि इसकी कीमत क्या है।\nजब तक वह नहीं जान लेती, तब तक KalaStree का अस्तित्व है।',
-
-    publicationsEyebrow: 'शोध प्रकाशन',
-    publicationsTitlePart1: 'प्रकाशित',
-    publicationsTitlePart2: 'कार्य एवं प्रस्तुतियां',
 
     memorialEyebrow: 'स्नेहिल स्मृति में',
     memorialTitlePart1: 'स्वर्गीय श्री',

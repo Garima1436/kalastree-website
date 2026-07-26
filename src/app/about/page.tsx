@@ -150,29 +150,6 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      {/* Publications */}
-      <section id="publications" style={{ padding: '5rem 5%', background: 'var(--parchment)' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <p style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#1A7A32', marginBottom: '0.6rem' }}>{t('publicationsEyebrow')}</p>
-          <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.8rem, 3vw, 2.4rem)', fontWeight: 700, color: '#1B2E4A', marginBottom: '2.5rem' }}>
-            {t('publicationsTitlePart1')} <span style={{ color: '#E8380A' }}>{t('publicationsTitlePart2')}</span>
-          </h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-            {[
-              { venue: 'Springer LNNS · ISMS 2025', title: 'Building a Domain-Specific AI Research Assistant Using Llama 3.1 & Retrieval-Augmented Generation (RAG)', meta: 'Garima Awasthi, Dr. Rajiv Misra, Dr. Nutan Kumar Tomar · IIT Patna · 2025 · A local RAG pipeline making PhD research on GI products and women empowerment queryable with zero cloud dependency.' },
-              { venue: 'Primary Research · 2024–25', title: 'Empowering Women with FinTech Access in GI-Tagged Product Ecosystems — A Survey of 2,500 Women across 16 Indian States', meta: 'Garima Awasthi · IIT Patna · Ongoing PhD Research · Examining UPI, AEPS, microloan, marketplace and insurtech adoption among women artisans in GI value chains.' },
-              { venue: 'Conference Presentation', title: 'Multimodal Research Framework: Integrating Survey Data, GI Registry, and AI for Women\'s Empowerment Analysis', meta: 'Garima Awasthi · IIT Patna · 2025 · Presented at ISMS 2025 — combining CSV data, Excel multimodal reports, and RAG AI for comprehensive GI research.' },
-            ].map(({ venue, title, meta }) => (
-              <div key={title} style={{ background: '#FFFFFF', border: '1.5px solid #DDB840', borderLeft: '4px solid #E8380A', borderRadius: '0 10px 10px 0', padding: '1.5rem 1.75rem' }}>
-                <div style={{ display: 'inline-block', background: '#1B2E4A', color: '#D4A000', fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', padding: '3px 10px', borderRadius: 3, marginBottom: 8 }}>{venue}</div>
-                <div style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.15rem', fontWeight: 600, color: '#1B2E4A', marginBottom: 6, lineHeight: 1.4 }}>{title}</div>
-                <div style={{ fontSize: '0.82rem', color: '#6B4820', lineHeight: 1.6 }}>{meta}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Memorial */}
       <section id="tribute" style={{ background: '#1B2E4A', padding: '4rem 5%', borderTop: '1px solid rgba(212,160,0,0.2)', textAlign: 'center' }}>
         <div style={{ maxWidth: 680, margin: '0 auto' }}>
