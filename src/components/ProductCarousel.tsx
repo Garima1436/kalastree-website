@@ -23,9 +23,14 @@ export default function ProductCarousel({ products }: { products: Product[] }) {
 
       {/* Scrollable track */}
       <div ref={scrollRef} className="product-carousel" style={{ display: 'flex', gap: '1.25rem', overflowX: 'auto', scrollSnapType: 'x mandatory', paddingBottom: 8, scrollbarWidth: 'none' }}>
-        <style>{`.product-carousel::-webkit-scrollbar { display: none; }`}</style>
+        <style>{`
+          .product-carousel::-webkit-scrollbar { display: none; }
+          @media (max-width: 640px) {
+            .carousel-card { min-width: 158px !important; max-width: 168px !important; }
+          }
+        `}</style>
         {products.map(p => (
-          <div key={p.id} style={{ minWidth: 240, maxWidth: 260, flexShrink: 0, scrollSnapAlign: 'start' }}>
+          <div key={p.id} className="carousel-card" style={{ minWidth: 240, maxWidth: 260, flexShrink: 0, scrollSnapAlign: 'start' }}>
             <ProductCard product={p} />
           </div>
         ))}
