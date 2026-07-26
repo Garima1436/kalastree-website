@@ -42,7 +42,7 @@ const dict = {
     heritageByHer: 'Heritage by Her',
     heroDescPrefix: "India's first women based GI-verified marketplace where every purchase goes",
     heroDescHighlight: 'directly to the woman who made it',
-    heroDescSuffix: '— no middlemen, no compromise.',
+    heroDescSuffix: '.',
     shopTheCollection: 'Shop the Collection',
     meetTheArtisans: 'Meet the Artisans',
     previousSlide: 'Previous slide',
