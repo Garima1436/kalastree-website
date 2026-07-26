@@ -20,7 +20,7 @@ async function sendCancellationEmailToCustomer(email: string, name: string, orde
     html: `
       <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;padding:32px;background:#FFF8EE;border:1.5px solid #DDB840;border-radius:10px;">
         <div style="text-align:center;margin-bottom:24px;">
-          <h1 style="font-size:26px;color:#E8380A;margin:0;">Kala<em style="color:#D4A000;">Stree</em></h1>
+          <img src="https://kalastree.com/kalastree-logo.png" alt="KalaStree — Heritage by Her" width="200" style="display:block;margin:0 auto;max-width:200px;height:auto;" />
         </div>
         <h2 style="color:#1B2E4A;font-size:20px;margin-bottom:8px;">Your order has been cancelled</h2>
         <p style="color:#6B4820;line-height:1.8;">
@@ -48,7 +48,7 @@ async function sendCancellationEmailToArtisan(email: string, orderShortId: strin
     html: `
       <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;padding:32px;background:#FFF8EE;border:1.5px solid #DDB840;border-radius:10px;">
         <div style="text-align:center;margin-bottom:24px;">
-          <h1 style="font-size:26px;color:#E8380A;margin:0;">Kala<em style="color:#D4A000;">Stree</em></h1>
+          <img src="https://kalastree.com/kalastree-logo.png" alt="KalaStree — Heritage by Her" width="200" style="display:block;margin:0 auto;max-width:200px;height:auto;" />
         </div>
         <h2 style="color:#1B2E4A;font-size:20px;margin-bottom:8px;">Order #${orderShortId} was cancelled</h2>
         <p style="color:#6B4820;line-height:1.8;">

@@ -68,8 +68,7 @@ export async function POST(req: NextRequest) {
           html: `
             <div style="font-family:Georgia,serif;max-width:600px;margin:0 auto;padding:32px;background:#FFF8EE;border:1.5px solid #DDB840;border-radius:10px;">
               <div style="text-align:center;margin-bottom:24px;">
-                <h1 style="font-size:28px;color:#E8380A;margin:0;">Kala<em style="color:#D4A000;">Stree</em></h1>
-                <p style="color:#6B4820;font-size:12px;letter-spacing:2px;text-transform:uppercase;margin:4px 0 0;">Heritage by Her</p>
+                <img src="https://kalastree.com/kalastree-logo.png" alt="KalaStree — Heritage by Her" width="200" style="display:block;margin:0 auto;max-width:200px;height:auto;" />
               </div>
               <h2 style="color:#1B2E4A;font-size:22px;">Thank you, ${order.user_name}! 🙏</h2>
               <p style="color:#6B4820;line-height:1.8;">Your order has been confirmed and payment received. Our artisans will begin preparing your handcrafted items.</p>
