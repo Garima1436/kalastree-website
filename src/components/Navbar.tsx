@@ -240,12 +240,9 @@ export default function Navbar() {
                 )}
               </li>
             ) : (
-              <li style={{ display: 'flex', gap: 8 }}>
-                <Link href="/login" style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', background: 'none', border: '1.5px solid #DDB840', color: '#6B4820', padding: '6px 14px', borderRadius: 4, textDecoration: 'none', whiteSpace: 'nowrap' }}>
+              <li>
+                <Link href="/login" style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', background: '#E8380A', color: '#fff', padding: '6px 14px', borderRadius: 4, textDecoration: 'none', whiteSpace: 'nowrap' }}>
                   {tCommon('signIn')}
-                </Link>
-                <Link href="/signup" style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', background: '#E8380A', color: '#fff', padding: '6px 14px', borderRadius: 4, textDecoration: 'none', whiteSpace: 'nowrap' }}>
-                  {tCommon('signUp')}
                 </Link>
               </li>
             )}
@@ -352,16 +349,10 @@ export default function Navbar() {
                 </button>
               </>
             ) : (
-              <>
-                <Link href="/login" onClick={() => setMenuOpen(false)}
-                  style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, color: '#1B2E4A', textDecoration: 'none', fontSize: '0.95rem', padding: '4px 0', borderBottom: '1px solid #EDD060' }}>
-                  {tCommon('signIn')}
-                </Link>
-                <Link href="/signup" onClick={() => setMenuOpen(false)}
-                  style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, color: '#E8380A', textDecoration: 'none', fontSize: '0.95rem', padding: '4px 0' }}>
-                  {tCommon('signUp')}
-                </Link>
-              </>
+              <Link href="/login" onClick={() => setMenuOpen(false)}
+                style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, color: '#1B2E4A', textDecoration: 'none', fontSize: '0.95rem', padding: '4px 0' }}>
+                {tCommon('signIn')}
+              </Link>
             )}
           </div>
         )}
