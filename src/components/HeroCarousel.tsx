@@ -28,33 +28,23 @@ function stateNameFromSrc(src: string): string {
   return STATE_NAME_MAP[key] || (key.length <= 3 ? key.toUpperCase() : key.charAt(0).toUpperCase() + key.slice(1))
 }
 
-// Blurred, oversized copy of the photo fills the full box as a backdrop. The sharp photo on top
-// uses object-fit: contain, so it always shows completely — letterboxing into whichever margin
-// (sides on a wide screen, top/bottom on a narrow one) is needed — and is never cropped, at any
-// screen width, regardless of the photo's own aspect ratio.
-function FullBleedPhoto({ src, priority, alt, tint }: { src: string; priority?: boolean; alt: string; tint: number }) {
+// White backdrop fills the full box. The sharp photo on top uses object-fit: contain, so it
+// always shows completely — letterboxing into whichever margin (sides on a wide screen, top/bottom
+// on a narrow one) is needed — and is never cropped, at any screen width, regardless of the
+// photo's own aspect ratio. A drop-shadow filter (not box-shadow — the img is a full-fill box, and
+// filter respects the transparent letterbox margin) hugs the photo's own visible edge, so it reads
+// as a poster sitting on a white mat rather than a cropped image.
+function FullBleedPhoto({ src, priority, alt }: { src: string; priority?: boolean; alt: string }) {
   return (
-    <>
-      <Image
-        src={src}
-        alt=""
-        fill
-        aria-hidden
-        style={{ objectFit: 'cover', objectPosition: 'center', filter: 'blur(40px) saturate(1.15)', transform: 'scale(1.15)' }}
-        sizes="100vw"
-        draggable={false}
-      />
-      <div style={{ position: 'absolute', inset: 0, background: `rgba(26,8,0,${tint})`, pointerEvents: 'none' }} />
-      <Image
-        src={src}
-        alt={alt}
-        fill
-        priority={priority}
-        style={{ objectFit: 'contain', objectPosition: 'center' }}
-        sizes="100vw"
-        draggable={false}
-      />
-    </>
+    <Image
+      src={src}
+      alt={alt}
+      fill
+      priority={priority}
+      style={{ objectFit: 'contain', objectPosition: 'center', filter: 'drop-shadow(0 6px 20px rgba(26,8,0,0.25))' }}
+      sizes="100vw"
+      draggable={false}
+    />
   )
 }
 
@@ -62,14 +52,18 @@ function ImageSlide({ src, priority }: { src: string; priority?: boolean }) {
   const { t } = useTranslation('home')
   const stateName = stateNameFromSrc(src)
   return (
-    <div style={{ position: 'relative', width: '100%', height: 'clamp(220px, 62vw, 560px)', background: '#1A0800', overflow: 'hidden' }}>
-      <FullBleedPhoto src={src} priority={priority} alt={stateName} tint={0.35} />
+    <div style={{ position: 'relative', width: '100%', height: 'clamp(220px, 62vw, 560px)', background: '#fff', overflow: 'hidden' }}>
+      <FullBleedPhoto src={src} priority={priority} alt={stateName} />
+      {/* Confined to the caption's own corner (not the full box) so it stays clear of the
+          poster's drop-shadow, but still guarantees contrast for the white caption text
+          regardless of where the letterboxed margin falls. */}
+      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 55%, rgba(20,8,0,0.6) 100%)', pointerEvents: 'none', zIndex: 1 }} />
       <Link
         href={`/shop?state=${encodeURIComponent(stateName)}`}
         style={{ position: 'absolute', inset: 0, zIndex: 2 }}
         aria-label={t('shopGiProductsFrom').replace('{state}', stateName)}
       />
-      <div style={{ position: 'absolute', left: '6%', bottom: '10%', maxWidth: 420, pointerEvents: 'none' }}>
+      <div style={{ position: 'absolute', left: '6%', bottom: '10%', maxWidth: 420, pointerEvents: 'none', zIndex: 3 }}>
         <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.25em', textTransform: 'uppercase', color: '#D4A000', marginBottom: 8 }}>
           {t('giHeritageOf')}
         </p>
@@ -87,8 +81,8 @@ function ImageSlide({ src, priority }: { src: string; priority?: boolean }) {
 // General banners/posters — no state name, no GI-heritage label, no /shop?state= link.
 function PromoSlide({ src, priority }: { src: string; priority?: boolean }) {
   return (
-    <div style={{ position: 'relative', width: '100%', height: 'clamp(220px, 62vw, 560px)', background: '#1A0800', overflow: 'hidden' }}>
-      <FullBleedPhoto src={src} priority={priority} alt="" tint={0.35} />
+    <div style={{ position: 'relative', width: '100%', height: 'clamp(220px, 62vw, 560px)', background: '#fff', overflow: 'hidden' }}>
+      <FullBleedPhoto src={src} priority={priority} alt="" />
     </div>
   )
 }
@@ -97,8 +91,8 @@ const BRAND_PHOTO = '/hero/hero-main.png'
 function BrandSlide() {
   const { t } = useTranslation('home')
   return (
-    <div style={{ position: 'relative', width: '100%', height: 'clamp(220px, 62vw, 560px)', background: '#1A0800', overflow: 'hidden' }}>
-      <FullBleedPhoto src={BRAND_PHOTO} priority alt="" tint={0.25} />
+    <div style={{ position: 'relative', width: '100%', height: 'clamp(220px, 62vw, 560px)', background: '#fff', overflow: 'hidden' }}>
+      <FullBleedPhoto src={BRAND_PHOTO} priority alt="" />
 
       <div style={{ position: 'absolute', inset: 0, zIndex: 4, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', padding: '0 5% clamp(0.6rem, 2vw, 1.25rem)' }}>
         {/* Sized to its own content (not the photo) so the wave backdrop always
