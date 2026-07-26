@@ -98,24 +98,24 @@ function LoginForm() {
 
   const inputStyle: React.CSSProperties = {
     width: '100%', padding: '11px 14px',
-    border: '1.5px solid #DDB840', borderRadius: 6,
-    fontSize: '0.95rem', background: '#FFF8EE', outline: 'none',
+    border: '1.5px solid #C7D2D6', borderRadius: 6,
+    fontSize: '0.95rem', background: '#F5F7F6', outline: 'none',
   }
   const inputErrorStyle: React.CSSProperties = { ...inputStyle, borderColor: '#EF4444' }
   const labelStyle: React.CSSProperties = {
     display: 'block', fontSize: '0.75rem', fontWeight: 700,
-    letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B4820', marginBottom: 6,
+    letterSpacing: '0.08em', textTransform: 'uppercase', color: '#5B7480', marginBottom: 6,
   }
   const fieldErrorStyle: React.CSSProperties = { color: '#B91C1C', fontSize: '0.78rem', marginTop: 4 }
 
   return (
     <div style={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--parchment)', padding: '2rem' }}>
-      <div style={{ width: '100%', maxWidth: 440, background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 12, padding: '2.5rem' }}>
+      <div style={{ width: '100%', maxWidth: 440, background: '#F5F7F6', border: '1.5px solid #C7D2D6', borderRadius: 12, padding: '2.5rem' }}>
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: '2rem', fontWeight: 700, color: '#1B2E4A', marginBottom: '0.4rem' }}>
+          <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: '2rem', fontWeight: 700, color: '#16303A', marginBottom: '0.4rem' }}>
             {t('welcomeBack')}
           </h1>
-          <p style={{ color: '#6B4820', fontSize: '0.9rem' }}>{t('signInSubtitle')}</p>
+          <p style={{ color: '#5B7480', fontSize: '0.9rem' }}>{t('signInSubtitle')}</p>
         </div>
 
         <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }} noValidate>
@@ -155,20 +155,20 @@ function LoginForm() {
                 style={{
                   position: 'absolute', right: 4, top: '50%', transform: 'translateY(-50%)',
                   background: 'none', border: 'none', cursor: 'pointer', padding: '6px 8px',
-                  fontSize: '0.78rem', fontWeight: 700, color: '#6B4820',
+                  fontSize: '0.78rem', fontWeight: 700, color: '#5B7480',
                 }}>
                 {showPassword ? t('hidePassword') : t('showPassword')}
               </button>
             </div>
             {fieldErrors.password && <p style={fieldErrorStyle}>{fieldErrors.password}</p>}
             <div style={{ textAlign: 'right', marginTop: 6 }}>
-              <Link href="/forgot-password" style={{ fontSize: '0.8rem', color: '#E8380A', fontWeight: 700, textDecoration: 'none' }}>
+              <Link href="/forgot-password" style={{ fontSize: '0.8rem', color: '#1E5F74', fontWeight: 700, textDecoration: 'none' }}>
                 {t('forgotPasswordLink')}
               </Link>
             </div>
           </div>
           <button type="submit" disabled={loading} style={{
-            width: '100%', background: '#E8380A', color: '#fff', padding: '13px',
+            width: '100%', background: '#1E5F74', color: '#fff', padding: '13px',
             border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '1rem',
             cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1, marginTop: '0.5rem',
           }}>
@@ -177,14 +177,14 @@ function LoginForm() {
         </form>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '1.5rem 0' }}>
-          <div style={{ flex: 1, height: 1, background: '#DDB840', opacity: 0.4 }} />
-          <span style={{ fontSize: '0.75rem', color: '#A07840', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{t('orDivider')}</span>
-          <div style={{ flex: 1, height: 1, background: '#DDB840', opacity: 0.4 }} />
+          <div style={{ flex: 1, height: 1, background: '#C7D2D6', opacity: 0.4 }} />
+          <span style={{ fontSize: '0.75rem', color: '#7C93A0', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{t('orDivider')}</span>
+          <div style={{ flex: 1, height: 1, background: '#C7D2D6', opacity: 0.4 }} />
         </div>
 
         <button type="button" onClick={handleGoogleLogin} disabled={googleLoading} style={{
-          width: '100%', background: '#fff', color: '#1B2E4A', padding: '12px',
-          border: '1.5px solid #DDB840', borderRadius: 6, fontWeight: 700, fontSize: '0.92rem',
+          width: '100%', background: '#F5F7F6', color: '#16303A', padding: '12px',
+          border: '1.5px solid #C7D2D6', borderRadius: 6, fontWeight: 700, fontSize: '0.92rem',
           cursor: googleLoading ? 'not-allowed' : 'pointer', opacity: googleLoading ? 0.7 : 1,
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
         }}>
@@ -197,9 +197,9 @@ function LoginForm() {
           {googleLoading ? t('openingGoogle') : t('continueWithGoogle')}
         </button>
 
-        <p style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.9rem', color: '#6B4820' }}>
+        <p style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.9rem', color: '#5B7480' }}>
           {t('noAccount')}{' '}
-          <Link href={`/signup?redirect=${encodeURIComponent(redirect)}`} style={{ color: '#E8380A', fontWeight: 700, textDecoration: 'none' }}>
+          <Link href={`/signup?redirect=${encodeURIComponent(redirect)}`} style={{ color: '#1E5F74', fontWeight: 700, textDecoration: 'none' }}>
             {t('signUpLink')}
           </Link>
         </p>

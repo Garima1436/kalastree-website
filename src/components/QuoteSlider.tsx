@@ -48,7 +48,7 @@ export default function QuoteSlider() {
   return (
     <div style={{ position: 'relative', userSelect: 'none' }}>
       {/* Sliding track */}
-      <div style={{ borderRadius: '16px 16px 0 0', overflow: 'hidden', border: '2px solid #DDB840', borderBottom: 'none' }}
+      <div style={{ borderRadius: '16px 16px 0 0', overflow: 'hidden', border: '2px solid #C7D2D6', borderBottom: 'none' }}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
@@ -59,7 +59,7 @@ export default function QuoteSlider() {
           willChange: 'transform',
         }}>
           {PHOTOS.map((photo, i) => (
-            <div key={i} style={{ minWidth: '100%', height: 320, background: '#FFE8A8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, overflow: 'hidden' }}>
+            <div key={i} style={{ minWidth: '100%', height: 320, background: '#E3ECEE', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, overflow: 'hidden' }}>
               <img
                 src={photo}
                 alt={t('quoteSlideAlt').replace('{n}', String(i + 1))}
@@ -71,16 +71,16 @@ export default function QuoteSlider() {
       </div>
 
       {/* Fixed quote */}
-      <div style={{ border: '2px solid #DDB840', borderTop: '2px solid #D4A000', borderRadius: '0 0 16px 16px', background: '#FFFFFF', padding: '1.5rem 1.75rem 1.25rem' }}>
-        <div style={{ fontSize: '1.8rem', color: '#E8380A', fontFamily: "'EB Garamond', serif", lineHeight: 0.8, marginBottom: '0.5rem', opacity: 0.5 }}>"</div>
-        <p style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(0.95rem, 1.6vw, 1.1rem)', fontStyle: 'italic', color: '#1B2E4A', lineHeight: 1.75, marginBottom: '1rem' }}>
+      <div style={{ border: '2px solid #C7D2D6', borderTop: '2px solid #1E5F74', borderRadius: '0 0 16px 16px', background: '#F5F7F6', padding: '1.5rem 1.75rem 1.25rem' }}>
+        <div style={{ fontSize: '1.8rem', color: '#1E5F74', fontFamily: "'EB Garamond', serif", lineHeight: 0.8, marginBottom: '0.5rem', opacity: 0.5 }}>"</div>
+        <p style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(0.95rem, 1.6vw, 1.1rem)', fontStyle: 'italic', color: '#16303A', lineHeight: 1.75, marginBottom: '1rem' }}>
           {t('founderQuote')}
         </p>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 28, height: 2, background: '#D4A000', borderRadius: 2, flexShrink: 0 }} />
+          <div style={{ width: 28, height: 2, background: '#1E5F74', borderRadius: 2, flexShrink: 0 }} />
           <div>
-            <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#E8380A', fontFamily: "'Inter', sans-serif" }}>Garima Awasthi</div>
-            <div style={{ fontSize: '0.7rem', color: '#A07840', fontFamily: "'Inter', sans-serif", marginTop: 1 }}>{t('founderRole')}</div>
+            <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#1E5F74', fontFamily: "'Inter', sans-serif" }}>Garima Awasthi</div>
+            <div style={{ fontSize: '0.7rem', color: '#7C93A0', fontFamily: "'Inter', sans-serif", marginTop: 1 }}>{t('founderRole')}</div>
           </div>
         </div>
       </div>
@@ -88,15 +88,15 @@ export default function QuoteSlider() {
       {/* Controls */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginTop: '1rem' }}>
         <button onClick={() => { prev(); resetTimer() }}
-          style={{ width: 32, height: 32, borderRadius: '50%', border: '1.5px solid #DDB840', background: '#FFFFFF', cursor: 'pointer', color: '#A07840', fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          style={{ width: 32, height: 32, borderRadius: '50%', border: '1.5px solid #C7D2D6', background: '#F5F7F6', cursor: 'pointer', color: '#7C93A0', fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           ‹
         </button>
         {PHOTOS.map((_, i) => (
           <button key={i} onClick={() => { setCurrent(i); resetTimer() }}
-            style={{ width: i === current ? 20 : 6, height: 6, borderRadius: 4, background: i === current ? '#E8380A' : '#DDB840', border: 'none', cursor: 'pointer', transition: 'all 0.3s ease', padding: 0 }} />
+            style={{ width: i === current ? 20 : 6, height: 6, borderRadius: 4, background: i === current ? '#1E5F74' : '#C7D2D6', border: 'none', cursor: 'pointer', transition: 'all 0.3s ease', padding: 0 }} />
         ))}
         <button onClick={() => { next(); resetTimer() }}
-          style={{ width: 32, height: 32, borderRadius: '50%', border: '1.5px solid #DDB840', background: '#FFFFFF', cursor: 'pointer', color: '#A07840', fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          style={{ width: 32, height: 32, borderRadius: '50%', border: '1.5px solid #C7D2D6', background: '#F5F7F6', cursor: 'pointer', color: '#7C93A0', fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           ›
         </button>
       </div>

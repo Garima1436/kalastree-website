@@ -62,7 +62,7 @@ function MediaThumbnail({ item }: { item: MediaItem }) {
   }
   if (item.type === 'video' && item.source === 'upload') {
     return (
-      <div style={{ width: '100%', height: '100%', background: '#1B2E4A', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ width: '100%', height: '100%', background: '#16303A', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <span style={{ fontSize: '1.2rem' }}>🎥</span>
       </div>
     )
@@ -125,11 +125,11 @@ export default function ProductPage() {
     setTimeout(() => setAdded(false), 2000)
   }
 
-  if (loading) return <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6B4820', fontSize: '1.1rem' }}>{tc('loading')}</div>
+  if (loading) return <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#5B7480', fontSize: '1.1rem' }}>{tc('loading')}</div>
   if (!product) return (
     <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '1rem' }}>
       <p>{t('productNotFound')}</p>
-      <Link href="/shop" style={{ color: '#E8380A' }}>{t('backToShop')}</Link>
+      <Link href="/shop" style={{ color: '#1E5F74' }}>{t('backToShop')}</Link>
     </div>
   )
 
@@ -141,12 +141,12 @@ export default function ProductPage() {
   return (
     <div style={{ background: 'var(--parchment)', minHeight: '80vh' }}>
       {/* Breadcrumb */}
-      <div style={{ background: '#FFE8A8', padding: '0.75rem 5%', fontSize: '0.78rem', color: '#6B4820' }}>
+      <div style={{ background: '#E3ECEE', padding: '0.75rem 5%', fontSize: '0.78rem', color: '#5B7480' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-          <Link href="/" style={{ color: '#6B4820', textDecoration: 'none' }}>{tc('home')}</Link> {' / '}
-          <Link href="/shop" style={{ color: '#6B4820', textDecoration: 'none' }}>{tc('shop')}</Link> {' / '}
-          <Link href={`/shop?category=${product.category}`} style={{ color: '#6B4820', textDecoration: 'none' }}>{cat.label}</Link> {' / '}
-          <span style={{ color: '#1B2E4A', fontWeight: 600 }}>{name}</span>
+          <Link href="/" style={{ color: '#5B7480', textDecoration: 'none' }}>{tc('home')}</Link> {' / '}
+          <Link href="/shop" style={{ color: '#5B7480', textDecoration: 'none' }}>{tc('shop')}</Link> {' / '}
+          <Link href={`/shop?category=${product.category}`} style={{ color: '#5B7480', textDecoration: 'none' }}>{cat.label}</Link> {' / '}
+          <span style={{ color: '#16303A', fontWeight: 600 }}>{name}</span>
         </div>
       </div>
 
@@ -155,7 +155,7 @@ export default function ProductPage() {
         {/* Media column */}
         <div>
           {/* Main viewer */}
-          <div style={{ borderRadius: 12, overflow: 'hidden', background: activeItem?.type === 'video' ? '#000' : cat.bg, height: 420, border: '1.5px solid #DDB840', marginBottom: '0.75rem', position: 'relative' }}>
+          <div style={{ borderRadius: 12, overflow: 'hidden', background: activeItem?.type === 'video' ? '#000' : cat.bg, height: 420, border: '1.5px solid #C7D2D6', marginBottom: '0.75rem', position: 'relative' }}>
             {activeItem ? (
               <MediaViewer item={activeItem} productName={name} />
             ) : (
@@ -175,7 +175,7 @@ export default function ProductPage() {
                   style={{
                     flexShrink: 0, width: 72, height: 72, borderRadius: 8,
                     overflow: 'hidden', padding: 0,
-                    border: `2px solid ${i === activeIdx ? '#E8380A' : '#DDB840'}`,
+                    border: `2px solid ${i === activeIdx ? '#1E5F74' : '#C7D2D6'}`,
                     cursor: 'pointer', background: 'none',
                   }}
                 >
@@ -193,26 +193,26 @@ export default function ProductPage() {
             <span style={{ background: cat.bg, color: cat.color, fontSize: '0.7rem', fontWeight: 700, padding: '3px 10px', borderRadius: 20, border: `1px solid ${cat.color}40` }}>{cat.icon} {cat.label}</span>
           </div>
 
-          <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.8rem, 3vw, 2.4rem)', fontWeight: 700, color: '#1B2E4A', lineHeight: 1.2, marginBottom: '0.5rem' }}>
+          <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.8rem, 3vw, 2.4rem)', fontWeight: 700, color: '#16303A', lineHeight: 1.2, marginBottom: '0.5rem' }}>
             {name}
           </h1>
 
           {product.artisan && (
             <Link href={`/artisans/${product.artisan.slug}`} style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', marginBottom: '1.5rem' }}>
-              <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#FFE8A8', border: '2px solid #D4A000', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#E3ECEE', border: '2px solid #1E5F74', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                 {product.artisan.photo_url
                   ? <img src={product.artisan.photo_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   : <span>👩‍🎨</span>}
               </div>
               <div>
-                <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#1B2E4A' }}>{t('byPrefix')}{product.artisan.name}{t('bySuffix')}</div>
-                <div style={{ fontSize: '0.75rem', color: '#6B4820' }}>{product.artisan.craft} · {product.artisan.state}</div>
+                <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#16303A' }}>{t('byPrefix')}{product.artisan.name}{t('bySuffix')}</div>
+                <div style={{ fontSize: '0.75rem', color: '#5B7480' }}>{product.artisan.craft} · {product.artisan.state}</div>
               </div>
-              <span style={{ marginLeft: 'auto', fontSize: '0.75rem', color: '#E8380A' }}>{t('viewProfile')}</span>
+              <span style={{ marginLeft: 'auto', fontSize: '0.75rem', color: '#1E5F74' }}>{t('viewProfile')}</span>
             </Link>
           )}
 
-          <div style={{ fontFamily: "'EB Garamond', serif", fontSize: '2.2rem', fontWeight: 700, color: '#E8380A', marginBottom: '0.5rem' }}>
+          <div style={{ fontFamily: "'EB Garamond', serif", fontSize: '2.2rem', fontWeight: 700, color: '#1E5F74', marginBottom: '0.5rem' }}>
             ₹{product.price.toLocaleString('en-IN')}
           </div>
           <p style={{ fontSize: '0.8rem', color: '#1A7A32', fontWeight: 700, marginBottom: '1.5rem' }}>
@@ -220,7 +220,7 @@ export default function ProductPage() {
           </p>
 
           {description && (
-            <div className="rich-text" style={{ fontSize: '0.95rem', lineHeight: 1.8, color: '#6B4820', marginBottom: '1.5rem' }}>
+            <div className="rich-text" style={{ fontSize: '0.95rem', lineHeight: 1.8, color: '#5B7480', marginBottom: '1.5rem' }}>
               <ReactMarkdown remarkPlugins={[remarkBreaks]}>{description}</ReactMarkdown>
             </div>
           )}
@@ -228,29 +228,29 @@ export default function ProductPage() {
           {/* Qty + Add to Cart */}
           {product.stock > 0 && (
             <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
-              <div style={{ display: 'flex', alignItems: 'center', border: '1.5px solid #DDB840', borderRadius: 6, overflow: 'hidden' }}>
-                <button onClick={() => setQty(Math.max(1, qty - 1))} style={{ padding: '10px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.1rem', color: '#6B4820' }}>−</button>
-                <span style={{ padding: '0 16px', fontWeight: 700, color: '#1B2E4A', minWidth: 40, textAlign: 'center' }}>{qty}</span>
-                <button onClick={() => setQty(Math.min(product.stock, qty + 1))} style={{ padding: '10px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.1rem', color: '#6B4820' }}>+</button>
+              <div style={{ display: 'flex', alignItems: 'center', border: '1.5px solid #C7D2D6', borderRadius: 6, overflow: 'hidden' }}>
+                <button onClick={() => setQty(Math.max(1, qty - 1))} style={{ padding: '10px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.1rem', color: '#5B7480' }}>−</button>
+                <span style={{ padding: '0 16px', fontWeight: 700, color: '#16303A', minWidth: 40, textAlign: 'center' }}>{qty}</span>
+                <button onClick={() => setQty(Math.min(product.stock, qty + 1))} style={{ padding: '10px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.1rem', color: '#5B7480' }}>+</button>
               </div>
-              <button onClick={addToCart} style={{ flex: 1, background: added ? '#1A7A32' : '#E8380A', color: '#fff', padding: '12px 24px', border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '1rem', cursor: 'pointer', transition: 'background 0.2s', minWidth: 180 }}>
+              <button onClick={addToCart} style={{ flex: 1, background: added ? '#1A7A32' : '#1E5F74', color: '#fff', padding: '12px 24px', border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '1rem', cursor: 'pointer', transition: 'background 0.2s', minWidth: 180 }}>
                 {added ? <>✓ {t('addedToCart')}</> : tc('addToCart')}
               </button>
             </div>
           )}
 
-          <button onClick={() => router.push('/cart')} style={{ width: '100%', background: '#1B2E4A', color: '#fff', padding: '12px', border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '1rem', cursor: 'pointer', marginBottom: '1.5rem' }}>
+          <button onClick={() => router.push('/cart')} style={{ width: '100%', background: '#16303A', color: '#fff', padding: '12px', border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '1rem', cursor: 'pointer', marginBottom: '1.5rem' }}>
             {tc('buyNow')} →
           </button>
 
           {/* Trust signals */}
-          <div style={{ borderTop: '1.5px solid #DDB840', paddingTop: '1.5rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+          <div style={{ borderTop: '1.5px solid #C7D2D6', paddingTop: '1.5rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             {[
               { icon: '✅', text: t('giRegistryVerified') },
               { icon: '📦', text: t('handmadeAuthentic') },
               { icon: '🔄', text: t('sevenDayReturns') },
             ].map(({ icon, text }) => (
-              <div key={text} style={{ fontSize: '0.8rem', color: '#6B4820', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <div key={text} style={{ fontSize: '0.8rem', color: '#5B7480', display: 'flex', alignItems: 'center', gap: 6 }}>
                 <span>{icon}</span> {text}
               </div>
             ))}

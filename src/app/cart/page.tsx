@@ -38,14 +38,14 @@ export default function CartPage() {
   return (
     <div style={{ background: 'var(--parchment)', minHeight: '80vh', padding: '3rem 5%' }}>
       <div style={{ maxWidth: 900, margin: '0 auto' }}>
-        <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.8rem, 3vw, 2.6rem)', fontWeight: 700, color: '#1B2E4A', marginBottom: '0.5rem' }}>{t('yourCart')}</h1>
-        <p style={{ color: '#6B4820', marginBottom: '2.5rem' }}>{count} {count !== 1 ? t('items') : t('item')}</p>
+        <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.8rem, 3vw, 2.6rem)', fontWeight: 700, color: '#16303A', marginBottom: '0.5rem' }}>{t('yourCart')}</h1>
+        <p style={{ color: '#5B7480', marginBottom: '2.5rem' }}>{count} {count !== 1 ? t('items') : t('item')}</p>
 
         {cart.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '5rem 0', color: '#6B4820' }}>
+          <div style={{ textAlign: 'center', padding: '5rem 0', color: '#5B7480' }}>
             <div style={{ fontSize: '3.5rem', marginBottom: '1.5rem' }}>🛒</div>
             <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.4rem', marginBottom: '1.5rem' }}>{t('cartEmptyMessage')}</p>
-            <Link href="/shop" style={{ background: '#E8380A', color: '#fff', padding: '12px 28px', borderRadius: 5, fontWeight: 700, textDecoration: 'none' }}>
+            <Link href="/shop" style={{ background: '#1E5F74', color: '#fff', padding: '12px 28px', borderRadius: 5, fontWeight: 700, textDecoration: 'none' }}>
               {t('browseGiProducts')} →
             </Link>
           </div>
@@ -54,47 +54,47 @@ export default function CartPage() {
             {/* Items */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {cart.map(item => (
-                <div key={item.id} style={{ background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 10, padding: '1.25rem', display: 'flex', gap: '1.25rem', alignItems: 'center' }}>
-                  <div style={{ width: 90, height: 90, borderRadius: 8, background: '#FFE8A8', overflow: 'hidden', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div key={item.id} style={{ background: '#F5F7F6', border: '1.5px solid #C7D2D6', borderRadius: 10, padding: '1.25rem', display: 'flex', gap: '1.25rem', alignItems: 'center' }}>
+                  <div style={{ width: 90, height: 90, borderRadius: 8, background: '#E3ECEE', overflow: 'hidden', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     {item.image ? <img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span style={{ fontSize: '2rem' }}>🏺</span>}
                   </div>
                   <div style={{ flex: 1 }}>
-                    <Link href={`/shop/${item.slug}`} style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.1rem', fontWeight: 600, color: '#1B2E4A', textDecoration: 'none', display: 'block', marginBottom: 4 }}>{item.name}</Link>
+                    <Link href={`/shop/${item.slug}`} style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.1rem', fontWeight: 600, color: '#16303A', textDecoration: 'none', display: 'block', marginBottom: 4 }}>{item.name}</Link>
                     <span className="gi-badge" style={{ marginBottom: 8, display: 'inline-flex' }}>✦ GI Tagged</span>
-                    <div style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.2rem', fontWeight: 700, color: '#E8380A' }}>
+                    <div style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.2rem', fontWeight: 700, color: '#1E5F74' }}>
                       ₹{(item.price * item.qty).toLocaleString('en-IN')}
                     </div>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', border: '1.5px solid #DDB840', borderRadius: 6, overflow: 'hidden' }}>
-                      <button onClick={() => updateQty(item.id, item.qty - 1)} style={{ padding: '6px 12px', background: 'none', border: 'none', cursor: 'pointer', color: '#6B4820', fontSize: '1rem' }}>−</button>
-                      <span style={{ padding: '0 10px', fontWeight: 700, color: '#1B2E4A', minWidth: 32, textAlign: 'center' }}>{item.qty}</span>
-                      <button onClick={() => updateQty(item.id, item.qty + 1)} style={{ padding: '6px 12px', background: 'none', border: 'none', cursor: 'pointer', color: '#6B4820', fontSize: '1rem' }}>+</button>
+                    <div style={{ display: 'flex', alignItems: 'center', border: '1.5px solid #C7D2D6', borderRadius: 6, overflow: 'hidden' }}>
+                      <button onClick={() => updateQty(item.id, item.qty - 1)} style={{ padding: '6px 12px', background: 'none', border: 'none', cursor: 'pointer', color: '#5B7480', fontSize: '1rem' }}>−</button>
+                      <span style={{ padding: '0 10px', fontWeight: 700, color: '#16303A', minWidth: 32, textAlign: 'center' }}>{item.qty}</span>
+                      <button onClick={() => updateQty(item.id, item.qty + 1)} style={{ padding: '6px 12px', background: 'none', border: 'none', cursor: 'pointer', color: '#5B7480', fontSize: '1rem' }}>+</button>
                     </div>
-                    <button onClick={() => updateQty(item.id, 0)} style={{ background: 'none', border: 'none', color: '#E8380A', fontSize: '0.78rem', cursor: 'pointer', fontWeight: 700 }}>{t('remove')}</button>
+                    <button onClick={() => updateQty(item.id, 0)} style={{ background: 'none', border: 'none', color: '#1E5F74', fontSize: '0.78rem', cursor: 'pointer', fontWeight: 700 }}>{t('remove')}</button>
                   </div>
                 </div>
               ))}
             </div>
 
             {/* Order Summary */}
-            <div style={{ background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 12, padding: '2rem', position: 'sticky', top: 90 }}>
-              <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.4rem', fontWeight: 600, color: '#1B2E4A', marginBottom: '1.5rem' }}>{t('orderSummary')}</h2>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8, fontSize: '0.9rem', color: '#6B4820' }}>
+            <div style={{ background: '#F5F7F6', border: '1.5px solid #C7D2D6', borderRadius: 12, padding: '2rem', position: 'sticky', top: 90 }}>
+              <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.4rem', fontWeight: 600, color: '#16303A', marginBottom: '1.5rem' }}>{t('orderSummary')}</h2>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8, fontSize: '0.9rem', color: '#5B7480' }}>
                 <span>{tc('subtotal')} ({count} {t('items')})</span>
                 <span>₹{total.toLocaleString('en-IN')}</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8, fontSize: '0.9rem', color: '#6B4820' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8, fontSize: '0.9rem', color: '#5B7480' }}>
                 <span>{t('shippingLabel')}</span>
                 <span style={{ color: '#1A7A32', fontWeight: 700 }}>{t('free')}</span>
               </div>
-              <div style={{ borderTop: '1.5px solid #DDB840', paddingTop: '1rem', marginTop: '1rem', display: 'flex', justifyContent: 'space-between', fontFamily: "'EB Garamond', serif", fontSize: '1.4rem', fontWeight: 700, color: '#1B2E4A' }}>
+              <div style={{ borderTop: '1.5px solid #C7D2D6', paddingTop: '1rem', marginTop: '1rem', display: 'flex', justifyContent: 'space-between', fontFamily: "'EB Garamond', serif", fontSize: '1.4rem', fontWeight: 700, color: '#16303A' }}>
                 <span>{tc('total')}</span>
-                <span style={{ color: '#E8380A' }}>₹{total.toLocaleString('en-IN')}</span>
+                <span style={{ color: '#1E5F74' }}>₹{total.toLocaleString('en-IN')}</span>
               </div>
 
               <Link href="/checkout"
-                style={{ display: 'block', width: '100%', background: '#E8380A', color: '#fff', padding: '14px', border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '1rem', cursor: 'pointer', marginTop: '1.5rem', textDecoration: 'none', textAlign: 'center' }}>
+                style={{ display: 'block', width: '100%', background: '#1E5F74', color: '#fff', padding: '14px', border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '1rem', cursor: 'pointer', marginTop: '1.5rem', textDecoration: 'none', textAlign: 'center' }}>
                 {t('proceedToCheckout')} →
               </Link>
 
@@ -102,7 +102,7 @@ export default function CartPage() {
                 💳 <strong>{t('directPayment')}</strong> {t('directPaymentDesc')}
               </div>
 
-              <Link href="/shop" style={{ display: 'block', textAlign: 'center', marginTop: '1rem', fontSize: '0.85rem', color: '#6B4820', textDecoration: 'none' }}>
+              <Link href="/shop" style={{ display: 'block', textAlign: 'center', marginTop: '1rem', fontSize: '0.85rem', color: '#5B7480', textDecoration: 'none' }}>
                 ← {t('continueShopping')}
               </Link>
             </div>

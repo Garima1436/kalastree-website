@@ -119,7 +119,7 @@ export default function CheckoutPage() {
       image: '/gi-logo.png',
       order_id: razorpayOrderId,
       prefill: { name: form.name, email: form.email, contact: form.phone },
-      theme: { color: '#E8380A' },
+      theme: { color: '#1E5F74' },
       handler: async (response: any) => {
         const verifyRes = await fetch('/api/razorpay/verify', {
           method: 'POST',
@@ -184,19 +184,19 @@ export default function CheckoutPage() {
   }
 
   const inputStyle: React.CSSProperties = {
-    width: '100%', padding: '10px 14px', border: '1.5px solid #DDB840',
-    borderRadius: 6, fontSize: '0.9rem', background: '#FFF8EE', outline: 'none',
+    width: '100%', padding: '10px 14px', border: '1.5px solid #C7D2D6',
+    borderRadius: 6, fontSize: '0.9rem', background: '#F5F7F6', outline: 'none',
   }
   const labelStyle: React.CSSProperties = {
     display: 'block', fontSize: '0.72rem', fontWeight: 700,
-    letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B4820', marginBottom: 5,
+    letterSpacing: '0.08em', textTransform: 'uppercase', color: '#5B7480', marginBottom: 5,
   }
 
   if (cart.length === 0) return (
-    <div style={{ minHeight: '60vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1rem', color: '#6B4820', background: 'var(--parchment)' }}>
+    <div style={{ minHeight: '60vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1rem', color: '#5B7480', background: 'var(--parchment)' }}>
       <div style={{ fontSize: '3rem' }}>🛒</div>
       <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.3rem' }}>{t('cartEmptyMessage')}</p>
-      <Link href="/shop" style={{ color: '#E8380A', fontWeight: 700, textDecoration: 'none' }}>{t('browseProducts')} →</Link>
+      <Link href="/shop" style={{ color: '#1E5F74', fontWeight: 700, textDecoration: 'none' }}>{t('browseProducts')} →</Link>
     </div>
   )
 
@@ -204,7 +204,7 @@ export default function CheckoutPage() {
     const panelTotal = items.reduce((s, i) => s + i.price * i.qty, 0)
     const groupId = isSplit ? checkoutGroupId : undefined
     return (
-      <div style={{ background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 12, padding: '1.75rem' }}>
+      <div style={{ background: '#F5F7F6', border: '1.5px solid #C7D2D6', borderRadius: 12, padding: '1.75rem' }}>
         {isSplit && (
           <div style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#1A7A32', marginBottom: 8 }}>
             {title}
@@ -213,14 +213,14 @@ export default function CheckoutPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: '1.25rem' }}>
           {items.map(item => (
             <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.88rem' }}>
-              <span style={{ color: '#6B4820' }}>{item.name} ×{item.qty}</span>
-              <span style={{ fontWeight: 700, color: '#1B2E4A' }}>₹{(item.price * item.qty).toLocaleString('en-IN')}</span>
+              <span style={{ color: '#5B7480' }}>{item.name} ×{item.qty}</span>
+              <span style={{ fontWeight: 700, color: '#16303A' }}>₹{(item.price * item.qty).toLocaleString('en-IN')}</span>
             </div>
           ))}
         </div>
-        <div style={{ borderTop: '1.5px solid #DDB840', paddingTop: '1rem', display: 'flex', justifyContent: 'space-between', fontFamily: "'EB Garamond', serif", fontSize: '1.4rem', fontWeight: 700 }}>
+        <div style={{ borderTop: '1.5px solid #C7D2D6', paddingTop: '1rem', display: 'flex', justifyContent: 'space-between', fontFamily: "'EB Garamond', serif", fontSize: '1.4rem', fontWeight: 700 }}>
           <span>{tc('total')}</span>
-          <span style={{ color: '#E8380A' }}>₹{panelTotal.toLocaleString('en-IN')}</span>
+          <span style={{ color: '#1E5F74' }}>₹{panelTotal.toLocaleString('en-IN')}</span>
         </div>
         <div style={{ marginTop: '0.75rem', padding: '0.75rem', background: '#C8F5D8', borderRadius: 6, fontSize: '0.75rem', color: '#1A7A32', lineHeight: 1.6 }}>
           🚚 {t('freeShipping')} &nbsp;·&nbsp; 🔒 {t('securedPayment')} &nbsp;·&nbsp; ✅ {t('giVerified')}
@@ -285,7 +285,7 @@ export default function CheckoutPage() {
   return (
     <div style={{ minHeight: '80vh', background: 'var(--parchment)', padding: '3rem 5%' }}>
       <div style={{ maxWidth: 960, margin: '0 auto' }}>
-        <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: '2rem', fontWeight: 700, color: '#1B2E4A', marginBottom: '2rem' }}>
+        <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: '2rem', fontWeight: 700, color: '#16303A', marginBottom: '2rem' }}>
           {t('checkoutTitle')}
         </h1>
 
@@ -293,8 +293,8 @@ export default function CheckoutPage() {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: '2rem', alignItems: 'start' }}>
 
             {/* Shipping form */}
-            <div style={{ background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 12, padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.4rem', fontWeight: 600, color: '#1B2E4A' }}>
+            <div style={{ background: '#F5F7F6', border: '1.5px solid #C7D2D6', borderRadius: 12, padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.4rem', fontWeight: 600, color: '#16303A' }}>
                 {t('shippingDetails')}
               </h2>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
@@ -340,7 +340,7 @@ export default function CheckoutPage() {
             <div style={{ position: 'sticky', top: 90, display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               {onlineOnlyItems.length > 0 && renderPanel(t('paidOnlineLabel'), onlineOnlyItems, false)}
               {codItems.length > 0 && renderPanel(t('codLabel'), codItems, true)}
-              <Link href="/cart" style={{ display: 'block', textAlign: 'center', fontSize: '0.82rem', color: '#6B4820', textDecoration: 'none' }}>
+              <Link href="/cart" style={{ display: 'block', textAlign: 'center', fontSize: '0.82rem', color: '#5B7480', textDecoration: 'none' }}>
                 ← {t('editCart')}
               </Link>
             </div>

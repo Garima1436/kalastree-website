@@ -41,7 +41,7 @@ function FullBleedPhoto({ src, priority, alt }: { src: string; priority?: boolea
       alt={alt}
       fill
       priority={priority}
-      style={{ objectFit: 'contain', objectPosition: 'center', filter: 'drop-shadow(0 6px 20px rgba(26,8,0,0.25))' }}
+      style={{ objectFit: 'contain', objectPosition: 'center', filter: 'drop-shadow(0 6px 20px rgba(13,31,38,0.28))' }}
       sizes="100vw"
       draggable={false}
     />
@@ -57,14 +57,14 @@ function ImageSlide({ src, priority }: { src: string; priority?: boolean }) {
       {/* Confined to the caption's own corner (not the full box) so it stays clear of the
           poster's drop-shadow, but still guarantees contrast for the white caption text
           regardless of where the letterboxed margin falls. */}
-      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 55%, rgba(20,8,0,0.6) 100%)', pointerEvents: 'none', zIndex: 1 }} />
+      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 55%, rgba(13,31,38,0.62) 100%)', pointerEvents: 'none', zIndex: 1 }} />
       <Link
         href={`/shop?state=${encodeURIComponent(stateName)}`}
         style={{ position: 'absolute', inset: 0, zIndex: 2 }}
         aria-label={t('shopGiProductsFrom').replace('{state}', stateName)}
       />
       <div style={{ position: 'absolute', left: '6%', bottom: '10%', maxWidth: 420, pointerEvents: 'none', zIndex: 3 }}>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.25em', textTransform: 'uppercase', color: '#D4A000', marginBottom: 8 }}>
+        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.25em', textTransform: 'uppercase', color: '#8A97A0', marginBottom: 8 }}>
           {t('giHeritageOf')}
         </p>
         <h3 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.5rem, 4vw, 2.6rem)', fontWeight: 700, color: '#fff', margin: '0 0 1rem', lineHeight: 1.1, textShadow: '0 2px 12px rgba(0,0,0,0.5)' }}>
@@ -112,16 +112,16 @@ function BrandSlide() {
               style={{ height: 'clamp(65px, 11.5vw, 120px)', width: 'auto', objectFit: 'contain', display: 'block' }} />
           </div>
 
-          <p className="hero-desc" style={{ fontSize: 'clamp(0.85rem, 1.2vw, 0.94rem)', lineHeight: 1.45, color: '#030303', maxWidth: 560, margin: '0 auto clamp(0.35rem, 1vw, 0.7rem)' }}>
+          <p className="hero-desc" style={{ fontSize: 'clamp(0.85rem, 1.2vw, 0.94rem)', lineHeight: 1.45, color: '#16303A', maxWidth: 560, margin: '0 auto clamp(0.35rem, 1vw, 0.7rem)' }}>
             {t('heroDescPrefix')}{' '}
-            <strong style={{ color: '#E8380A' }}>{t('heroDescHighlight')}</strong> {t('heroDescSuffix')}
+            <strong style={{ color: '#1E5F74' }}>{t('heroDescHighlight')}</strong> {t('heroDescSuffix')}
           </p>
 
           <div className="hero-btns" style={{ display: 'flex', gap: '0.6rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link href="/shop" style={{ background: '#E8380A', color: '#fff', padding: 'clamp(6px,1vw,10px) clamp(12px,2.2vw,24px)', borderRadius: 6, fontFamily: "'Inter', sans-serif", fontSize: 'clamp(0.65rem,1vw,0.82rem)', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6, boxShadow: '0 4px 16px rgba(232,56,10,0.3)' }}>
+            <Link href="/shop" style={{ background: '#1E5F74', color: '#fff', padding: 'clamp(6px,1vw,10px) clamp(12px,2.2vw,24px)', borderRadius: 6, fontFamily: "'Inter', sans-serif", fontSize: 'clamp(0.65rem,1vw,0.82rem)', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6, boxShadow: '0 4px 16px rgba(30,95,116,0.3)' }}>
               {t('shopTheCollection')} →
             </Link>
-            <Link href="/artisans" style={{ background: '#E8380A', color: '#fff', padding: 'clamp(6px,1vw,10px) clamp(12px,2.2vw,24px)', borderRadius: 6, border: '2px solid #E8380A', fontFamily: "'Inter', sans-serif", fontSize: 'clamp(0.65rem,1vw,0.82rem)', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <Link href="/artisans" style={{ background: '#1E5F74', color: '#fff', padding: 'clamp(6px,1vw,10px) clamp(12px,2.2vw,24px)', borderRadius: 6, border: '2px solid #1E5F74', fontFamily: "'Inter', sans-serif", fontSize: 'clamp(0.65rem,1vw,0.82rem)', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
               {t('meetTheArtisans')}
             </Link>
           </div>
@@ -167,11 +167,11 @@ export default function HeroSection({ heroImages, statsImages }: HeroSectionProp
   }
 
   return (
-    <section style={{ background: 'linear-gradient(135deg, #FFFFFF 0%, #FDFBF6 55%, #F3ECDD 100%)', position: 'relative', overflow: 'hidden' }}>
+    <section style={{ background: 'linear-gradient(135deg, #FFFFFF 0%, #F5F7F6 55%, #E7EDEC 100%)', position: 'relative', overflow: 'hidden' }}>
       {/* Premium shine */}
       <div style={{
         position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 1,
-        background: 'radial-gradient(ellipse 60% 45% at 22% 0%, rgba(255,255,255,0.95) 0%, transparent 60%), radial-gradient(ellipse 50% 40% at 100% 100%, rgba(212,160,0,0.1) 0%, transparent 60%)',
+        background: 'radial-gradient(ellipse 60% 45% at 22% 0%, rgba(255,255,255,0.95) 0%, transparent 60%), radial-gradient(ellipse 50% 40% at 100% 100%, rgba(30,95,116,0.08) 0%, transparent 60%)',
       }} />
 
       <div
@@ -204,7 +204,7 @@ export default function HeroSection({ heroImages, statsImages }: HeroSectionProp
               style={{
                 position: 'absolute', top: '50%', left: 14, transform: 'translateY(-50%)', zIndex: 3,
                 width: 'clamp(36px, 6vw, 44px)', height: 'clamp(36px, 6vw, 44px)', borderRadius: '50%', border: 'none',
-                background: 'rgba(255,255,255,0.85)', color: '#1A0800', fontSize: '1.3rem', lineHeight: 1,
+                background: 'rgba(255,255,255,0.85)', color: '#16303A', fontSize: '1.3rem', lineHeight: 1,
                 display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
                 boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
               }}
@@ -218,7 +218,7 @@ export default function HeroSection({ heroImages, statsImages }: HeroSectionProp
               style={{
                 position: 'absolute', top: '50%', right: 14, transform: 'translateY(-50%)', zIndex: 3,
                 width: 'clamp(36px, 6vw, 44px)', height: 'clamp(36px, 6vw, 44px)', borderRadius: '50%', border: 'none',
-                background: 'rgba(255,255,255,0.85)', color: '#1A0800', fontSize: '1.3rem', lineHeight: 1,
+                background: 'rgba(255,255,255,0.85)', color: '#16303A', fontSize: '1.3rem', lineHeight: 1,
                 display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
                 boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
               }}
@@ -234,8 +234,8 @@ export default function HeroSection({ heroImages, statsImages }: HeroSectionProp
                   onClick={() => go(i)}
                   style={{
                     width: i === index ? 22 : 8, height: 8, borderRadius: 4,
-                    background: i === index ? '#D4A000' : 'rgba(139,94,30,0.35)',
-                    border: `1px solid ${i === index ? '#D4A000' : 'rgba(212,160,0,0.7)'}`,
+                    background: i === index ? '#8A97A0' : 'rgba(91,116,128,0.35)',
+                    border: `1px solid ${i === index ? '#8A97A0' : 'rgba(138,151,160,0.7)'}`,
                     padding: 0, cursor: 'pointer', transition: 'width 0.3s, background 0.3s, border-color 0.3s',
                   }}
                 />
@@ -260,7 +260,7 @@ export default function HeroSection({ heroImages, statsImages }: HeroSectionProp
                 className="stats-cell"
                 style={{
                   flex: '1 1 0', minWidth: 0, position: 'relative', overflow: 'hidden',
-                  borderRadius: 12, boxShadow: '0 6px 18px rgba(26,8,0,0.18)',
+                  borderRadius: 12, boxShadow: '0 6px 18px rgba(13,31,38,0.18)',
                   display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center',
                   padding: 'clamp(0.9rem,2vw,1.5rem) clamp(0.5rem,1.5vw,1.2rem)',
                 }}
@@ -268,13 +268,13 @@ export default function HeroSection({ heroImages, statsImages }: HeroSectionProp
                 {bg && (
                   <>
                     <Image src={bg} alt="" fill sizes="(max-width: 640px) 50vw, 25vw" style={{ objectFit: 'cover', objectPosition: 'center' }} />
-                    <div style={{ position: 'absolute', inset: 0, background: 'rgba(26,8,0,0.72)' }} />
+                    <div style={{ position: 'absolute', inset: 0, background: 'rgba(13,31,38,0.72)' }} />
                   </>
                 )}
                 <div style={{ position: 'relative', minWidth: 0 }}>
-                  <div style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.1rem,2.8vw,1.9rem)', fontWeight: 700, color: bg ? '#fff' : '#D4A000', lineHeight: 1, whiteSpace: 'nowrap' }}>{displayNum}</div>
-                  <div style={{ fontSize: 'clamp(0.48rem,1.1vw,0.65rem)', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: bg ? '#fff' : '#3A1C08', marginTop: 3 }}>{label}</div>
-                  <div className="stat-sub" style={{ fontSize: 'clamp(0.48rem,1vw,0.6rem)', color: bg ? 'rgba(255,255,255,0.85)' : 'rgba(139,94,30,0.8)', marginTop: 2, fontStyle: 'italic', whiteSpace: 'nowrap' }}>{sub}</div>
+                  <div style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.1rem,2.8vw,1.9rem)', fontWeight: 700, color: bg ? '#fff' : '#1E5F74', lineHeight: 1, whiteSpace: 'nowrap' }}>{displayNum}</div>
+                  <div style={{ fontSize: 'clamp(0.48rem,1.1vw,0.65rem)', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: bg ? '#fff' : '#16303A', marginTop: 3 }}>{label}</div>
+                  <div className="stat-sub" style={{ fontSize: 'clamp(0.48rem,1vw,0.6rem)', color: bg ? 'rgba(255,255,255,0.85)' : 'rgba(91,116,128,0.8)', marginTop: 2, fontStyle: 'italic', whiteSpace: 'nowrap' }}>{sub}</div>
                 </div>
               </div>
             )

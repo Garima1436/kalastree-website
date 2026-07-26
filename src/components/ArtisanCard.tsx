@@ -8,7 +8,7 @@ export default function ArtisanCard({ artisan }: { artisan: Artisan }) {
   return (
     <Link href={`/artisans/${artisan.slug}`} style={{ textDecoration: 'none' }}>
       <div style={{
-        background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 12,
+        background: '#F5F7F6', border: '1.5px solid #C7D2D6', borderRadius: 12,
         padding: '1.5rem', textAlign: 'center',
         transition: 'transform 0.25s, box-shadow 0.25s',
         cursor: 'pointer',
@@ -26,7 +26,7 @@ export default function ArtisanCard({ artisan }: { artisan: Artisan }) {
         }}
       >
         {/* Photo */}
-        <div style={{ width: 90, height: 90, flexShrink: 0, borderRadius: '50% 40% 55% 45% / 45% 55% 40% 50%', border: '2.5px solid #D4A000', margin: '0 auto 1rem', overflow: 'hidden', background: '#FFE8A8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: 90, height: 90, flexShrink: 0, borderRadius: '50% 40% 55% 45% / 45% 55% 40% 50%', border: '2.5px solid #1E5F74', margin: '0 auto 1rem', overflow: 'hidden', background: '#E3ECEE', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           {artisan.photo_url
             ? <img src={artisan.photo_url} alt={artisan.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             : <span style={{ fontSize: '2.5rem' }}>👩‍🎨</span>
@@ -34,14 +34,14 @@ export default function ArtisanCard({ artisan }: { artisan: Artisan }) {
         </div>
 
         <div style={{
-          fontFamily: "'EB Garamond', serif", fontSize: '1.15rem', fontWeight: 600, color: '#1B2E4A', marginBottom: 4,
+          fontFamily: "'EB Garamond', serif", fontSize: '1.15rem', fontWeight: 600, color: '#16303A', marginBottom: 4,
           display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
           lineHeight: 1.25, minHeight: '2.5em',
         }}>
           {artisan.name}
         </div>
         <div style={{
-          fontSize: '0.78rem', color: '#6B4820', marginBottom: 8,
+          fontSize: '0.78rem', color: '#5B7480', marginBottom: 8,
           display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
           lineHeight: 1.3, minHeight: '2rem',
         }}>
@@ -57,7 +57,7 @@ export default function ArtisanCard({ artisan }: { artisan: Artisan }) {
           )}
         </div>
         <div style={{
-          fontSize: '0.75rem', color: '#D4A000', marginTop: 8, fontStyle: 'italic', minHeight: '1.2rem',
+          fontSize: '0.75rem', color: '#1E5F74', marginTop: 8, fontStyle: 'italic', minHeight: '1.2rem',
           display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden',
         }}>
           {artisan.gi_product ?? ''}

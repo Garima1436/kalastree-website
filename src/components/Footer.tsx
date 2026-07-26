@@ -41,7 +41,7 @@ export default function Footer() {
 
         {/* Shop */}
         <div>
-          <div style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#D4A000', marginBottom: '1rem' }}>{tFooter('shopHeading')}</div>
+          <div style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#1E5F74', marginBottom: '1rem' }}>{tFooter('shopHeading')}</div>
           <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 8 }}>
             {shopLinks.map(({ href, label }) => (
               <li key={href}>
@@ -53,7 +53,7 @@ export default function Footer() {
 
         {/* About */}
         <div>
-          <div style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#D4A000', marginBottom: '1rem' }}>{tFooter('aboutHeading')}</div>
+          <div style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#1E5F74', marginBottom: '1rem' }}>{tFooter('aboutHeading')}</div>
           <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 8 }}>
             {aboutLinks.map(({ href, label }) => (
               <li key={href}>
@@ -65,7 +65,7 @@ export default function Footer() {
 
         {/* Contact */}
         <div>
-          <div style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#D4A000', marginBottom: '1rem' }}>{tFooter('contactHeading')}</div>
+          <div style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#1E5F74', marginBottom: '1rem' }}>{tFooter('contactHeading')}</div>
           <div style={{ fontSize: '0.88rem', color: '#fff', lineHeight: 1.8 }}>
             <p>✉️ <a href="mailto:garima@kalastree.com" className="footer-link" style={{ color: '#fff', textDecoration: 'none' }}>garima@kalastree.com</a></p>
             <p>🏛️ {tFooter('instituteLine')}</p>
@@ -94,7 +94,7 @@ export default function Footer() {
 
       {/* Payment methods */}
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 5% 2rem', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '1.75rem' }}>
-        <div style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#D4A000', marginBottom: '1rem' }}>
+        <div style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#1E5F74', marginBottom: '1rem' }}>
           {tFooter('paymentMethodsHeading')}
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '1.5rem' }}>
@@ -112,10 +112,10 @@ export default function Footer() {
       </div>
 
       {/* Folk bottom band */}
-      <div style={{ height: 6, background: 'linear-gradient(90deg, #E8380A, #D4A000, #1A7A32, #C21859, #E8380A)' }} />
+      <div style={{ height: 6, background: 'linear-gradient(90deg, #1E5F74, #1E5F74, #1A7A32, #C21859, #1E5F74)' }} />
       <style>{`
         .footer-link { transition: color 0.2s; }
-        .footer-link:hover { color: #1B2E4A !important; }
+        .footer-link:hover { color: #16303A !important; }
         .footer-social-icon { transition: transform 0.15s; }
         .footer-social-icon:hover { transform: scale(1.12); }
         @media(max-width:600px){

@@ -37,23 +37,23 @@ export default function ForgotPasswordPage() {
 
   const inputStyle: React.CSSProperties = {
     width: '100%', padding: '11px 14px',
-    border: '1.5px solid #DDB840', borderRadius: 6,
-    fontSize: '0.95rem', background: '#FFF8EE', outline: 'none',
+    border: '1.5px solid #C7D2D6', borderRadius: 6,
+    fontSize: '0.95rem', background: '#F5F7F6', outline: 'none',
   }
   const inputErrorStyle: React.CSSProperties = { ...inputStyle, borderColor: '#EF4444' }
   const labelStyle: React.CSSProperties = {
     display: 'block', fontSize: '0.75rem', fontWeight: 700,
-    letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B4820', marginBottom: 6,
+    letterSpacing: '0.08em', textTransform: 'uppercase', color: '#5B7480', marginBottom: 6,
   }
 
   return (
     <div style={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--parchment)', padding: '2rem' }}>
-      <div style={{ width: '100%', maxWidth: 440, background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 12, padding: '2.5rem' }}>
+      <div style={{ width: '100%', maxWidth: 440, background: '#F5F7F6', border: '1.5px solid #C7D2D6', borderRadius: 12, padding: '2.5rem' }}>
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: '2rem', fontWeight: 700, color: '#1B2E4A', marginBottom: '0.4rem' }}>
+          <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: '2rem', fontWeight: 700, color: '#16303A', marginBottom: '0.4rem' }}>
             {t('resetPasswordHeading')}
           </h1>
-          <p style={{ color: '#6B4820', fontSize: '0.9rem' }}>
+          <p style={{ color: '#5B7480', fontSize: '0.9rem' }}>
             {sent ? t('resetSentMessage') : t('resetInstructions')}
           </p>
         </div>
@@ -72,7 +72,7 @@ export default function ForgotPasswordPage() {
               {fieldError && <p style={{ color: '#B91C1C', fontSize: '0.78rem', marginTop: 4 }}>{fieldError}</p>}
             </div>
             <button type="submit" disabled={loading} style={{
-              width: '100%', background: '#E8380A', color: '#fff', padding: '13px',
+              width: '100%', background: '#1E5F74', color: '#fff', padding: '13px',
               border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '1rem',
               cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1, marginTop: '0.5rem',
             }}>
@@ -81,8 +81,8 @@ export default function ForgotPasswordPage() {
           </form>
         )}
 
-        <p style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.9rem', color: '#6B4820' }}>
-          <Link href="/login" style={{ color: '#E8380A', fontWeight: 700, textDecoration: 'none' }}>
+        <p style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.9rem', color: '#5B7480' }}>
+          <Link href="/login" style={{ color: '#1E5F74', fontWeight: 700, textDecoration: 'none' }}>
             {t('backToSignIn')}
           </Link>
         </p>

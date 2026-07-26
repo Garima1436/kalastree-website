@@ -7,10 +7,10 @@ import CancelOrder from './CancelOrder'
 const CANCELLABLE_STATUSES = ['paid', 'confirmed', 'processing']
 
 const STATUS_COLOR: Record<string, { bg: string; color: string }> = {
-  pending:    { bg: '#FFF3A8', color: '#D4A000' },
+  pending:    { bg: '#DCE4E6', color: '#1E5F74' },
   confirmed:  { bg: '#C8F5D8', color: '#1A7A32' },
   paid:       { bg: '#C8F5D8', color: '#1A7A32' },
-  processing: { bg: '#E0EAFF', color: '#1B2E4A' },
+  processing: { bg: '#E0EAFF', color: '#16303A' },
   shipped:    { bg: '#dbeafe', color: '#1d4ed8' },
   delivered:  { bg: '#C8F5D8', color: '#1A7A32' },
   cancelled:  { bg: '#FEE2E2', color: '#B91C1C' },
@@ -54,19 +54,19 @@ export default async function MyOrdersPage() {
     <div style={{ minHeight: '80vh', background: 'var(--parchment)', padding: '3rem 5%' }}>
       <div style={{ maxWidth: 820, margin: '0 auto' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-          <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: '2rem', fontWeight: 700, color: '#1B2E4A' }}>
+          <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: '2rem', fontWeight: 700, color: '#16303A' }}>
             {tc('myOrders')}
           </h1>
-          <Link href="/shop" style={{ fontSize: '0.85rem', color: '#E8380A', fontWeight: 700, textDecoration: 'none' }}>
+          <Link href="/shop" style={{ fontSize: '0.85rem', color: '#1E5F74', fontWeight: 700, textDecoration: 'none' }}>
             {t('continueShoppingArrow')} →
           </Link>
         </div>
 
         {(!orders || orders.length === 0) ? (
-          <div style={{ textAlign: 'center', padding: '5rem 0', color: '#6B4820' }}>
+          <div style={{ textAlign: 'center', padding: '5rem 0', color: '#5B7480' }}>
             <div style={{ fontSize: '3.5rem', marginBottom: '1rem' }}>📦</div>
             <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.4rem', marginBottom: '1.5rem' }}>{t('noOrdersYet')}</p>
-            <Link href="/shop" style={{ background: '#E8380A', color: '#fff', padding: '12px 28px', borderRadius: 5, fontWeight: 700, textDecoration: 'none' }}>
+            <Link href="/shop" style={{ background: '#1E5F74', color: '#fff', padding: '12px 28px', borderRadius: 5, fontWeight: 700, textDecoration: 'none' }}>
               {t('shopGiProducts')} →
             </Link>
           </div>
@@ -78,25 +78,25 @@ export default async function MyOrdersPage() {
               const steps = isCod ? STATUS_STEPS_COD : STATUS_STEPS_ONLINE
               const stepIndex = steps.indexOf(order.status)
               return (
-                <div key={order.id} style={{ background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 12, overflow: 'hidden' }}>
+                <div key={order.id} style={{ background: '#F5F7F6', border: '1.5px solid #C7D2D6', borderRadius: 12, overflow: 'hidden' }}>
                   {/* Header */}
-                  <div style={{ background: '#FFE8A8', padding: '1rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  <div style={{ background: '#E3ECEE', padding: '1rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
                     <div>
-                      <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', color: '#6B4820' }}>
+                      <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', color: '#5B7480' }}>
                         {t('orderNumberLabel')}{order.order_number ?? order.id.slice(0, 8).toUpperCase()}
                       </div>
-                      <div style={{ fontSize: '0.8rem', color: '#A07840', marginTop: 2 }}>
+                      <div style={{ fontSize: '0.8rem', color: '#7C93A0', marginTop: 2 }}>
                         {new Date(order.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
                       </div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                      <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#6B4820' }}>
+                      <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#5B7480' }}>
                         {isCod ? `💵 ${t('codLabel')}` : `💳 ${t('paidOnlineLabel')}`}
                       </span>
                       <span style={{ padding: '4px 14px', borderRadius: 20, fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.08em', background: sc.bg, color: sc.color }}>
                         {statusLabel(order.status)}
                       </span>
-                      <span style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.4rem', fontWeight: 700, color: '#E8380A' }}>
+                      <span style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.4rem', fontWeight: 700, color: '#1E5F74' }}>
                         ₹{Number(order.total).toLocaleString('en-IN')}
                       </span>
                     </div>
@@ -110,18 +110,18 @@ export default async function MyOrdersPage() {
                           <div key={step} style={{ display: 'flex', alignItems: 'center', flex: i < steps.length - 1 ? 1 : 0 }}>
                             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
                               <div style={{
-                                width: 24, height: 24, borderRadius: '50%', border: `2px solid ${i <= stepIndex ? '#E8380A' : '#DDB840'}`,
-                                background: i <= stepIndex ? '#E8380A' : '#FFFFFF',
-                                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.65rem', color: i <= stepIndex ? '#fff' : '#DDB840', fontWeight: 700,
+                                width: 24, height: 24, borderRadius: '50%', border: `2px solid ${i <= stepIndex ? '#1E5F74' : '#C7D2D6'}`,
+                                background: i <= stepIndex ? '#1E5F74' : '#FFFFFF',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.65rem', color: i <= stepIndex ? '#fff' : '#C7D2D6', fontWeight: 700,
                               }}>
                                 {i < stepIndex ? '✓' : i + 1}
                               </div>
-                              <span style={{ fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', color: i <= stepIndex ? '#E8380A' : '#A07840', whiteSpace: 'nowrap' }}>
+                              <span style={{ fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', color: i <= stepIndex ? '#1E5F74' : '#7C93A0', whiteSpace: 'nowrap' }}>
                                 {statusLabel(step)}
                               </span>
                             </div>
                             {i < steps.length - 1 && (
-                              <div style={{ flex: 1, height: 2, background: i < stepIndex ? '#E8380A' : '#DDB840', margin: '0 4px', marginBottom: 16 }} />
+                              <div style={{ flex: 1, height: 2, background: i < stepIndex ? '#1E5F74' : '#C7D2D6', margin: '0 4px', marginBottom: 16 }} />
                             )}
                           </div>
                         ))}
@@ -130,10 +130,10 @@ export default async function MyOrdersPage() {
 
                     {/* Tracking */}
                     {order.tracking_number && (
-                      <div style={{ padding: '0.8rem 1rem', background: '#E0EAFF', borderRadius: 8, fontSize: '0.82rem', color: '#1B2E4A', marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+                      <div style={{ padding: '0.8rem 1rem', background: '#E0EAFF', borderRadius: 8, fontSize: '0.82rem', color: '#16303A', marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
                         <span>🚚 {t('trackingNumberLabel')}: <strong style={{ fontFamily: 'monospace' }}>{order.tracking_number}</strong></span>
                         {order.tracking_url && (
-                          <a href={order.tracking_url} target="_blank" rel="noopener noreferrer" style={{ background: '#1B2E4A', color: '#D4A000', fontWeight: 700, padding: '6px 14px', borderRadius: 6, textDecoration: 'none', fontSize: '0.78rem' }}>
+                          <a href={order.tracking_url} target="_blank" rel="noopener noreferrer" style={{ background: '#16303A', color: '#1E5F74', fontWeight: 700, padding: '6px 14px', borderRadius: 6, textDecoration: 'none', fontSize: '0.78rem' }}>
                             {t('trackPackage')} →
                           </a>
                         )}
@@ -144,8 +144,8 @@ export default async function MyOrdersPage() {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                       {(order.order_items ?? []).map((item: any) => (
                         <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.88rem' }}>
-                          <span style={{ color: '#1B2E4A' }}>{item.product_name} × {item.quantity}</span>
-                          <span style={{ fontWeight: 700, color: '#E8380A' }}>₹{(Number(item.price) * item.quantity).toLocaleString('en-IN')}</span>
+                          <span style={{ color: '#16303A' }}>{item.product_name} × {item.quantity}</span>
+                          <span style={{ fontWeight: 700, color: '#1E5F74' }}>₹{(Number(item.price) * item.quantity).toLocaleString('en-IN')}</span>
                         </div>
                       ))}
                     </div>
