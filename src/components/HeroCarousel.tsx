@@ -245,10 +245,12 @@ export default function HeroSection({ heroImages, statsImages }: HeroSectionProp
         )}
       </div>
 
-      {/* Stats bar — each cell shows its own background image with text overlaid */}
-      <div style={{ borderTop: '1px solid rgba(139,94,30,0.2)', position: 'relative', zIndex: 2 }}>
-        <div className="stats-grid" style={{ display: 'flex', width: '100%' }}>
-          {STATS.map(({ key, num }, i) => {
+      {/* Stats bar — individual rounded cards with a gap and drop shadow between them
+          (not flush cells with divider lines), each showing its own background image
+          with centered text overlaid. */}
+      <div style={{ position: 'relative', zIndex: 2, padding: 'clamp(0.7rem,1.8vw,1.25rem) clamp(0.6rem,2vw,1.5rem)' }}>
+        <div className="stats-grid" style={{ display: 'flex', width: '100%', gap: 'clamp(0.5rem,1.5vw,1rem)' }}>
+          {STATS.map(({ key, num }) => {
             const bg = statsImages[key]
             const { label, sub } = statText[key]
             const displayNum = key === 'marketplace' ? t('statMarketplaceNum') : num
@@ -258,20 +260,21 @@ export default function HeroSection({ heroImages, statsImages }: HeroSectionProp
                 className="stats-cell"
                 style={{
                   flex: '1 1 0', minWidth: 0, position: 'relative', overflow: 'hidden',
+                  borderRadius: 12, boxShadow: '0 6px 18px rgba(26,8,0,0.18)',
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center',
                   padding: 'clamp(0.9rem,2vw,1.5rem) clamp(0.5rem,1.5vw,1.2rem)',
-                  borderLeft: i > 0 ? '1px solid rgba(139,94,30,0.15)' : 'none',
                 }}
               >
                 {bg && (
                   <>
                     <Image src={bg} alt="" fill sizes="(max-width: 640px) 50vw, 25vw" style={{ objectFit: 'cover', objectPosition: 'center' }} />
-                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(26,8,0,0.35) 0%, rgba(26,8,0,0.75) 100%)' }} />
+                    <div style={{ position: 'absolute', inset: 0, background: 'rgba(26,8,0,0.72)' }} />
                   </>
                 )}
                 <div style={{ position: 'relative', minWidth: 0 }}>
-                  <div style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.1rem,2.8vw,1.9rem)', fontWeight: 700, color: '#D4A000', lineHeight: 1, whiteSpace: 'nowrap' }}>{displayNum}</div>
+                  <div style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.1rem,2.8vw,1.9rem)', fontWeight: 700, color: bg ? '#fff' : '#D4A000', lineHeight: 1, whiteSpace: 'nowrap' }}>{displayNum}</div>
                   <div style={{ fontSize: 'clamp(0.48rem,1.1vw,0.65rem)', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: bg ? '#fff' : '#3A1C08', marginTop: 3 }}>{label}</div>
-                  <div className="stat-sub" style={{ fontSize: 'clamp(0.48rem,1vw,0.6rem)', color: bg ? 'rgba(212,160,0,0.85)' : 'rgba(139,94,30,0.8)', marginTop: 2, fontStyle: 'italic', whiteSpace: 'nowrap' }}>{sub}</div>
+                  <div className="stat-sub" style={{ fontSize: 'clamp(0.48rem,1vw,0.6rem)', color: bg ? 'rgba(255,255,255,0.85)' : 'rgba(139,94,30,0.8)', marginTop: 2, fontStyle: 'italic', whiteSpace: 'nowrap' }}>{sub}</div>
                 </div>
               </div>
             )
