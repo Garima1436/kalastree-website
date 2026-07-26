@@ -9,6 +9,7 @@ import ReactMarkdown from 'react-markdown'
 import remarkBreaks from 'remark-breaks'
 import { useTranslation } from '@/lib/i18n/useTranslation'
 import { localizedProductName, localizedProductDescription } from '@/lib/productLocale'
+import ProductReviews, { Stars } from '@/components/ProductReviews'
 
 interface MediaItem {
   id: string
@@ -81,6 +82,7 @@ export default function ProductPage() {
   const [activeIdx, setActiveIdx] = useState(0)
   const [qty, setQty] = useState(1)
   const [added, setAdded] = useState(false)
+  const [reviewStats, setReviewStats] = useState<{ average: number; count: number } | null>(null)
 
   useEffect(() => {
     const load = async () => {
@@ -106,6 +108,13 @@ export default function ProductPage() {
         const legacyUrls = new Set(legacyImages.map(m => m.url))
         const dbMedia = ((mediaData ?? []) as MediaItem[]).filter(m => !legacyUrls.has(m.url))
         setMedia([...legacyImages, ...dbMedia])
+
+        const { data: ratingsData } = await supabase
+          .from('reviews')
+          .select('rating')
+          .eq('product_id', typedProd.id)
+        const ratings = ((ratingsData ?? []) as { rating: number }[]).map(r => r.rating)
+        setReviewStats(ratings.length ? { average: ratings.reduce((s, r) => s + r, 0) / ratings.length, count: ratings.length } : null)
       }
       setLoading(false)
     }
@@ -197,6 +206,15 @@ export default function ProductPage() {
             {name}
           </h1>
 
+          {reviewStats && (
+            <a href="#reviews" style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: '1rem', textDecoration: 'none' }}>
+              <Stars value={reviewStats.average} />
+              <span style={{ fontSize: '0.85rem', color: '#6B4820' }}>
+                {reviewStats.count} {reviewStats.count === 1 ? t('review') : t('reviews')}
+              </span>
+            </a>
+          )}
+
           {product.artisan && (
             <Link href={`/artisans/${product.artisan.slug}`} style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', marginBottom: '1.5rem' }}>
               <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#FFE8A8', border: '2px solid #D4A000', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -257,6 +275,8 @@ export default function ProductPage() {
           </div>
         </div>
       </div>
+
+      <ProductReviews productId={product.id} />
 
       <style>{`
         @media(max-width: 768px) {

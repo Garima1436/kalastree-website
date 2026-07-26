@@ -27,9 +27,10 @@ export default function ProductCard({ product }: { product: Product }) {
   }
 
   return (
-    <div style={{
+    <div className="product-card" style={{
       background: '#FFFFFF', borderRadius: 3,
       overflow: 'hidden', transition: 'transform 0.25s, box-shadow 0.25s',
+      display: 'flex', flexDirection: 'column',
     }}
       onMouseEnter={e => {
         const el = e.currentTarget as HTMLElement
@@ -42,9 +43,21 @@ export default function ProductCard({ product }: { product: Product }) {
         el.style.boxShadow = 'none'
       }}
     >
+      <style>{`
+        @media (max-width: 640px) {
+          .product-card .pc-image { height: 110px !important; }
+          .product-card .pc-info { padding: 0.6rem 0.7rem 0 !important; }
+          .pc-name { font-size: 0.86rem !important; margin-bottom: 2px !important; }
+          .pc-artisan { font-size: 0.66rem !important; }
+          .pc-price { font-size: 1rem !important; }
+          .pc-stock { font-size: 0.62rem !important; }
+          .product-card .pc-cart { padding: 0.5rem 0.7rem 0.65rem !important; }
+          .product-card .pc-cart button { padding: 7px 0 !important; font-size: 0.72rem !important; }
+        }
+      `}</style>
       <Link href={`/shop/${product.slug}`} style={{ textDecoration: 'none', display: 'block', cursor: 'pointer' }}>
         {/* Image */}
-        <div style={{ height: 170, background: `linear-gradient(135deg, ${cat.bg}, #FFF8EE)`, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
+        <div className="pc-image" style={{ height: 170, background: `linear-gradient(135deg, ${cat.bg}, #FFF8EE)`, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
           {product.images?.[0] ? (
             <img src={product.images[0]} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           ) : (
@@ -58,23 +71,24 @@ export default function ProductCard({ product }: { product: Product }) {
         </div>
 
         {/* Info */}
-        <div style={{ padding: '0.85rem 0.95rem 0' }}>
+        <div className="pc-info" style={{ padding: '0.85rem 0.95rem 0' }}>
           <div style={{ fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: cat.color, marginBottom: 3 }}>
             {cat.icon} {cat.label}
           </div>
-          <div style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.02rem', fontWeight: 600, color: '#1B2E4A', marginBottom: 3, lineHeight: 1.3 }}>
+          <div className="pc-name" style={{
+            fontFamily: "'EB Garamond', serif", fontSize: '1.02rem', fontWeight: 600, color: '#1B2E4A', marginBottom: 3, lineHeight: 1.3,
+            display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', minHeight: '2.6em',
+          }}>
             {name}
           </div>
-          {product.artisan && (
-            <div style={{ fontSize: '0.74rem', color: '#6B4820', marginBottom: 6 }}>
-              {t('byPrefix')}{product.artisan.name}{t('bySuffix')} · {product.state}
-            </div>
-          )}
+          <div className="pc-artisan" style={{ fontSize: '0.74rem', color: '#6B4820', marginBottom: 6, minHeight: '1.2em', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+            {product.artisan ? <>{t('byPrefix')}{product.artisan.name}{t('bySuffix')} · {product.state}</> : ' '}
+          </div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 6 }}>
-            <span style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.2rem', fontWeight: 700, color: '#E8380A' }}>
+            <span className="pc-price" style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.2rem', fontWeight: 700, color: '#E8380A' }}>
               ₹{product.price.toLocaleString('en-IN')}
             </span>
-            <span style={{ fontSize: '0.7rem', color: product.stock > 0 ? '#1A7A32' : '#E8380A', fontWeight: 700 }}>
+            <span className="pc-stock" style={{ fontSize: '0.7rem', color: product.stock > 0 ? '#1A7A32' : '#E8380A', fontWeight: 700 }}>
               {product.stock > 0 ? <>{product.stock}{t('stockLeftSuffix')}</> : t('outOfStock')}
             </span>
           </div>
@@ -82,7 +96,7 @@ export default function ProductCard({ product }: { product: Product }) {
       </Link>
 
       {/* Add to cart */}
-      <div style={{ padding: '0.7rem 0.95rem 0.85rem' }}>
+      <div className="pc-cart" style={{ padding: '0.7rem 0.95rem 0.85rem', marginTop: 'auto' }}>
         <button
           onClick={product.stock > 0 ? addToCart : undefined}
           disabled={product.stock === 0}

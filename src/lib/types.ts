@@ -48,6 +48,20 @@ export interface Inquiry {
   created_at: string
 }
 
+export interface Review {
+  id: string
+  product_id: string
+  user_id: string | null
+  reviewer_name: string
+  email: string | null
+  rating: number
+  title: string | null
+  body: string | null
+  media_url: string | null
+  youtube_url: string | null
+  created_at: string
+}
+
 export type Database = {
   public: {
     Tables: {
@@ -65,6 +79,11 @@ export type Database = {
         Row: Inquiry
         Insert: Omit<Inquiry, 'id' | 'created_at'>
         Update: Partial<Omit<Inquiry, 'id' | 'created_at'>>
+      }
+      reviews: {
+        Row: Review
+        Insert: Omit<Review, 'id' | 'created_at'>
+        Update: Partial<Omit<Review, 'id' | 'created_at'>>
       }
     }
   }
