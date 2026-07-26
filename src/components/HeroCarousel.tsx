@@ -97,7 +97,7 @@ function BrandSlide() {
       <div style={{ position: 'absolute', inset: 0, zIndex: 4, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', padding: '0 5% clamp(0.6rem, 2vw, 1.25rem)' }}>
         {/* Sized to its own content (not the photo) so the wave backdrop always
             hugs the logo/description/buttons regardless of viewport width. */}
-        <div style={{ position: 'relative', maxWidth: 820, textAlign: 'center', padding: 'clamp(1.5rem, 4.5vw, 2.5rem) clamp(1.75rem, 6vw, 3.5rem)' }}>
+        <div className="hero-brand-card" style={{ position: 'relative', maxWidth: 820, textAlign: 'center', padding: 'clamp(1.5rem, 4.5vw, 2.5rem) clamp(1.75rem, 6vw, 3.5rem)' }}>
           {/* Soft feathered glow, not a shape with an edge — fades all the way to
               transparent with no hard boundary anywhere, so there's nothing for a
               busy photo to clash against. Sized via the padding above, tight to the
@@ -108,7 +108,7 @@ function BrandSlide() {
           }} />
 
           <div style={{ display: 'flex', justifyContent: 'center', marginTop: 'clamp(0.4rem, 1.2vw, 0.9rem)', marginBottom: 'clamp(0.15rem, 0.6vw, 0.35rem)' }}>
-            <img src="/kalastree-logo.png" alt={`KalaStree — ${t('heritageByHer')}`}
+            <img className="hero-logo" src="/kalastree-logo.png" alt={`KalaStree — ${t('heritageByHer')}`}
               style={{ height: 'clamp(65px, 11.5vw, 120px)', width: 'auto', objectFit: 'contain', display: 'block' }} />
           </div>
 
@@ -283,6 +283,21 @@ export default function HeroSection({ heroImages, statsImages }: HeroSectionProp
         @media(max-width:640px){
           .stat-sub { white-space: normal !important; }
           .hero-arrow { display: none !important; }
+          /* Card was scaling to fill nearly the whole slide height on narrow screens,
+             hiding the background photo almost entirely. Slide height stays the same
+             as other slides — shrink the card's own padding/logo/copy instead, so the
+             photo stays visible around it. */
+          .hero-brand-card { padding: 0.7rem 1rem !important; }
+          .hero-logo { height: 38px !important; }
+          .hero-desc {
+            font-size: 0.68rem !important;
+            margin-bottom: 0.4rem !important;
+            display: -webkit-box !important;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+          }
+          .hero-btns a { padding: 4px 9px !important; font-size: 0.58rem !important; }
         }
       `}</style>
     </section>
