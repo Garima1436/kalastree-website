@@ -36,7 +36,7 @@ export const PAYMENT_METHODS = [
   {
     name: 'UPI',
     icon: (
-      <span style={{ background: '#F5F7F6', borderRadius: 6, padding: '6px 12px', display: 'inline-flex', alignItems: 'center', fontFamily: "'Inter', sans-serif", fontWeight: 800, fontSize: '1rem', color: '#16303A' }}>
+      <span style={{ background: '#fff', borderRadius: 6, padding: '6px 12px', display: 'inline-flex', alignItems: 'center', fontFamily: "'Inter', sans-serif", fontWeight: 800, fontSize: '1rem', color: '#1B2E4A' }}>
         UPI
       </span>
     ),

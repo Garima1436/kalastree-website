@@ -34,7 +34,7 @@ export default function ProductCard({ product }: { product: Product }) {
       onMouseEnter={e => {
         const el = e.currentTarget as HTMLElement
         el.style.transform = 'translateY(-6px)'
-        el.style.boxShadow = '0 16px 40px rgba(30,95,116,0.14)'
+        el.style.boxShadow = '0 16px 40px rgba(232,56,10,0.12)'
       }}
       onMouseLeave={e => {
         const el = e.currentTarget as HTMLElement
@@ -44,7 +44,7 @@ export default function ProductCard({ product }: { product: Product }) {
     >
       <Link href={`/shop/${product.slug}`} style={{ textDecoration: 'none', display: 'block', cursor: 'pointer' }}>
         {/* Image */}
-        <div style={{ height: 170, background: `linear-gradient(135deg, ${cat.bg}, #FFFFFF)`, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ height: 170, background: `linear-gradient(135deg, ${cat.bg}, #FFF8EE)`, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
           {product.images?.[0] ? (
             <img src={product.images[0]} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           ) : (
@@ -62,19 +62,19 @@ export default function ProductCard({ product }: { product: Product }) {
           <div style={{ fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: cat.color, marginBottom: 3 }}>
             {cat.icon} {cat.label}
           </div>
-          <div style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.02rem', fontWeight: 600, color: '#16303A', marginBottom: 3, lineHeight: 1.3 }}>
+          <div style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.02rem', fontWeight: 600, color: '#1B2E4A', marginBottom: 3, lineHeight: 1.3 }}>
             {name}
           </div>
           {product.artisan && (
-            <div style={{ fontSize: '0.74rem', color: '#5B7480', marginBottom: 6 }}>
+            <div style={{ fontSize: '0.74rem', color: '#6B4820', marginBottom: 6 }}>
               {t('byPrefix')}{product.artisan.name}{t('bySuffix')} · {product.state}
             </div>
           )}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 6 }}>
-            <span style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.2rem', fontWeight: 700, color: '#1E5F74' }}>
+            <span style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.2rem', fontWeight: 700, color: '#E8380A' }}>
               ₹{product.price.toLocaleString('en-IN')}
             </span>
-            <span style={{ fontSize: '0.7rem', color: product.stock > 0 ? '#1A7A32' : '#1E5F74', fontWeight: 700 }}>
+            <span style={{ fontSize: '0.7rem', color: product.stock > 0 ? '#1A7A32' : '#E8380A', fontWeight: 700 }}>
               {product.stock > 0 ? <>{product.stock}{t('stockLeftSuffix')}</> : t('outOfStock')}
             </span>
           </div>
@@ -90,8 +90,8 @@ export default function ProductCard({ product }: { product: Product }) {
             width: '100%', padding: '9px 0', borderRadius: 3, border: 'none',
             fontSize: '0.8rem', fontWeight: 700, fontFamily: "'Inter', sans-serif",
             cursor: product.stock > 0 ? 'pointer' : 'not-allowed',
-            background: product.stock === 0 ? '#DCE4E6' : added ? '#1A7A32' : '#1E5F74',
-            color: product.stock === 0 ? '#5B7480' : '#fff',
+            background: product.stock === 0 ? '#F3ECDD' : added ? '#1A7A32' : '#E8380A',
+            color: product.stock === 0 ? '#6B4820' : '#fff',
             transition: 'background 0.2s',
           }}
         >

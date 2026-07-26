@@ -97,45 +97,33 @@ export default async function HomePage() {
       <HeroSection heroImages={heroImages} statsImages={statsImages} />
 
       {/* Marigold promo strip */}
-      <div style={{ background: '#1E5F74', padding: '11px 5%', textAlign: 'center', overflow: 'hidden' }}>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#16303A', margin: 0 }}>
+      <div style={{ background: '#D4A000', padding: '11px 5%', textAlign: 'center', overflow: 'hidden' }}>
+        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#1A0800', margin: 0 }}>
           {t('promoStrip')}
         </p>
       </div>
 
       {/* <ComingSoonRibbon /> */}
 
-      {/* GI CATEGORIES */}
-      <section style={{ padding: '2.5rem 5% 5rem', background: '#DCE4E6' }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-          <div className="folk-divider" style={{ margin: '0 0 1rem' }}><span>✦ ✧ ✦</span></div>
-          <p style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#1A7A32', textAlign: 'center', marginBottom: '0.6rem' }}>{t('categoryEyebrow')}</p>
-          <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.8rem, 3vw, 2.6rem)', fontWeight: 700, color: '#16303A', textAlign: 'center', marginBottom: '3rem' }}>
-            {t('categoryHeadingPrefix')} <span style={{ color: '#1E5F74' }}>{t('categoryHeadingHighlight')}</span>
-          </h2>
-          <CategoryGrid categoryImages={categoryImages} />
-        </div>
-      </section>
-
       {/* FEATURED PRODUCTS */}
-      <section style={{ padding: '2.5rem 5% 5rem', background: '#DCE4E6' }}>
+      <section style={{ padding: '2.5rem 5% 5rem', background: '#E8E3D9' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '3rem', flexWrap: 'wrap', gap: '1rem' }}>
             <div>
               <p style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#1A7A32', marginBottom: '0.4rem' }}>{t('featuredEyebrow')}</p>
-              <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.8rem, 3vw, 2.6rem)', fontWeight: 700, color: '#16303A' }}>
-                {t('featuredHeadingPrefix')} <span style={{ color: '#1E5F74' }}>{t('featuredHeadingHighlight')}</span>
+              <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.8rem, 3vw, 2.6rem)', fontWeight: 700, color: '#1B2E4A' }}>
+                {t('featuredHeadingPrefix')} <span style={{ color: '#E8380A' }}>{t('featuredHeadingHighlight')}</span>
               </h2>
             </div>
-            <Link href="/shop" style={{ fontSize: '0.88rem', fontWeight: 700, color: '#1E5F74', textDecoration: 'none', border: '1.5px solid #1E5F74', padding: '8px 20px', borderRadius: 4 }}>
+            <Link href="/shop" style={{ fontSize: '0.88rem', fontWeight: 700, color: '#E8380A', textDecoration: 'none', border: '1.5px solid #E8380A', padding: '8px 20px', borderRadius: 4 }}>
               {t('viewAllProductsLink')} →
             </Link>
           </div>
 
           {products.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '4rem', color: '#5B7480' }}>
+            <div style={{ textAlign: 'center', padding: '4rem', color: '#6B4820' }}>
               <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🌾</div>
-              <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.3rem' }}>{t('productsComingSoon')} <Link href="/join" style={{ color: '#1E5F74' }}>{t('joinAsArtisanLink')} →</Link></p>
+              <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.3rem' }}>{t('productsComingSoon')} <Link href="/join" style={{ color: '#E8380A' }}>{t('joinAsArtisanLink')} →</Link></p>
             </div>
           ) : (
             <ProductCarousel products={products} />
@@ -147,13 +135,13 @@ export default async function HomePage() {
       {CATEGORY_KEYS.filter(key => (byCategory[key]?.length ?? 0) > 0).map(key => {
         const meta = CATEGORY_META[key]
         return (
-          <section key={key} style={{ padding: '0 5% 5rem', background: '#DCE4E6' }}>
+          <section key={key} style={{ padding: '0 5% 3rem', background: '#E8E3D9' }}>
             <div style={{ maxWidth: 1280, margin: '0 auto' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-                <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.4rem, 2.4vw, 1.9rem)', fontWeight: 700, color: '#16303A' }}>
+                <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.4rem, 2.4vw, 1.9rem)', fontWeight: 700, color: '#1B2E4A' }}>
                   {meta.icon} {meta.label}
                 </h2>
-                <Link href={`/shop?category=${key}`} style={{ fontSize: '0.85rem', fontWeight: 700, color: '#1E5F74', textDecoration: 'none', border: '1.5px solid #1E5F74', padding: '7px 16px', borderRadius: 4 }}>
+                <Link href={`/shop?category=${key}`} style={{ fontSize: '0.85rem', fontWeight: 700, color: '#E8380A', textDecoration: 'none', border: '1.5px solid #E8380A', padding: '7px 16px', borderRadius: 4 }}>
                   {t('viewAllProductsLink')} →
                 </Link>
               </div>
@@ -163,8 +151,20 @@ export default async function HomePage() {
         )
       })}
 
+      {/* GI CATEGORIES */}
+      <section style={{ padding: '1rem 5% 5rem', background: '#E8E3D9' }}>
+        <div style={{ maxWidth: 1280, margin: '0 auto' }}>
+          <div className="folk-divider" style={{ margin: '0 0 1rem' }}><span>✦ ✧ ✦</span></div>
+          <p style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#1A7A32', textAlign: 'center', marginBottom: '0.6rem' }}>{t('categoryEyebrow')}</p>
+          <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.8rem, 3vw, 2.6rem)', fontWeight: 700, color: '#1B2E4A', textAlign: 'center', marginBottom: '3rem' }}>
+            {t('categoryHeadingPrefix')} <span style={{ color: '#E8380A' }}>{t('categoryHeadingHighlight')}</span>
+          </h2>
+          <CategoryGrid categoryImages={categoryImages} />
+        </div>
+      </section>
+
       {/* MISSION STRIP */}
-      <section style={{ background: '#16303A', padding: '1rem 5%', position: 'relative', overflow: 'hidden' }}>
+      <section style={{ background: '#1B2E4A', padding: '1rem 5%', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', inset: 0, backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cg fill='%23B8860B' opacity='0.06'%3E%3Ccircle cx='10' cy='10' r='3'/%3E%3Ccircle cx='30' cy='10' r='3'/%3E%3Ccircle cx='50' cy='10' r='3'/%3E%3Ccircle cx='10' cy='30' r='3'/%3E%3Ccircle cx='30' cy='30' r='3'/%3E%3Ccircle cx='50' cy='30' r='3'/%3E%3Ccircle cx='10' cy='50' r='3'/%3E%3Ccircle cx='30' cy='50' r='3'/%3E%3Ccircle cx='50' cy='50' r='3'/%3E%3C/g%3E%3C/svg%3E\")", pointerEvents: 'none' }} />
         <div style={{ maxWidth: 860, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '2.5rem', position: 'relative', zIndex: 1 }}>
           {[
@@ -183,19 +183,19 @@ export default async function HomePage() {
 
       {/* ARTISANS */}
       {artisans.length > 0 && (
-        <section style={{ padding: '2.5rem 5% 5rem', background: '#DCE4E6' }}>
+        <section style={{ padding: '2.5rem 5% 5rem', background: '#E8E3D9' }}>
           <div style={{ maxWidth: 1280, margin: '0 auto' }}>
             <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
               <p style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#1A7A32', marginBottom: '0.4rem' }}>{t('artisansEyebrow')}</p>
-              <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.8rem, 3vw, 2.6rem)', fontWeight: 700, color: '#16303A' }}>
-                {t('artisansHeadingPrefix')} <span style={{ color: '#1E5F74' }}>{t('artisansHeadingHighlight')}</span>
+              <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.8rem, 3vw, 2.6rem)', fontWeight: 700, color: '#1B2E4A' }}>
+                {t('artisansHeadingPrefix')} <span style={{ color: '#E8380A' }}>{t('artisansHeadingHighlight')}</span>
               </h2>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1.25rem', marginBottom: '2.5rem' }}>
               {artisans.map(a => <ArtisanCard key={a.id} artisan={a} />)}
             </div>
             <div style={{ textAlign: 'center' }}>
-              <Link href="/artisans" style={{ background: '#1E5F74', color: '#fff', padding: '12px 28px', borderRadius: 5, fontWeight: 700, textDecoration: 'none', fontSize: '0.9rem' }}>
+              <Link href="/artisans" style={{ background: '#E8380A', color: '#fff', padding: '12px 28px', borderRadius: 5, fontWeight: 700, textDecoration: 'none', fontSize: '0.9rem' }}>
                 {t('viewAllArtisansLink')} →
               </Link>
             </div>
@@ -210,7 +210,7 @@ export default async function HomePage() {
           <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.8rem, 3vw, 2.4rem)', fontWeight: 700, color: '#1A7A32', marginBottom: '1rem' }}>
             {t('ctaHeading')}
           </h2>
-          <p style={{ fontSize: '1rem', lineHeight: 1.8, color: '#5B7480', marginBottom: '2rem' }}>
+          <p style={{ fontSize: '1rem', lineHeight: 1.8, color: '#6B4820', marginBottom: '2rem' }}>
             {t('ctaBody')}
           </p>
           <Link href="/join" style={{ background: '#1A7A32', color: '#fff', padding: '14px 32px', borderRadius: 5, fontWeight: 700, textDecoration: 'none', fontSize: '1rem', display: 'inline-block' }}>

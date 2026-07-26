@@ -53,7 +53,7 @@ export default function ProfilePage() {
 
   if (loading) return (
     <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--parchment)' }}>
-      <div style={{ color: '#5B7480', fontFamily: "'Inter', sans-serif" }}>{t('loadingProfile')}</div>
+      <div style={{ color: '#6B4820', fontFamily: "'Inter', sans-serif" }}>{t('loadingProfile')}</div>
     </div>
   )
 
@@ -65,14 +65,14 @@ export default function ProfilePage() {
 
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginBottom: '2.5rem' }}>
-          <div style={{ width: 72, height: 72, borderRadius: '50%', background: 'linear-gradient(135deg, #1E5F74, #1E5F74)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.6rem', fontWeight: 700, color: '#fff', flexShrink: 0 }}>
+          <div style={{ width: 72, height: 72, borderRadius: '50%', background: 'linear-gradient(135deg, #E8380A, #D4A000)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.6rem', fontWeight: 700, color: '#fff', flexShrink: 0 }}>
             {initials}
           </div>
           <div>
-            <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.8rem', fontWeight: 700, color: '#16303A', margin: 0 }}>
+            <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.8rem', fontWeight: 700, color: '#1B2E4A', margin: 0 }}>
               {form.full_name || t('yourProfileFallback')}
             </h1>
-            <p style={{ color: '#5B7480', fontSize: '0.9rem', margin: '4px 0 0' }}>{user?.email}</p>
+            <p style={{ color: '#6B4820', fontSize: '0.9rem', margin: '4px 0 0' }}>{user?.email}</p>
           </div>
         </div>
 
@@ -82,17 +82,17 @@ export default function ProfilePage() {
             { label: `📦 ${tc('myOrders')}`, href: '/account/orders' },
             { label: `🛒 ${t('continueShopping')}`, href: '/shop' },
           ].map(({ label, href }) => (
-            <a key={href} href={href} style={{ padding: '8px 18px', background: '#E3ECEE', border: '1.5px solid #C7D2D6', borderRadius: 6, fontSize: '0.85rem', fontWeight: 700, color: '#16303A', textDecoration: 'none', fontFamily: "'Inter', sans-serif" }}>
+            <a key={href} href={href} style={{ padding: '8px 18px', background: '#FFE8A8', border: '1.5px solid #DDB840', borderRadius: 6, fontSize: '0.85rem', fontWeight: 700, color: '#1B2E4A', textDecoration: 'none', fontFamily: "'Inter', sans-serif" }}>
               {label}
             </a>
           ))}
         </div>
 
-        <form onSubmit={handleSave} style={{ background: '#F5F7F6', border: '1.5px solid #C7D2D6', borderRadius: 12, overflow: 'hidden' }}>
+        <form onSubmit={handleSave} style={{ background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 12, overflow: 'hidden' }}>
 
           {/* Personal Info */}
-          <div style={{ padding: '1.5rem', borderBottom: '1px solid #DCE4E6' }}>
-            <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.2rem', fontWeight: 700, color: '#16303A', marginBottom: '1.25rem' }}>
+          <div style={{ padding: '1.5rem', borderBottom: '1px solid #EDD060' }}>
+            <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.2rem', fontWeight: 700, color: '#1B2E4A', marginBottom: '1.25rem' }}>
               {t('personalInformation')}
             </h2>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
@@ -104,8 +104,8 @@ export default function ProfilePage() {
               <div style={{ gridColumn: '1 / -1' }}>
                 <label style={labelStyle}>{t('emailAddressLabel')}</label>
                 <input value={user?.email} disabled
-                  style={{ ...inputStyle, background: '#E3ECEE', color: '#7C93A0', cursor: 'not-allowed' }} />
-                <span style={{ fontSize: '0.72rem', color: '#7C93A0' }}>{t('emailCannotBeChanged')}</span>
+                  style={{ ...inputStyle, background: '#FFE8A8', color: '#A07840', cursor: 'not-allowed' }} />
+                <span style={{ fontSize: '0.72rem', color: '#A07840' }}>{t('emailCannotBeChanged')}</span>
               </div>
               <div>
                 <label style={labelStyle}>{t('phoneNumberLabel')}</label>
@@ -117,10 +117,10 @@ export default function ProfilePage() {
 
           {/* Shipping Address */}
           <div style={{ padding: '1.5rem' }}>
-            <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.2rem', fontWeight: 700, color: '#16303A', marginBottom: '0.25rem' }}>
+            <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.2rem', fontWeight: 700, color: '#1B2E4A', marginBottom: '0.25rem' }}>
               {t('defaultShippingAddress')}
             </h2>
-            <p style={{ fontSize: '0.8rem', color: '#7C93A0', marginBottom: '1.25rem', fontFamily: "'Inter', sans-serif" }}>
+            <p style={{ fontSize: '0.8rem', color: '#A07840', marginBottom: '1.25rem', fontFamily: "'Inter', sans-serif" }}>
               {t('autoFilledAtCheckout')}
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
@@ -150,9 +150,9 @@ export default function ProfilePage() {
           </div>
 
           {/* Save */}
-          <div style={{ padding: '1.25rem 1.5rem', background: '#EEF2F2', borderTop: '1px solid #DCE4E6', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div style={{ padding: '1.25rem 1.5rem', background: '#FFF5E0', borderTop: '1px solid #EDD060', display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <button type="submit" disabled={saving}
-              style={{ background: saving ? '#7C93A0' : '#1E5F74', color: '#fff', padding: '11px 28px', border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '0.95rem', cursor: saving ? 'not-allowed' : 'pointer', fontFamily: "'Inter', sans-serif", transition: 'background 0.2s' }}>
+              style={{ background: saving ? '#A07840' : '#E8380A', color: '#fff', padding: '11px 28px', border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '0.95rem', cursor: saving ? 'not-allowed' : 'pointer', fontFamily: "'Inter', sans-serif", transition: 'background 0.2s' }}>
               {saving ? t('savingLabel') : t('saveChanges')}
             </button>
             {saved && (
@@ -178,11 +178,11 @@ export default function ProfilePage() {
 const labelStyle: React.CSSProperties = {
   display: 'block', fontFamily: "'Inter', sans-serif", fontSize: '0.78rem',
   fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase',
-  color: '#5B7480', marginBottom: 6,
+  color: '#6B4820', marginBottom: 6,
 }
 const inputStyle: React.CSSProperties = {
-  width: '100%', padding: '10px 14px', border: '1.5px solid #C7D2D6',
+  width: '100%', padding: '10px 14px', border: '1.5px solid #DDB840',
   borderRadius: 6, fontSize: '0.95rem', fontFamily: "'Inter', sans-serif",
-  color: '#16303A', background: '#F5F7F6', boxSizing: 'border-box',
+  color: '#1B2E4A', background: '#FFFFFF', boxSizing: 'border-box',
   outline: 'none',
 }

@@ -48,24 +48,24 @@ function ResetPasswordForm() {
 
   const inputStyle: React.CSSProperties = {
     width: '100%', padding: '11px 14px',
-    border: '1.5px solid #C7D2D6', borderRadius: 6,
-    fontSize: '0.95rem', background: '#F5F7F6', outline: 'none',
+    border: '1.5px solid #DDB840', borderRadius: 6,
+    fontSize: '0.95rem', background: '#FFF8EE', outline: 'none',
   }
   const inputErrorStyle: React.CSSProperties = { ...inputStyle, borderColor: '#EF4444' }
   const labelStyle: React.CSSProperties = {
     display: 'block', fontSize: '0.75rem', fontWeight: 700,
-    letterSpacing: '0.08em', textTransform: 'uppercase', color: '#5B7480', marginBottom: 6,
+    letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B4820', marginBottom: 6,
   }
   const fieldErrorStyle: React.CSSProperties = { color: '#B91C1C', fontSize: '0.78rem', marginTop: 4 }
 
   return (
     <div style={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--parchment)', padding: '2rem' }}>
-      <div style={{ width: '100%', maxWidth: 440, background: '#F5F7F6', border: '1.5px solid #C7D2D6', borderRadius: 12, padding: '2.5rem' }}>
+      <div style={{ width: '100%', maxWidth: 440, background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 12, padding: '2.5rem' }}>
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: '2rem', fontWeight: 700, color: '#16303A', marginBottom: '0.4rem' }}>
+          <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: '2rem', fontWeight: 700, color: '#1B2E4A', marginBottom: '0.4rem' }}>
             {t('setNewPassword')}
           </h1>
-          <p style={{ color: '#5B7480', fontSize: '0.9rem' }}>{t('setNewPasswordSubtitle')}</p>
+          <p style={{ color: '#6B4820', fontSize: '0.9rem' }}>{t('setNewPasswordSubtitle')}</p>
         </div>
 
         {hasSession === false ? (
@@ -94,7 +94,7 @@ function ResetPasswordForm() {
                   style={{
                     position: 'absolute', right: 4, top: '50%', transform: 'translateY(-50%)',
                     background: 'none', border: 'none', cursor: 'pointer', padding: '6px 8px',
-                    fontSize: '0.78rem', fontWeight: 700, color: '#5B7480',
+                    fontSize: '0.78rem', fontWeight: 700, color: '#6B4820',
                   }}>
                   {showPassword ? t('hidePassword') : t('showPassword')}
                 </button>
@@ -109,7 +109,7 @@ function ResetPasswordForm() {
               {fieldErrors.confirmPassword && <p style={fieldErrorStyle}>{fieldErrors.confirmPassword}</p>}
             </div>
             <button type="submit" disabled={loading} style={{
-              width: '100%', background: '#1E5F74', color: '#fff', padding: '13px',
+              width: '100%', background: '#E8380A', color: '#fff', padding: '13px',
               border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '1rem',
               cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1, marginTop: '0.5rem',
             }}>

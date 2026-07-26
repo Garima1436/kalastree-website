@@ -33,8 +33,8 @@ export default async function ArtisansPage() {
       <div style={{ background: '#1A7A32', padding: '3.5rem 5%', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', inset: 0, backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cg fill='%23B8860B' opacity='0.08'%3E%3Ccircle cx='10' cy='10' r='3'/%3E%3Ccircle cx='30' cy='30' r='3'/%3E%3Ccircle cx='50' cy='10' r='3'/%3E%3C/g%3E%3C/svg%3E\")", pointerEvents: 'none' }} />
         <div style={{ maxWidth: 1280, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <p style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#1E5F74', marginBottom: 8 }}>
-            <Link href="/" style={{ color: '#1E5F74', textDecoration: 'none' }}>{tc('home')}</Link> / {tc('artisans')}
+          <p style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#D4A000', marginBottom: 8 }}>
+            <Link href="/" style={{ color: '#D4A000', textDecoration: 'none' }}>{tc('home')}</Link> / {tc('artisans')}
           </p>
           <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 700, color: '#fff', marginBottom: 8 }}>
             {t('heroTitle')}
@@ -47,17 +47,17 @@ export default async function ArtisansPage() {
 
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: '4rem 5%' }}>
         {/* Stats bar */}
-        <div style={{ background: '#F5F7F6', border: '1.5px solid #C7D2D6', borderRadius: 10, padding: '1.5rem 2rem', display: 'flex', gap: '3rem', flexWrap: 'wrap', marginBottom: '3rem', justifyContent: 'center' }}>
+        <div style={{ background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 10, padding: '1.5rem 2rem', display: 'flex', gap: '3rem', flexWrap: 'wrap', marginBottom: '3rem', justifyContent: 'center' }}>
           {([['60–80%', t('statSectorWorkforce')], ['0.393', t('statEmpowermentIndex')], ['2,500', t('statWomenSurveyed')], ['0%', t('statPlatformsBuilt')]] as const).map(([n, l]) => (
             <div key={l} style={{ textAlign: 'center' }}>
-              <div style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.8rem', fontWeight: 700, color: '#1E5F74' }}>{n}</div>
-              <div style={{ fontSize: '0.75rem', color: '#5B7480', maxWidth: 160, lineHeight: 1.4 }}>{l}</div>
+              <div style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.8rem', fontWeight: 700, color: '#E8380A' }}>{n}</div>
+              <div style={{ fontSize: '0.75rem', color: '#6B4820', maxWidth: 160, lineHeight: 1.4 }}>{l}</div>
             </div>
           ))}
         </div>
 
         {artisans.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '5rem 0', color: '#5B7480' }}>
+          <div style={{ textAlign: 'center', padding: '5rem 0', color: '#6B4820' }}>
             <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>👩‍🎨</div>
             <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.4rem', marginBottom: '1rem' }}>{t('emptyTitle')}</p>
             <Link href="/join" style={{ background: '#1A7A32', color: '#fff', padding: '12px 24px', borderRadius: 5, fontWeight: 700, textDecoration: 'none' }}>
