@@ -39,7 +39,7 @@ function CardVisual({ product }: { product: GIProduct }) {
     textile: t('categoryTextile'), handicraft: t('categoryHandicraft'), agricultural: tc('agricultural'), food: tc('foodAndNatural'),
   }
   return (
-    <div style={{ height: 200, position: 'relative', borderRadius: '10px 10px 0 0', overflow: 'hidden', background: `linear-gradient(135deg, ${product.accent}18, ${product.accent}30)` }}>
+    <div className="gi-card-visual" style={{ height: 200, position: 'relative', borderRadius: '10px 10px 0 0', overflow: 'hidden', background: `linear-gradient(135deg, ${product.accent}18, ${product.accent}30)` }}>
       {product.image_url ? (
         <img src={product.image_url} alt={name}
           style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
@@ -234,7 +234,7 @@ export default function GIProductsClient({ products }: { products: GIProduct[] }
             <button onClick={() => { setSearchQuery(''); setActiveState('All States') }} style={{ marginTop: '1rem', background: '#E8380A', color: '#fff', border: 'none', borderRadius: 6, padding: '8px 20px', cursor: 'pointer', fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>{t('clearFilters')}</button>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
+          <div data-grid="products" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
             {filtered.map(product => (
               <div key={product.id} onClick={() => setSelectedProduct(product)}
                 style={{ background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 12, overflow: 'hidden', cursor: 'pointer', transition: 'transform 0.18s, box-shadow 0.18s', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}
@@ -242,10 +242,10 @@ export default function GIProductsClient({ products }: { products: GIProduct[] }
                 onMouseLeave={e => { const el = e.currentTarget as HTMLDivElement; el.style.transform = 'translateY(0)'; el.style.boxShadow = '0 2px 8px rgba(0,0,0,0.04)' }}
               >
                 <CardVisual product={product} />
-                <div style={{ padding: '1.25rem' }}>
+                <div className="gi-card-info" style={{ padding: '1.25rem' }}>
                   <div style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A07840', marginBottom: '0.35rem' }}>{product.state}</div>
-                  <h3 style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.2rem', fontWeight: 700, color: '#1B2E4A', margin: '0 0 0.5rem' }}>{localizedGiField(product.name, product.name_hi, lang)}</h3>
-                  <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.82rem', color: '#6B4820', lineHeight: 1.6, margin: '0 0 1rem' }}>{localizedGiField(product.tagline, product.tagline_hi, lang)}</p>
+                  <h3 className="gi-card-name" style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.2rem', fontWeight: 700, color: '#1B2E4A', margin: '0 0 0.5rem' }}>{localizedGiField(product.name, product.name_hi, lang)}</h3>
+                  <p className="gi-card-tagline" style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.82rem', color: '#6B4820', lineHeight: 1.6, margin: '0 0 1rem' }}>{localizedGiField(product.tagline, product.tagline_hi, lang)}</p>
                   <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: `${product.accent}12`, border: `1px solid ${product.accent}35`, borderRadius: 20, padding: '4px 10px', marginBottom: '1rem' }}>
                     <span style={{ fontSize: '0.75rem' }}>👩‍🎨</span>
                     <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.7rem', fontWeight: 700, color: product.accent }}>{product.women_percent}{t('womenArtisansSuffix')}</span>
@@ -282,8 +282,12 @@ export default function GIProductsClient({ products }: { products: GIProduct[] }
         input::placeholder { color: #A07840; }
         input:focus { border-color: #E8380A !important; box-shadow: 0 0 0 3px rgba(232,56,10,0.12); }
         @media (max-width: 640px) {
-          div[style*="repeat(auto-fill, minmax(280px"] { grid-template-columns: 1fr !important; }
+          div[data-grid="products"] { grid-template-columns: repeat(2, 1fr) !important; gap: 0.75rem; }
           div[style*="1fr 1fr"] { grid-template-columns: 1fr !important; }
+          .gi-card-visual { height: 120px !important; }
+          .gi-card-info { padding: 0.85rem !important; }
+          .gi-card-name { font-size: 0.92rem !important; margin-bottom: 4px !important; }
+          .gi-card-tagline { font-size: 0.72rem !important; margin-bottom: 0.6rem !important; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         }
       `}</style>
     </div>

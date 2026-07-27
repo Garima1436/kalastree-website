@@ -80,7 +80,7 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
               <Link href="/join" style={{ color: '#E8380A', fontWeight: 700 }}>{t('inviteArtisan')}</Link>
             </div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '1.25rem' }}>
+            <div data-grid="products" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '1.25rem' }}>
               {products.map(p => <ProductCard key={p.id} product={p} />)}
             </div>
           )}
@@ -91,6 +91,9 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
         @media(max-width: 768px) {
           div[style*="grid-template-columns: 220px"] { grid-template-columns: 1fr !important; }
           aside { display: none; }
+        }
+        @media(max-width: 640px) {
+          div[data-grid="products"] { grid-template-columns: repeat(2, 1fr) !important; gap: 0.6rem; }
         }
       `}</style>
     </div>
