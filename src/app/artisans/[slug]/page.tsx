@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase'
 import type { Artisan, Product } from '@/lib/types'
 import ProductCard from '@/components/ProductCard'
 import Link from 'next/link'
+import Image from 'next/image'
 import ReactMarkdown from 'react-markdown'
 import remarkBreaks from 'remark-breaks'
 import { useTranslation } from '@/lib/i18n/useTranslation'
@@ -48,9 +49,9 @@ export default function ArtisanProfilePage() {
       {/* Profile Hero */}
       <div style={{ background: '#1B2E4A', padding: '3rem 5%' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto', display: 'flex', gap: '3rem', alignItems: 'center', flexWrap: 'wrap' }}>
-          <div style={{ width: 140, height: 140, borderRadius: '50%', overflow: 'hidden', background: '#FFE8A8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <div style={{ position: 'relative', width: 140, height: 140, borderRadius: '50%', overflow: 'hidden', background: '#FFE8A8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             {artisan.photo_url
-              ? <img src={artisan.photo_url} alt={artisan.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              ? <Image src={artisan.photo_url} alt={artisan.name} fill sizes="140px" style={{ objectFit: 'cover' }} />
               : <span style={{ fontSize: '4rem' }}>👩‍🎨</span>
             }
           </div>

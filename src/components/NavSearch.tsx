@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { createClient } from '@/lib/supabase-browser'
 import { CATEGORY_META } from '@/lib/types'
 import { useTranslation } from '@/lib/i18n/useTranslation'
@@ -54,11 +55,12 @@ export default function NavSearch({ onClose }: { onClose: () => void }) {
       const [{ data: prods }, { data: arts }] = await Promise.all([
         supabase.from('products')
           .select('id, name, slug, images, price, category, state')
-          .or(`name.ilike.%${q}%,description.ilike.%${q}%,state.ilike.%${q}%,gi_tag.ilike.%${q}%,category.ilike.%${q}%`)
+          .eq('status', 'approved')
+          .textSearch('search_vector', q, { type: 'websearch', config: 'english' })
           .limit(5),
         supabase.from('artisans')
           .select('id, name, slug, photo_url, craft, state')
-          .or(`name.ilike.%${q}%,craft.ilike.%${q}%,state.ilike.%${q}%`)
+          .textSearch('search_vector', q, { type: 'websearch', config: 'english' })
           .limit(3),
       ])
       setProducts((prods ?? []) as SearchProduct[])
@@ -131,9 +133,9 @@ export default function NavSearch({ onClose }: { onClose: () => void }) {
                     style={{ display: 'flex', alignItems: 'center', gap: 12, width: '100%', background: 'none', border: 'none', borderBottom: '1px solid #FFE8A8', padding: '8px 6px', cursor: 'pointer', borderRadius: 6, textAlign: 'left' }}
                     onMouseEnter={e => { e.currentTarget.style.background = '#FFF5E0' }}
                     onMouseLeave={e => { e.currentTarget.style.background = 'none' }}>
-                    <div style={{ width: 46, height: 46, borderRadius: 8, background: cat.bg, overflow: 'hidden', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #DDB840' }}>
+                    <div style={{ position: 'relative', width: 46, height: 46, borderRadius: 8, background: cat.bg, overflow: 'hidden', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #DDB840' }}>
                       {p.images?.[0]
-                        ? <img src={p.images[0]} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        ? <Image src={p.images[0]} alt="" fill sizes="46px" style={{ objectFit: 'cover' }} />
                         : <span style={{ fontSize: '1.3rem' }}>{cat.icon}</span>}
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
@@ -162,8 +164,8 @@ export default function NavSearch({ onClose }: { onClose: () => void }) {
                   style={{ display: 'flex', alignItems: 'center', gap: 12, width: '100%', background: 'none', border: 'none', borderBottom: '1px solid #FFE8A8', padding: '8px 6px', cursor: 'pointer', borderRadius: 6, textAlign: 'left' }}
                   onMouseEnter={e => { e.currentTarget.style.background = '#FFF5E0' }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'none' }}>
-                  <div style={{ width: 46, height: 46, borderRadius: '50%', background: '#FFE8A8', border: '2px solid #D4A000', overflow: 'hidden', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    {a.photo_url ? <img src={a.photo_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span>👩‍🎨</span>}
+                  <div style={{ position: 'relative', width: 46, height: 46, borderRadius: '50%', background: '#FFE8A8', border: '2px solid #D4A000', overflow: 'hidden', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    {a.photo_url ? <Image src={a.photo_url} alt="" fill sizes="46px" style={{ objectFit: 'cover' }} /> : <span>👩‍🎨</span>}
                   </div>
                   <div>
                     <div style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, fontSize: '0.9rem', color: '#1B2E4A' }}>{a.name}</div>

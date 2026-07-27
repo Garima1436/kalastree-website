@@ -1,5 +1,6 @@
 'use client'
 import Link from 'next/link'
+import Image from 'next/image'
 import type { Artisan } from '@/lib/types'
 import { useTranslation } from '@/lib/i18n/useTranslation'
 
@@ -26,9 +27,9 @@ export default function ArtisanCard({ artisan }: { artisan: Artisan }) {
         }}
       >
         {/* Photo */}
-        <div style={{ width: 90, height: 90, flexShrink: 0, borderRadius: '50%', margin: '0 auto 1rem', overflow: 'hidden', background: '#FFE8A8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ position: 'relative', width: 90, height: 90, flexShrink: 0, borderRadius: '50%', margin: '0 auto 1rem', overflow: 'hidden', background: '#FFE8A8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           {artisan.photo_url
-            ? <img src={artisan.photo_url} alt={artisan.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            ? <Image src={artisan.photo_url} alt={artisan.name} fill sizes="90px" style={{ objectFit: 'cover' }} />
             : <span style={{ fontSize: '2.5rem' }}>👩‍🎨</span>
           }
         </div>

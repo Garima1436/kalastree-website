@@ -126,6 +126,13 @@ body {
 .rich-text a { color: #E8380A; font-weight: 700; text-decoration: none; }
 .rich-text a:hover { text-decoration: underline; }
 
+/* ProductCard, shop grid, and GI product card responsive rules now live as
+   Tailwind classes directly on those components. This rule remains because
+   ProductModal's "Details" grid (materials/districts) is still inline-styled. */
+@media (max-width: 640px) {
+  div[style*="1fr 1fr"] { grid-template-columns: 1fr !important; }
+}
+
 /* Folk divider */
 .folk-divider {
   display: flex;

@@ -11,7 +11,7 @@ async function getProducts(category?: string, state?: string, q?: string) {
   let query = supabase.from('products').select('*, artisan:artisans(*)').eq('status', 'approved').order('created_at', { ascending: false })
   if (category) query = query.eq('category', category)
   if (state) query = query.eq('state', state)
-  if (q) query = query.or(`name.ilike.%${q}%,description.ilike.%${q}%,state.ilike.%${q}%,gi_tag.ilike.%${q}%,category.ilike.%${q}%`)
+  if (q) query = query.textSearch('search_vector', q, { type: 'websearch', config: 'english' })
   const { data } = await query
   return (data ?? []) as Product[]
 }
@@ -42,9 +42,9 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
         </div>
       </div>
 
-      <div style={{ maxWidth: 1280, margin: '0 auto', padding: '3rem 5%', display: 'grid', gridTemplateColumns: '220px 1fr', gap: '3rem', alignItems: 'start' }}>
+      <div className="mx-auto grid max-w-[1280px] items-start gap-12 px-[5%] py-12 max-md:grid-cols-1 [grid-template-columns:220px_1fr]">
         {/* Sidebar Filters */}
-        <aside>
+        <aside className="max-md:hidden">
           <div style={{ background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 10, padding: '1.5rem', position: 'sticky', top: 90 }}>
             <div style={{ fontWeight: 700, fontSize: '0.78rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6B4820', marginBottom: '1rem' }}>{t('categories')}</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -80,22 +80,12 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
               <Link href="/join" style={{ color: '#E8380A', fontWeight: 700 }}>{t('inviteArtisan')}</Link>
             </div>
           ) : (
-            <div data-grid="products" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '1.25rem' }}>
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-5 max-sm:grid-cols-2 max-sm:gap-[0.6rem]">
               {products.map(p => <ProductCard key={p.id} product={p} />)}
             </div>
           )}
         </div>
       </div>
-
-      <style>{`
-        @media(max-width: 768px) {
-          div[style*="grid-template-columns: 220px"] { grid-template-columns: 1fr !important; }
-          aside { display: none; }
-        }
-        @media(max-width: 640px) {
-          div[data-grid="products"] { grid-template-columns: repeat(2, 1fr) !important; gap: 0.6rem; }
-        }
-      `}</style>
     </div>
   )
 }

@@ -1,5 +1,6 @@
 'use client'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useState } from 'react'
 import type { Product } from '@/lib/types'
 import { CATEGORY_META } from '@/lib/types'
@@ -26,69 +27,45 @@ export default function ProductCard({ product }: { product: Product }) {
     setTimeout(() => setAdded(false), 1600)
   }
 
+  const buttonClass = product.stock === 0
+    ? 'bg-[#F3ECDD] text-text-muted cursor-not-allowed'
+    : added
+      ? 'bg-forest text-white cursor-pointer'
+      : 'bg-saffron text-white cursor-pointer'
+
   return (
-    <div className="product-card" style={{
-      background: '#FFFFFF', borderRadius: 3,
-      overflow: 'hidden', transition: 'transform 0.25s, box-shadow 0.25s',
-      display: 'flex', flexDirection: 'column',
-    }}
-      onMouseEnter={e => {
-        const el = e.currentTarget as HTMLElement
-        el.style.transform = 'translateY(-6px)'
-        el.style.boxShadow = '0 16px 40px rgba(232,56,10,0.12)'
-      }}
-      onMouseLeave={e => {
-        const el = e.currentTarget as HTMLElement
-        el.style.transform = 'translateY(0)'
-        el.style.boxShadow = 'none'
-      }}
-    >
-      <style>{`
-        @media (max-width: 640px) {
-          .product-card .pc-image { height: 110px !important; }
-          .product-card .pc-info { padding: 0.6rem 0.7rem 0 !important; }
-          .pc-name { font-size: 0.86rem !important; margin-bottom: 2px !important; }
-          .pc-artisan { font-size: 0.66rem !important; }
-          .pc-price { font-size: 1rem !important; }
-          .pc-stock { font-size: 0.62rem !important; }
-          .product-card .pc-cart { padding: 0.5rem 0.7rem 0.65rem !important; }
-          .product-card .pc-cart button { padding: 7px 0 !important; font-size: 0.72rem !important; }
-        }
-      `}</style>
-      <Link href={`/shop/${product.slug}`} style={{ textDecoration: 'none', display: 'block', cursor: 'pointer' }}>
+    <div className="flex flex-col overflow-hidden rounded-[3px] bg-white transition-all duration-[250ms] hover:-translate-y-1.5 hover:shadow-[0_16px_40px_rgba(232,56,10,0.12)]">
+      <Link href={`/shop/${product.slug}`} className="block cursor-pointer no-underline">
         {/* Image */}
-        <div className="pc-image" style={{ height: 170, background: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
+        <div className="relative flex h-[170px] items-center justify-center overflow-hidden bg-white max-sm:h-[110px]">
           {product.images?.[0] ? (
-            <img src={product.images[0]} alt={name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+            <Image src={product.images[0]} alt={name} fill sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 240px" style={{ objectFit: 'contain' }} />
           ) : (
-            <span style={{ fontSize: '3rem' }}>{cat.icon}</span>
+            <span className="text-[3rem]">{cat.icon}</span>
           )}
           {product.gi_tag && (
-            <div style={{ position: 'absolute', top: 8, left: 8 }}>
+            <div className="absolute top-2 left-2">
               <span className="gi-badge">✦ {t('giTagged')}</span>
             </div>
           )}
         </div>
 
         {/* Info */}
-        <div className="pc-info" style={{ padding: '0.85rem 0.95rem 0' }}>
-          <div style={{ fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: cat.color, marginBottom: 3 }}>
+        <div className="px-[0.95rem] pt-[0.85rem] max-sm:px-[0.7rem] max-sm:pt-[0.6rem]">
+          <div className="mb-[3px] text-[0.68rem] font-bold uppercase tracking-[0.1em]" style={{ color: cat.color }}>
             {cat.icon} {cat.label}
           </div>
-          <div className="pc-name" style={{
-            fontFamily: "'EB Garamond', serif", fontSize: '1.02rem', fontWeight: 600, color: '#1B2E4A', marginBottom: 3, lineHeight: 1.3,
-            display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', minHeight: '2.6em',
-          }}>
+          <div className="mb-[3px] min-h-[2.6em] font-serif text-[1.02rem] leading-[1.3] font-semibold text-navy line-clamp-2 max-sm:text-[0.86rem]">
             {name}
           </div>
-          <div className="pc-artisan" style={{ fontSize: '0.74rem', color: '#6B4820', marginBottom: 6, minHeight: '1.2em', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-            {product.artisan ? <>{t('byPrefix')}{product.artisan.name}{t('bySuffix')} · {product.state}</> : ' '}
+          <div className="mb-1.5 min-h-[1.2em] truncate text-[0.74rem] text-text-muted max-sm:text-[0.66rem]">
+            {product.artisan ? <>{t('byPrefix')}{product.artisan.name}{t('bySuffix')} · {product.state}</> : ' '}
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 6 }}>
-            <span className="pc-price" style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.2rem', fontWeight: 700, color: '#E8380A' }}>
+          <div className="mt-1.5 flex items-center justify-between">
+            <span className="font-serif text-[1.2rem] font-bold text-saffron max-sm:text-[1rem]">
               ₹{product.price.toLocaleString('en-IN')}
             </span>
-            <span className="pc-stock" style={{ fontSize: '0.7rem', color: product.stock > 0 ? '#1A7A32' : '#E8380A', fontWeight: 700 }}>
+            <span className={`text-[0.7rem] font-bold max-sm:text-[0.62rem] ${product.stock > 0 ? 'text-forest' : 'text-saffron'}`}>
               {product.stock > 0 ? <>{product.stock}{t('stockLeftSuffix')}</> : t('outOfStock')}
             </span>
           </div>
@@ -96,18 +73,11 @@ export default function ProductCard({ product }: { product: Product }) {
       </Link>
 
       {/* Add to cart */}
-      <div className="pc-cart" style={{ padding: '0.7rem 0.95rem 0.85rem', marginTop: 'auto' }}>
+      <div className="mt-auto px-[0.95rem] pt-[0.7rem] pb-[0.85rem] max-sm:px-[0.7rem] max-sm:pt-[0.5rem] max-sm:pb-[0.65rem]">
         <button
           onClick={product.stock > 0 ? addToCart : undefined}
           disabled={product.stock === 0}
-          style={{
-            width: '100%', padding: '9px 0', borderRadius: 3, border: 'none',
-            fontSize: '0.8rem', fontWeight: 700, fontFamily: "'Inter', sans-serif",
-            cursor: product.stock > 0 ? 'pointer' : 'not-allowed',
-            background: product.stock === 0 ? '#F3ECDD' : added ? '#1A7A32' : '#E8380A',
-            color: product.stock === 0 ? '#6B4820' : '#fff',
-            transition: 'background 0.2s',
-          }}
+          className={`w-full rounded-[3px] border-none py-[9px] font-sans text-[0.8rem] font-bold transition-colors duration-200 max-sm:py-[7px] max-sm:text-[0.72rem] ${buttonClass}`}
         >
           {product.stock === 0 ? t('outOfStock') : added ? `✓ ${t('addedToCart')}` : tc('addToCart')}
         </button>

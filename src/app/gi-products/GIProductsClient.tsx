@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useTranslation } from '@/lib/i18n/useTranslation'
 import { localizedGiField } from '@/lib/giProductLocale'
 
@@ -39,20 +40,20 @@ function CardVisual({ product }: { product: GIProduct }) {
     textile: t('categoryTextile'), handicraft: t('categoryHandicraft'), agricultural: tc('agricultural'), food: tc('foodAndNatural'),
   }
   return (
-    <div className="gi-card-visual" style={{ height: 200, position: 'relative', borderRadius: '10px 10px 0 0', overflow: 'hidden', background: `linear-gradient(135deg, ${product.accent}18, ${product.accent}30)` }}>
+    <div className="relative h-[200px] overflow-hidden rounded-t-[10px] max-sm:h-[120px]" style={{ background: `linear-gradient(135deg, ${product.accent}18, ${product.accent}30)` }}>
       {product.image_url ? (
-        <img src={product.image_url} alt={name}
-          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+        <Image src={product.image_url} alt={name} fill sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 280px"
+          style={{ objectFit: 'cover' }}
           onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none' }} />
       ) : (
-        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <span style={{ fontSize: '3.5rem', filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.2))' }}>{product.emoji}</span>
+        <div className="flex h-full w-full items-center justify-center">
+          <span className="text-[3.5rem] drop-shadow-[0_2px_6px_rgba(0,0,0,0.2)]">{product.emoji}</span>
         </div>
       )}
-      <div style={{ position: 'absolute', top: 10, left: 10, background: CATEGORY_COLORS[product.category], color: '#fff', fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', padding: '3px 8px', borderRadius: 4, fontFamily: "'Inter', sans-serif" }}>
+      <div className="absolute top-2.5 left-2.5 rounded font-sans text-[0.62rem] font-bold tracking-[0.1em] text-white uppercase" style={{ background: CATEGORY_COLORS[product.category], padding: '3px 8px' }}>
         {categoryLabels[product.category]}
       </div>
-      <div style={{ position: 'absolute', top: 10, right: 10, background: '#D4A000', color: '#fff', fontSize: '0.6rem', fontWeight: 700, padding: '3px 8px', borderRadius: 4, fontFamily: "'Inter', sans-serif" }}>
+      <div className="absolute top-2.5 right-2.5 rounded bg-gold font-sans text-[0.6rem] font-bold text-white" style={{ padding: '3px 8px' }}>
         {t('giCertified')}
       </div>
     </div>
@@ -71,8 +72,8 @@ function ProductModal({ product, onClose }: { product: GIProduct; onClose: () =>
         {/* Header */}
         <div style={{ height: 200, background: `linear-gradient(135deg, ${product.accent}25, ${product.accent}45)`, borderRadius: '14px 14px 0 0', display: 'flex', alignItems: 'flex-end', gap: '1.5rem', padding: '0 2rem 1.25rem', position: 'relative', overflow: 'hidden' }}>
           {product.image_url && (
-            <img src={product.image_url} alt={name}
-              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.35 }}
+            <Image src={product.image_url} alt={name} fill sizes="720px"
+              style={{ objectFit: 'cover', opacity: 0.35 }}
               onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none' }} />
           )}
           <span style={{ fontSize: '3rem', filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.4))', position: 'relative', zIndex: 1 }}>{product.emoji}</span>
@@ -234,25 +235,23 @@ export default function GIProductsClient({ products }: { products: GIProduct[] }
             <button onClick={() => { setSearchQuery(''); setActiveState('All States') }} style={{ marginTop: '1rem', background: '#E8380A', color: '#fff', border: 'none', borderRadius: 6, padding: '8px 20px', cursor: 'pointer', fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>{t('clearFilters')}</button>
           </div>
         ) : (
-          <div data-grid="products" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-6 max-sm:grid-cols-2 max-sm:gap-3">
             {filtered.map(product => (
               <div key={product.id} onClick={() => setSelectedProduct(product)}
-                style={{ background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 12, overflow: 'hidden', cursor: 'pointer', transition: 'transform 0.18s, box-shadow 0.18s', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}
-                onMouseEnter={e => { const el = e.currentTarget as HTMLDivElement; el.style.transform = 'translateY(-4px)'; el.style.boxShadow = '0 12px 32px rgba(0,0,0,0.12)' }}
-                onMouseLeave={e => { const el = e.currentTarget as HTMLDivElement; el.style.transform = 'translateY(0)'; el.style.boxShadow = '0 2px 8px rgba(0,0,0,0.04)' }}
+                className="cursor-pointer overflow-hidden rounded-xl border border-[#DDB840] bg-white shadow-[0_2px_8px_rgba(0,0,0,0.04)] transition-all duration-[180ms] hover:-translate-y-1 hover:shadow-[0_12px_32px_rgba(0,0,0,0.12)]"
               >
                 <CardVisual product={product} />
-                <div className="gi-card-info" style={{ padding: '1.25rem' }}>
-                  <div style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A07840', marginBottom: '0.35rem' }}>{product.state}</div>
-                  <h3 className="gi-card-name" style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.2rem', fontWeight: 700, color: '#1B2E4A', margin: '0 0 0.5rem' }}>{localizedGiField(product.name, product.name_hi, lang)}</h3>
-                  <p className="gi-card-tagline" style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.82rem', color: '#6B4820', lineHeight: 1.6, margin: '0 0 1rem' }}>{localizedGiField(product.tagline, product.tagline_hi, lang)}</p>
-                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: `${product.accent}12`, border: `1px solid ${product.accent}35`, borderRadius: 20, padding: '4px 10px', marginBottom: '1rem' }}>
-                    <span style={{ fontSize: '0.75rem' }}>👩‍🎨</span>
-                    <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.7rem', fontWeight: 700, color: product.accent }}>{product.women_percent}{t('womenArtisansSuffix')}</span>
+                <div className="p-5 max-sm:p-[0.85rem]">
+                  <div className="mb-[0.35rem] font-sans text-[0.68rem] font-bold tracking-[0.12em] text-[#A07840] uppercase">{product.state}</div>
+                  <h3 className="mb-2 font-serif text-[1.2rem] font-bold text-navy max-sm:mb-1 max-sm:text-[0.92rem]">{localizedGiField(product.name, product.name_hi, lang)}</h3>
+                  <p className="mb-4 line-clamp-2 font-sans text-[0.82rem] leading-[1.6] text-text-muted max-sm:mb-[0.6rem] max-sm:text-[0.72rem]">{localizedGiField(product.tagline, product.tagline_hi, lang)}</p>
+                  <div className="mb-4 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1" style={{ background: `${product.accent}12`, border: `1px solid ${product.accent}35` }}>
+                    <span className="text-[0.75rem]">👩‍🎨</span>
+                    <span className="font-sans text-[0.7rem] font-bold" style={{ color: product.accent }}>{product.women_percent}{t('womenArtisansSuffix')}</span>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.75rem', borderTop: '1px solid #EDD060' }}>
-                    <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.68rem', color: '#D4A000', fontWeight: 700 }}>{product.gi_tag}</span>
-                    <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.72rem', fontWeight: 700, color: '#E8380A', letterSpacing: '0.05em' }}>{t('learnMore')}</span>
+                  <div className="flex items-center justify-between border-t border-[#EDD060] pt-3">
+                    <span className="font-sans text-[0.68rem] font-bold text-gold">{product.gi_tag}</span>
+                    <span className="font-sans text-[0.72rem] font-bold tracking-[0.05em] text-saffron">{t('learnMore')}</span>
                   </div>
                 </div>
               </div>
@@ -281,14 +280,6 @@ export default function GIProductsClient({ products }: { products: GIProduct[] }
       <style>{`
         input::placeholder { color: #A07840; }
         input:focus { border-color: #E8380A !important; box-shadow: 0 0 0 3px rgba(232,56,10,0.12); }
-        @media (max-width: 640px) {
-          div[data-grid="products"] { grid-template-columns: repeat(2, 1fr) !important; gap: 0.75rem; }
-          div[style*="1fr 1fr"] { grid-template-columns: 1fr !important; }
-          .gi-card-visual { height: 120px !important; }
-          .gi-card-info { padding: 0.85rem !important; }
-          .gi-card-name { font-size: 0.92rem !important; margin-bottom: 4px !important; }
-          .gi-card-tagline { font-size: 0.72rem !important; margin-bottom: 0.6rem !important; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        }
       `}</style>
     </div>
   )

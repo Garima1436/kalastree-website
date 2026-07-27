@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useTranslation } from '@/lib/i18n/useTranslation'
 
 interface CartItem { id: string; name: string; price: number; image: string; slug: string; qty: number }
@@ -55,8 +56,8 @@ export default function CartPage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {cart.map(item => (
                 <div key={item.id} style={{ background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 10, padding: '1.25rem', display: 'flex', gap: '1.25rem', alignItems: 'center' }}>
-                  <div style={{ width: 90, height: 90, borderRadius: 8, background: '#FFE8A8', overflow: 'hidden', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    {item.image ? <img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span style={{ fontSize: '2rem' }}>🏺</span>}
+                  <div style={{ position: 'relative', width: 90, height: 90, borderRadius: 8, background: '#FFE8A8', overflow: 'hidden', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    {item.image ? <Image src={item.image} alt={item.name} fill sizes="90px" style={{ objectFit: 'cover' }} /> : <span style={{ fontSize: '2rem' }}>🏺</span>}
                   </div>
                   <div style={{ flex: 1 }}>
                     <Link href={`/shop/${item.slug}`} style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.1rem', fontWeight: 600, color: '#1B2E4A', textDecoration: 'none', display: 'block', marginBottom: 4 }}>{item.name}</Link>

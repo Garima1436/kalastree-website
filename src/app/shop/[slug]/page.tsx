@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase'
 import type { Product } from '@/lib/types'
 import { CATEGORY_META } from '@/lib/types'
 import Link from 'next/link'
+import Image from 'next/image'
 import ReactMarkdown from 'react-markdown'
 import remarkBreaks from 'remark-breaks'
 import { useTranslation } from '@/lib/i18n/useTranslation'
@@ -46,7 +47,7 @@ function MediaViewer({ item, productName }: { item: MediaItem; productName: stri
       />
     )
   }
-  return <img src={item.url} alt={productName} style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }} />
+  return <Image src={item.url} alt={productName} fill sizes="(max-width: 768px) 100vw, 600px" style={{ objectFit: 'contain' }} />
 }
 
 function MediaThumbnail({ item }: { item: MediaItem }) {
@@ -68,7 +69,7 @@ function MediaThumbnail({ item }: { item: MediaItem }) {
       </div>
     )
   }
-  return <img src={item.url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+  return <Image src={item.url} alt="" fill sizes="72px" style={{ objectFit: 'cover' }} />
 }
 
 export default function ProductPage() {
@@ -198,7 +199,7 @@ export default function ProductPage() {
                   key={item.id}
                   onClick={() => setActiveIdx(i)}
                   style={{
-                    flexShrink: 0, width: 72, height: 72, borderRadius: 8,
+                    position: 'relative', flexShrink: 0, width: 72, height: 72, borderRadius: 8,
                     overflow: 'hidden', padding: 0,
                     border: `2px solid ${i === activeIdx ? '#E8380A' : '#DDB840'}`,
                     cursor: 'pointer', background: 'none',
@@ -244,9 +245,9 @@ export default function ProductPage() {
 
           {product.artisan && (
             <Link href={`/artisans/${product.artisan.slug}`} style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', marginBottom: '1.5rem' }}>
-              <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#FFE8A8', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <div style={{ position: 'relative', width: 40, height: 40, borderRadius: '50%', background: '#FFE8A8', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                 {product.artisan.photo_url
-                  ? <img src={product.artisan.photo_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ? <Image src={product.artisan.photo_url} alt="" fill sizes="40px" style={{ objectFit: 'cover' }} />
                   : <span>👩‍🎨</span>}
               </div>
               <div>

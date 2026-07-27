@@ -1,5 +1,6 @@
 'use client'
 import Link from 'next/link'
+import Image from 'next/image'
 import { CATEGORY_META, type Category } from '@/lib/types'
 import { useTranslation } from '@/lib/i18n/useTranslation'
 
@@ -17,7 +18,7 @@ export default function CategoryGrid({ categoryImages }: { categoryImages?: Part
             >
               {image ? (
                 <>
-                  <img src={image} alt={meta.label} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <Image src={image} alt={meta.label} fill sizes="(max-width: 640px) 100vw, 220px" style={{ objectFit: 'cover' }} />
                   <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.68) 100%)' }} />
                   <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '1.25rem', textAlign: 'center' }}>
                     <div style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.2rem', fontWeight: 600, color: '#fff', marginBottom: 4 }}>{meta.label}</div>
