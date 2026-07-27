@@ -48,7 +48,7 @@ export default function ArtisanProfilePage() {
       {/* Profile Hero */}
       <div style={{ background: '#1B2E4A', padding: '3rem 5%' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto', display: 'flex', gap: '3rem', alignItems: 'center', flexWrap: 'wrap' }}>
-          <div style={{ width: 140, height: 140, borderRadius: '50% 40% 55% 45% / 45% 55% 40% 50%', border: '3px solid #D4A000', overflow: 'hidden', background: '#FFE8A8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <div style={{ width: 140, height: 140, borderRadius: '50%', overflow: 'hidden', background: '#FFE8A8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             {artisan.photo_url
               ? <img src={artisan.photo_url} alt={artisan.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               : <span style={{ fontSize: '4rem' }}>👩‍🎨</span>
