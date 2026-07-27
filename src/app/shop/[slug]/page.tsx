@@ -217,7 +217,7 @@ export default function ProductPage() {
 
           {product.artisan && (
             <Link href={`/artisans/${product.artisan.slug}`} style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', marginBottom: '1.5rem' }}>
-              <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#FFE8A8', border: '2px solid #D4A000', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#FFE8A8', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                 {product.artisan.photo_url
                   ? <img src={product.artisan.photo_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   : <span>👩‍🎨</span>}
