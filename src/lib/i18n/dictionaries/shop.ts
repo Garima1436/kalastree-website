@@ -51,6 +51,8 @@ const dict = {
     postingAs: 'Posting as {name} ({email})',
     review: 'review',
     reviews: 'reviews',
+    share: 'Share',
+    linkCopied: 'Link copied!',
   },
   hi: {
     allGiProducts: 'सभी जीआई उत्पाद',
@@ -104,6 +106,8 @@ const dict = {
     postingAs: '{name} ({email}) के रूप में पोस्ट कर रहे हैं',
     review: 'समीक्षा',
     reviews: 'समीक्षाएँ',
+    share: 'शेयर करें',
+    linkCopied: 'लिंक कॉपी हो गया!',
   },
 } as const
 

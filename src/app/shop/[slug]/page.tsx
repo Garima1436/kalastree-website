@@ -83,6 +83,22 @@ export default function ProductPage() {
   const [qty, setQty] = useState(1)
   const [added, setAdded] = useState(false)
   const [reviewStats, setReviewStats] = useState<{ average: number; count: number } | null>(null)
+  const [linkCopied, setLinkCopied] = useState(false)
+
+  const handleShare = async () => {
+    const url = window.location.href
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: document.title, url })
+      } catch {
+        // user cancelled the native share sheet — no action needed
+      }
+      return
+    }
+    await navigator.clipboard.writeText(url)
+    setLinkCopied(true)
+    setTimeout(() => setLinkCopied(false), 2000)
+  }
 
   useEffect(() => {
     const load = async () => {
@@ -197,9 +213,20 @@ export default function ProductPage() {
 
         {/* Details column */}
         <div>
-          <div style={{ display: 'flex', gap: 8, marginBottom: '1rem', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: '1rem', flexWrap: 'wrap' }}>
             <span className="gi-badge">✦ {product.gi_tag || t('giTagged')}</span>
             <span style={{ background: cat.bg, color: cat.color, fontSize: '0.7rem', fontWeight: 700, padding: '3px 10px', borderRadius: 20, border: `1px solid ${cat.color}40` }}>{cat.icon} {cat.label}</span>
+            <button
+              onClick={handleShare}
+              style={{
+                marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 6,
+                background: 'none', border: 'none', borderRadius: 20,
+                padding: '4px 12px', fontSize: '0.75rem', fontWeight: 600, color: '#6B4820',
+                cursor: 'pointer',
+              }}
+            >
+              {linkCopied ? `✓ ${t('linkCopied')}` : <><img src="/share_icon.png" alt="" style={{ width: 14, height: 14 }} /> {t('share')}</>}
+            </button>
           </div>
 
           <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.8rem, 3vw, 2.4rem)', fontWeight: 700, color: '#1B2E4A', lineHeight: 1.2, marginBottom: '0.5rem' }}>
