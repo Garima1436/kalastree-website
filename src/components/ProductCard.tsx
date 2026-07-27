@@ -57,9 +57,9 @@ export default function ProductCard({ product }: { product: Product }) {
       `}</style>
       <Link href={`/shop/${product.slug}`} style={{ textDecoration: 'none', display: 'block', cursor: 'pointer' }}>
         {/* Image */}
-        <div className="pc-image" style={{ height: 170, background: `linear-gradient(135deg, ${cat.bg}, #FFF8EE)`, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
+        <div className="pc-image" style={{ height: 170, background: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
           {product.images?.[0] ? (
-            <img src={product.images[0]} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            <img src={product.images[0]} alt={name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
           ) : (
             <span style={{ fontSize: '3rem' }}>{cat.icon}</span>
           )}

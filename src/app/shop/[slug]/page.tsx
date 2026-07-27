@@ -164,7 +164,7 @@ export default function ProductPage() {
         {/* Media column */}
         <div>
           {/* Main viewer */}
-          <div style={{ borderRadius: 12, overflow: 'hidden', background: activeItem?.type === 'video' ? '#000' : cat.bg, height: 420, border: '1.5px solid #DDB840', marginBottom: '0.75rem', position: 'relative' }}>
+          <div style={{ borderRadius: 12, overflow: 'hidden', background: activeItem?.type === 'video' ? '#000' : '#FFFFFF', height: 420, border: '1.5px solid #DDB840', marginBottom: '0.75rem', position: 'relative' }}>
             {activeItem ? (
               <MediaViewer item={activeItem} productName={name} />
             ) : (
