@@ -26,7 +26,7 @@ export default function ArtisanCard({ artisan }: { artisan: Artisan }) {
         }}
       >
         {/* Photo */}
-        <div style={{ width: 90, height: 90, flexShrink: 0, borderRadius: '50% 40% 55% 45% / 45% 55% 40% 50%', border: '2.5px solid #D4A000', margin: '0 auto 1rem', overflow: 'hidden', background: '#FFE8A8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: 90, height: 90, flexShrink: 0, borderRadius: '50%', margin: '0 auto 1rem', overflow: 'hidden', background: '#FFE8A8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           {artisan.photo_url
             ? <img src={artisan.photo_url} alt={artisan.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             : <span style={{ fontSize: '2.5rem' }}>👩‍🎨</span>
