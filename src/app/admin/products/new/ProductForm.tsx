@@ -3,6 +3,7 @@ import { useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase-browser'
 import { useRouter } from 'next/navigation'
 import type { Category } from '@/lib/types'
+import { SUBCATEGORY_META } from '@/lib/types'
 import ProductMediaManager from '../ProductMediaManager'
 import TranslateHindiField from '@/components/TranslateHindiField'
 import { INDIAN_STATES } from '@/lib/indian-states'
@@ -68,6 +69,7 @@ export default function ProductForm({ artisans, initialData, mode = 'new' }: Pro
     price: initialData?.price?.toString() ?? '',
     gi_tag: initialData?.gi_tag ?? '',
     category: (initialData?.category ?? 'handicraft') as Category,
+    subcategory: initialData?.subcategory ?? '',
     state: initialData?.state ?? '',
     stock: initialData?.stock?.toString() ?? '1',
     is_featured: initialData?.is_featured ?? false,
@@ -93,7 +95,7 @@ export default function ProductForm({ artisans, initialData, mode = 'new' }: Pro
       name: form.name, name_hi: form.name_hi || null, slug,
       description: form.description, description_hi: form.description_hi || null,
       price: parseFloat(form.price), gi_tag: form.gi_tag || null,
-      category: form.category, state: form.state || null,
+      category: form.category, subcategory: form.subcategory || null, state: form.state || null,
       stock: parseInt(form.stock), is_featured: form.is_featured,
       artisan_id: form.artisan_id || null, images,
       weight_grams: form.weight_grams ? parseInt(form.weight_grams) : null,
@@ -202,13 +204,24 @@ export default function ProductForm({ artisans, initialData, mode = 'new' }: Pro
             </div>
             <div>
               <label style={labelStyle}>{t('categoryLabel')}</label>
-              <select style={inputStyle} value={form.category} onChange={e => set('category', e.target.value as Category)}>
+              <select style={inputStyle} value={form.category} onChange={e => {
+                const c = e.target.value as Category
+                set('category', c)
+                if (!SUBCATEGORY_META[c].some(s => s.value === form.subcategory)) set('subcategory', '')
+              }}>
                 {CATEGORIES.map(c => <option key={c} value={c}>{categoryLabel[c]}</option>)}
               </select>
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
+            <div>
+              <label style={labelStyle}>Subcategory</label>
+              <select style={inputStyle} value={form.subcategory} onChange={e => set('subcategory', e.target.value)}>
+                <option value="">None</option>
+                {SUBCATEGORY_META[form.category].map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
+              </select>
+            </div>
             <div>
               <label style={labelStyle}>{t('giTagLabel')}</label>
               <input style={inputStyle} value={form.gi_tag} onChange={e => set('gi_tag', e.target.value)}

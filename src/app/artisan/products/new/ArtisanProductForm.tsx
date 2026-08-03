@@ -3,6 +3,7 @@ import { useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase-browser'
 import { useRouter } from 'next/navigation'
 import type { Category } from '@/lib/types'
+import { SUBCATEGORY_META } from '@/lib/types'
 import { INDIAN_STATES } from '@/lib/indian-states'
 import TranslateHindiField from '@/components/TranslateHindiField'
 import { useLanguage } from '@/lib/i18n/LanguageContext'
@@ -40,6 +41,7 @@ export default function ArtisanProductForm({ artisanId, initialData, mode = 'new
     price: initialData?.price?.toString() ?? '',
     gi_tag: initialData?.gi_tag ?? '',
     category: (initialData?.category ?? 'handicraft') as Category,
+    subcategory: initialData?.subcategory ?? '',
     state: initialData?.state ?? '',
     stock: initialData?.stock?.toString() ?? '1',
     image_url: initialData?.images?.[0] ?? '',
@@ -76,7 +78,7 @@ export default function ArtisanProductForm({ artisanId, initialData, mode = 'new
       name: form.name, name_hi: form.name_hi || null, slug,
       description: form.description, description_hi: form.description_hi || null,
       price: parseFloat(form.price), gi_tag: form.gi_tag || null,
-      category: form.category, state: form.state || null,
+      category: form.category, subcategory: form.subcategory || null, state: form.state || null,
       stock: parseInt(form.stock), artisan_id: artisanId, images,
       weight_grams: form.weight_grams ? parseInt(form.weight_grams) : null,
       length_cm: form.length_cm ? parseInt(form.length_cm) : null,
@@ -171,13 +173,24 @@ export default function ArtisanProductForm({ artisanId, initialData, mode = 'new
             </div>
             <div>
               <label style={labelStyle}>{t('labelCategory')}</label>
-              <select style={inputStyle} value={form.category} onChange={e => set('category', e.target.value as Category)}>
+              <select style={inputStyle} value={form.category} onChange={e => {
+                const c = e.target.value as Category
+                set('category', c)
+                if (!SUBCATEGORY_META[c].some(s => s.value === form.subcategory)) set('subcategory', '')
+              }}>
                 {CATEGORIES.map(c => <option key={c} value={c}>{CATEGORY_LABELS[c]}</option>)}
               </select>
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
+            <div>
+              <label style={labelStyle}>Subcategory</label>
+              <select style={inputStyle} value={form.subcategory} onChange={e => set('subcategory', e.target.value)}>
+                <option value="">None</option>
+                {SUBCATEGORY_META[form.category].map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
+              </select>
+            </div>
             <div>
               <label style={labelStyle}>{t('labelGiTag')}</label>
               <input style={inputStyle} value={form.gi_tag} onChange={e => set('gi_tag', e.target.value)} placeholder="Bihar Madhubani Paintings — GI Tag 2007" />

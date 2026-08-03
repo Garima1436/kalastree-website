@@ -1,24 +1,25 @@
 import { supabase } from '@/lib/supabase'
 import type { Product, Category } from '@/lib/types'
-import { CATEGORY_META } from '@/lib/types'
+import { CATEGORY_META, SUBCATEGORY_META } from '@/lib/types'
 import ProductCard from '@/components/ProductCard'
 import Link from 'next/link'
 import { getServerLang, getT } from '@/lib/i18n/server'
 
 export const revalidate = 120
 
-async function getProducts(category?: string, state?: string, q?: string) {
+async function getProducts(category?: string, subcategory?: string, state?: string, q?: string) {
   let query = supabase.from('products').select('*, artisan:artisans(*)').eq('status', 'approved').order('created_at', { ascending: false })
   if (category) query = query.eq('category', category)
+  if (subcategory) query = query.eq('subcategory', subcategory)
   if (state) query = query.eq('state', state)
   if (q) query = query.textSearch('search_vector', q, { type: 'websearch', config: 'english' })
   const { data } = await query
   return (data ?? []) as Product[]
 }
 
-export default async function ShopPage({ searchParams }: { searchParams: Promise<{ category?: string; state?: string; q?: string }> }) {
+export default async function ShopPage({ searchParams }: { searchParams: Promise<{ category?: string; subcategory?: string; state?: string; q?: string }> }) {
   const params = await searchParams
-  const products = await getProducts(params.category, params.state, params.q)
+  const products = await getProducts(params.category, params.subcategory, params.state, params.q)
   const activeCategory = params.category as Category | undefined
   const lang = await getServerLang()
   const t = getT('shop', lang)
@@ -52,9 +53,20 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
                 🌟 {t('allProducts')}
               </Link>
               {(Object.entries(CATEGORY_META) as [Category, typeof CATEGORY_META[Category]][]).map(([key, meta]) => (
-                <Link key={key} href={`/shop?category=${key}`} style={{ fontSize: '0.9rem', fontWeight: activeCategory === key ? 700 : 400, color: activeCategory === key ? meta.color : '#6B4820', textDecoration: 'none', padding: '6px 10px', borderRadius: 6, background: activeCategory === key ? meta.bg : 'transparent' }}>
-                  {meta.icon} {meta.label}
-                </Link>
+                <div key={key}>
+                  <Link href={`/shop?category=${key}`} style={{ fontSize: '0.9rem', fontWeight: activeCategory === key ? 700 : 400, color: activeCategory === key ? meta.color : '#6B4820', textDecoration: 'none', padding: '6px 10px', borderRadius: 6, background: activeCategory === key ? meta.bg : 'transparent', display: 'block' }}>
+                    {meta.icon} {meta.label}
+                  </Link>
+                  {activeCategory === key && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 2, marginLeft: 14, marginTop: 2 }}>
+                      {SUBCATEGORY_META[key].map(sc => (
+                        <Link key={sc.value} href={`/shop?category=${key}&subcategory=${sc.value}`} style={{ fontSize: '0.8rem', fontWeight: params.subcategory === sc.value ? 700 : 400, color: params.subcategory === sc.value ? meta.color : '#8A7250', textDecoration: 'none', padding: '3px 10px' }}>
+                          {sc.label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
 

@@ -3,12 +3,13 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useState } from 'react'
 import type { Product } from '@/lib/types'
-import { CATEGORY_META } from '@/lib/types'
+import { CATEGORY_META, SUBCATEGORY_META } from '@/lib/types'
 import { useTranslation } from '@/lib/i18n/useTranslation'
 import { localizedProductName } from '@/lib/productLocale'
 
 export default function ProductCard({ product }: { product: Product }) {
   const cat = CATEGORY_META[product.category]
+  const subcat = product.subcategory ? SUBCATEGORY_META[product.category]?.find(s => s.value === product.subcategory) : undefined
   const { t, lang } = useTranslation('shop')
   const { t: tc } = useTranslation('common')
   const name = localizedProductName(product, lang)
@@ -53,7 +54,7 @@ export default function ProductCard({ product }: { product: Product }) {
         {/* Info */}
         <div className="px-[0.95rem] pt-[0.85rem] max-sm:px-[0.7rem] max-sm:pt-[0.6rem]">
           <div className="mb-[3px] text-[0.68rem] font-bold uppercase tracking-[0.1em]" style={{ color: cat.color }}>
-            {cat.icon} {cat.label}
+            {cat.icon} {cat.label}{subcat ? ` · ${subcat.label}` : ''}
           </div>
           <div className="mb-[3px] min-h-[2.6em] font-serif text-[1.02rem] leading-[1.3] font-semibold text-navy line-clamp-2 max-sm:text-[0.86rem]">
             {name}

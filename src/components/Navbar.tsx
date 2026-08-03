@@ -6,6 +6,8 @@ import CartIcon from './CartIcon'
 import NavSearch from './NavSearch'
 import { createClient } from '@/lib/supabase-browser'
 import { useTranslation } from '@/lib/i18n/useTranslation'
+import type { Category } from '@/lib/types'
+import { SUBCATEGORY_META } from '@/lib/types'
 
 export default function Navbar() {
   const { t: tCommon } = useTranslation('common')
@@ -17,11 +19,11 @@ export default function Navbar() {
     { href: '/about', label: tCommon('aboutUs') },
   ]
 
-  const SHOP_CATEGORIES = [
-    { href: '/shop?category=textile', label: tCommon('textilesAndSilk'), icon: '🧵' },
-    { href: '/shop?category=handicraft', label: tCommon('handicrafts'), icon: '🏺' },
-    { href: '/shop?category=agricultural', label: tCommon('agricultural'), icon: '🌾' },
-    { href: '/shop?category=food', label: tCommon('foodAndNatural'), icon: '🍯' },
+  const SHOP_CATEGORIES: { key: Category; href: string; label: string; icon: string }[] = [
+    { key: 'textile', href: '/shop?category=textile', label: tCommon('textilesAndSilk'), icon: '🧵' },
+    { key: 'handicraft', href: '/shop?category=handicraft', label: tCommon('handicrafts'), icon: '🏺' },
+    { key: 'agricultural', href: '/shop?category=agricultural', label: tCommon('agricultural'), icon: '🌾' },
+    { key: 'food', href: '/shop?category=food', label: tCommon('foodAndNatural'), icon: '🍯' },
   ]
 
   const SHOP_STATES = [
@@ -33,6 +35,7 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [userDropdown, setUserDropdown] = useState(false)
   const [shopDropdown, setShopDropdown] = useState(false)
+  const [hoveredCat, setHoveredCat] = useState<Category>('textile')
   const [mobileShopOpen, setMobileShopOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
@@ -41,6 +44,15 @@ export default function Navbar() {
   const [isArtisan, setIsArtisan] = useState(false)
   const dropdownRef = useRef<HTMLLIElement>(null)
   const shopRef = useRef<HTMLLIElement>(null)
+  const shopCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const openShopDropdown = () => {
+    if (shopCloseTimer.current) clearTimeout(shopCloseTimer.current)
+    setShopDropdown(true)
+  }
+  const scheduleCloseShopDropdown = () => {
+    shopCloseTimer.current = setTimeout(() => setShopDropdown(false), 150)
+  }
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -52,7 +64,10 @@ export default function Navbar() {
       }
     }
     document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
+    return () => {
+      document.removeEventListener('mousedown', handler)
+      if (shopCloseTimer.current) clearTimeout(shopCloseTimer.current)
+    }
   }, [])
 
   useEffect(() => {
@@ -124,22 +139,24 @@ export default function Navbar() {
           <ul className="nav-desktop" style={{ display: 'flex', gap: '0.15rem', listStyle: 'none', alignItems: 'center', flexWrap: 'nowrap' }}>
             <li><Link href="/" className="nav-link">{tCommon('home')}</Link></li>
             {/* Shop dropdown */}
-            <li ref={shopRef} style={{ position: 'relative' }}>
+            <li ref={shopRef} style={{ position: 'relative' }}
+              onMouseEnter={openShopDropdown}
+              onMouseLeave={scheduleCloseShopDropdown}>
               <button onClick={() => setShopDropdown(v => !v)}
                 className="nav-link"
                 style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
                 {tCommon('shop')} <span style={{ fontSize: '0.55rem', marginTop: 1 }}>{shopDropdown ? '▲' : '▼'}</span>
               </button>
               {shopDropdown && (
-                <div style={{ position: 'absolute', top: 'calc(100% + 12px)', left: 0, background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 12, boxShadow: '0 12px 40px rgba(26,10,0,0.14)', zIndex: 300, minWidth: 480, display: 'grid', gridTemplateColumns: '1fr 1fr', overflow: 'hidden' }}>
+                <div style={{ position: 'absolute', top: 'calc(100% + 12px)', left: 0, background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 12, boxShadow: '0 12px 40px rgba(26,10,0,0.14)', zIndex: 300, minWidth: 700, display: 'grid', gridTemplateColumns: '200px 220px 1fr', overflow: 'hidden' }}>
                   {/* By Category */}
                   <div style={{ padding: '1.25rem 1.5rem', borderRight: '1px solid #EDD060' }}>
                     <div style={{ fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#D4A000', marginBottom: '0.75rem' }}>{tCommon('shopByCategory')}</div>
-                    {SHOP_CATEGORIES.map(({ href, label, icon }) => (
+                    {SHOP_CATEGORIES.map(({ key, href, label, icon }) => (
                       <Link key={href} href={href} onClick={() => setShopDropdown(false)}
-                        style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', textDecoration: 'none', borderBottom: '1px solid #FFE8A8', color: '#1B2E4A', fontSize: '0.88rem', fontWeight: 600, fontFamily: "'Inter', sans-serif" }}
-                        onMouseEnter={e => (e.currentTarget.style.color = '#E8380A')}
-                        onMouseLeave={e => (e.currentTarget.style.color = '#1B2E4A')}>
+                        onMouseEnter={e => { setHoveredCat(key); e.currentTarget.style.color = '#E8380A' }}
+                        onMouseLeave={e => (e.currentTarget.style.color = '#1B2E4A')}
+                        style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 6px', borderRadius: 6, textDecoration: 'none', borderBottom: '1px solid #FFE8A8', color: '#1B2E4A', fontSize: '0.88rem', fontWeight: 600, fontFamily: "'Inter', sans-serif", background: hoveredCat === key ? '#FFF5E0' : 'transparent' }}>
                         <span>{icon}</span>{label}
                       </Link>
                     ))}
@@ -147,6 +164,22 @@ export default function Navbar() {
                       style={{ display: 'block', marginTop: '0.75rem', fontSize: '0.78rem', fontWeight: 700, color: '#E8380A', textDecoration: 'none' }}>
                       {tCommon('viewAllProducts')} →
                     </Link>
+                  </div>
+                  {/* Subcategories of hovered category */}
+                  <div style={{ padding: '1.25rem 1.5rem', borderRight: '1px solid #EDD060', background: '#FFFDF5' }}>
+                    <div style={{ fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#D4A000', marginBottom: '0.75rem' }}>
+                      {SHOP_CATEGORIES.find(c => c.key === hoveredCat)?.label}
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                      {SUBCATEGORY_META[hoveredCat].map(sc => (
+                        <Link key={sc.value} href={`/shop?category=${hoveredCat}&subcategory=${sc.value}`} onClick={() => setShopDropdown(false)}
+                          style={{ padding: '5px 0', textDecoration: 'none', color: '#6B4820', fontSize: '0.82rem', fontFamily: "'Inter', sans-serif" }}
+                          onMouseEnter={e => (e.currentTarget.style.color = '#E8380A')}
+                          onMouseLeave={e => (e.currentTarget.style.color = '#6B4820')}>
+                          {sc.label}
+                        </Link>
+                      ))}
+                    </div>
                   </div>
                   {/* By State */}
                   <div style={{ padding: '1.25rem 1.5rem', background: '#FFFFF0' }}>
@@ -279,11 +312,21 @@ export default function Navbar() {
               {mobileShopOpen && (
                 <div style={{ paddingTop: '0.75rem', paddingLeft: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                   <div style={{ fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#D4A000', marginBottom: 2 }}>{tCommon('shopByCategory')}</div>
-                  {SHOP_CATEGORIES.map(({ href, label, icon }) => (
-                    <Link key={href} href={href} onClick={() => { setMenuOpen(false); setMobileShopOpen(false) }}
-                      style={{ fontFamily: "'Inter', sans-serif", color: '#1B2E4A', textDecoration: 'none', fontSize: '0.88rem', padding: '3px 0' }}>
-                      {icon} {label}
-                    </Link>
+                  {SHOP_CATEGORIES.map(({ key, href, label, icon }) => (
+                    <div key={href}>
+                      <Link href={href} onClick={() => { setMenuOpen(false); setMobileShopOpen(false) }}
+                        style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, color: '#1B2E4A', textDecoration: 'none', fontSize: '0.88rem', padding: '3px 0', display: 'block' }}>
+                        {icon} {label}
+                      </Link>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2px 12px', paddingLeft: '1.35rem', marginBottom: 4 }}>
+                        {SUBCATEGORY_META[key].map(sc => (
+                          <Link key={sc.value} href={`/shop?category=${key}&subcategory=${sc.value}`} onClick={() => { setMenuOpen(false); setMobileShopOpen(false) }}
+                            style={{ fontFamily: "'Inter', sans-serif", color: '#6B4820', textDecoration: 'none', fontSize: '0.78rem', padding: '2px 0' }}>
+                            {sc.label}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
                   ))}
                   <div style={{ fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#D4A000', marginTop: '0.5rem', marginBottom: 2 }}>{tCommon('shopByState')}</div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px 12px' }}>

@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import type { Product } from '@/lib/types'
-import { CATEGORY_META } from '@/lib/types'
+import { CATEGORY_META, SUBCATEGORY_META } from '@/lib/types'
 import Link from 'next/link'
 import Image from 'next/image'
 import ReactMarkdown from 'react-markdown'
@@ -160,6 +160,7 @@ export default function ProductPage() {
   )
 
   const cat = CATEGORY_META[product.category]
+  const subcat = product.subcategory ? SUBCATEGORY_META[product.category]?.find(s => s.value === product.subcategory) : undefined
   const activeItem = media[activeIdx]
   const name = localizedProductName(product, lang)
   const description = localizedProductDescription(product, lang)
@@ -172,6 +173,11 @@ export default function ProductPage() {
           <Link href="/" style={{ color: '#6B4820', textDecoration: 'none' }}>{tc('home')}</Link> {' / '}
           <Link href="/shop" style={{ color: '#6B4820', textDecoration: 'none' }}>{tc('shop')}</Link> {' / '}
           <Link href={`/shop?category=${product.category}`} style={{ color: '#6B4820', textDecoration: 'none' }}>{cat.label}</Link> {' / '}
+          {subcat && (
+            <>
+              <Link href={`/shop?category=${product.category}&subcategory=${subcat.value}`} style={{ color: '#6B4820', textDecoration: 'none' }}>{subcat.label}</Link> {' / '}
+            </>
+          )}
           <span style={{ color: '#1B2E4A', fontWeight: 600 }}>{name}</span>
         </div>
       </div>
