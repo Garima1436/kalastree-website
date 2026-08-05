@@ -2,6 +2,7 @@ import { supabase } from '@/lib/supabase'
 import type { Product, Category } from '@/lib/types'
 import { CATEGORY_META, SUBCATEGORY_META } from '@/lib/types'
 import ProductCard from '@/components/ProductCard'
+import StateFilterSelect from '@/components/StateFilterSelect'
 import Link from 'next/link'
 import { getServerLang, getT } from '@/lib/i18n/server'
 
@@ -72,13 +73,7 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
 
             <div style={{ borderTop: '1px solid #DDB840', marginTop: '1.5rem', paddingTop: '1.5rem' }}>
               <div style={{ fontWeight: 700, fontSize: '0.78rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6B4820', marginBottom: '1rem' }}>{t('filterByState')}</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                {['Bihar', 'Jammu & Kashmir', 'West Bengal', 'Uttar Pradesh', 'Rajasthan', 'Tamil Nadu', 'Assam', 'Punjab'].map(state => (
-                  <Link key={state} href={`/shop?state=${encodeURIComponent(state)}`} style={{ fontSize: '0.85rem', color: params.state === state ? '#E8380A' : '#6B4820', textDecoration: 'none', fontWeight: params.state === state ? 700 : 400 }}>
-                    {state}
-                  </Link>
-                ))}
-              </div>
+              <StateFilterSelect current={params.state} allLabel={t('allStates')} />
             </div>
           </div>
         </aside>

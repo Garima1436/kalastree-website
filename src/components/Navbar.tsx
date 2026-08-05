@@ -35,8 +35,9 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [userDropdown, setUserDropdown] = useState(false)
   const [shopDropdown, setShopDropdown] = useState(false)
-  const [hoveredCat, setHoveredCat] = useState<Category>('textile')
+  const [stateDropdown, setStateDropdown] = useState(false)
   const [mobileShopOpen, setMobileShopOpen] = useState(false)
+  const [mobileStateOpen, setMobileStateOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   const [user, setUser] = useState<any>(null)
@@ -44,7 +45,9 @@ export default function Navbar() {
   const [isArtisan, setIsArtisan] = useState(false)
   const dropdownRef = useRef<HTMLLIElement>(null)
   const shopRef = useRef<HTMLLIElement>(null)
+  const stateRef = useRef<HTMLLIElement>(null)
   const shopCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const stateCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const openShopDropdown = () => {
     if (shopCloseTimer.current) clearTimeout(shopCloseTimer.current)
@@ -52,6 +55,14 @@ export default function Navbar() {
   }
   const scheduleCloseShopDropdown = () => {
     shopCloseTimer.current = setTimeout(() => setShopDropdown(false), 150)
+  }
+
+  const openStateDropdown = () => {
+    if (stateCloseTimer.current) clearTimeout(stateCloseTimer.current)
+    setStateDropdown(true)
+  }
+  const scheduleCloseStateDropdown = () => {
+    stateCloseTimer.current = setTimeout(() => setStateDropdown(false), 150)
   }
 
   useEffect(() => {
@@ -62,11 +73,15 @@ export default function Navbar() {
       if (shopRef.current && !shopRef.current.contains(e.target as Node)) {
         setShopDropdown(false)
       }
+      if (stateRef.current && !stateRef.current.contains(e.target as Node)) {
+        setStateDropdown(false)
+      }
     }
     document.addEventListener('mousedown', handler)
     return () => {
       document.removeEventListener('mousedown', handler)
       if (shopCloseTimer.current) clearTimeout(shopCloseTimer.current)
+      if (stateCloseTimer.current) clearTimeout(stateCloseTimer.current)
     }
   }, [])
 
@@ -148,52 +163,57 @@ export default function Navbar() {
                 {tCommon('shop')} <span style={{ fontSize: '0.55rem', marginTop: 1 }}>{shopDropdown ? '▲' : '▼'}</span>
               </button>
               {shopDropdown && (
-                <div style={{ position: 'absolute', top: 'calc(100% + 12px)', left: 0, background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 12, boxShadow: '0 12px 40px rgba(26,10,0,0.14)', zIndex: 300, minWidth: 700, display: 'grid', gridTemplateColumns: '200px 220px 1fr', overflow: 'hidden' }}>
-                  {/* By Category */}
-                  <div style={{ padding: '1.25rem 1.5rem', borderRight: '1px solid #EDD060' }}>
-                    <div style={{ fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#D4A000', marginBottom: '0.75rem' }}>{tCommon('shopByCategory')}</div>
-                    {SHOP_CATEGORIES.map(({ key, href, label, icon }) => (
-                      <Link key={href} href={href} onClick={() => setShopDropdown(false)}
-                        onMouseEnter={e => { setHoveredCat(key); e.currentTarget.style.color = '#E8380A' }}
-                        onMouseLeave={e => (e.currentTarget.style.color = '#1B2E4A')}
-                        style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 6px', borderRadius: 6, textDecoration: 'none', borderBottom: '1px solid #FFE8A8', color: '#1B2E4A', fontSize: '0.88rem', fontWeight: 600, fontFamily: "'Inter', sans-serif", background: hoveredCat === key ? '#FFF5E0' : 'transparent' }}>
+                <div style={{ position: 'absolute', top: 'calc(100% + 12px)', left: '50%', transform: 'translateX(-50%)', background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 12, boxShadow: '0 12px 40px rgba(26,10,0,0.14)', zIndex: 300, display: 'grid', gridTemplateColumns: `repeat(${SHOP_CATEGORIES.length}, 200px)`, overflow: 'hidden' }}>
+                  {SHOP_CATEGORIES.map(({ key, href, label, icon }, i) => (
+                    <div key={key} style={{ padding: '1.25rem 1.5rem', borderRight: i < SHOP_CATEGORIES.length - 1 ? '1px solid #EDD060' : 'none' }}>
+                      <Link href={href} onClick={() => setShopDropdown(false)}
+                        style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none', color: '#1B2E4A', fontSize: '0.88rem', fontWeight: 700, fontFamily: "'Inter', sans-serif", marginBottom: '0.75rem' }}
+                        onMouseEnter={e => (e.currentTarget.style.color = '#E8380A')}
+                        onMouseLeave={e => (e.currentTarget.style.color = '#1B2E4A')}>
                         <span>{icon}</span>{label}
                       </Link>
-                    ))}
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        {SUBCATEGORY_META[key].map(sc => (
+                          <Link key={sc.value} href={`/shop?category=${key}&subcategory=${sc.value}`} onClick={() => setShopDropdown(false)}
+                            style={{ padding: '5px 0', textDecoration: 'none', color: '#6B4820', fontSize: '0.82rem', fontFamily: "'Inter', sans-serif" }}
+                            onMouseEnter={e => (e.currentTarget.style.color = '#E8380A')}
+                            onMouseLeave={e => (e.currentTarget.style.color = '#6B4820')}>
+                            {sc.label}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                  <div style={{ gridColumn: `1 / -1`, padding: '0.75rem 1.5rem', borderTop: '1px solid #EDD060', background: '#FFFDF5' }}>
                     <Link href="/shop" onClick={() => setShopDropdown(false)}
-                      style={{ display: 'block', marginTop: '0.75rem', fontSize: '0.78rem', fontWeight: 700, color: '#E8380A', textDecoration: 'none' }}>
+                      style={{ fontSize: '0.78rem', fontWeight: 700, color: '#E8380A', textDecoration: 'none' }}>
                       {tCommon('viewAllProducts')} →
                     </Link>
                   </div>
-                  {/* Subcategories of hovered category */}
-                  <div style={{ padding: '1.25rem 1.5rem', borderRight: '1px solid #EDD060', background: '#FFFDF5' }}>
-                    <div style={{ fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#D4A000', marginBottom: '0.75rem' }}>
-                      {SHOP_CATEGORIES.find(c => c.key === hoveredCat)?.label}
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                      {SUBCATEGORY_META[hoveredCat].map(sc => (
-                        <Link key={sc.value} href={`/shop?category=${hoveredCat}&subcategory=${sc.value}`} onClick={() => setShopDropdown(false)}
-                          style={{ padding: '5px 0', textDecoration: 'none', color: '#6B4820', fontSize: '0.82rem', fontFamily: "'Inter', sans-serif" }}
-                          onMouseEnter={e => (e.currentTarget.style.color = '#E8380A')}
-                          onMouseLeave={e => (e.currentTarget.style.color = '#6B4820')}>
-                          {sc.label}
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                  {/* By State */}
-                  <div style={{ padding: '1.25rem 1.5rem', background: '#FFFFF0' }}>
-                    <div style={{ fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#D4A000', marginBottom: '0.75rem' }}>{tCommon('shopByState')}</div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2px 8px' }}>
-                      {SHOP_STATES.map(state => (
-                        <Link key={state} href={`/shop?state=${encodeURIComponent(state)}`} onClick={() => setShopDropdown(false)}
-                          style={{ padding: '5px 0', textDecoration: 'none', color: '#6B4820', fontSize: '0.82rem', fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap' }}
-                          onMouseEnter={e => (e.currentTarget.style.color = '#E8380A')}
-                          onMouseLeave={e => (e.currentTarget.style.color = '#6B4820')}>
-                          {state}
-                        </Link>
-                      ))}
-                    </div>
+                </div>
+              )}
+            </li>
+
+            {/* Shop by State dropdown */}
+            <li ref={stateRef} style={{ position: 'relative' }}
+              onMouseEnter={openStateDropdown}
+              onMouseLeave={scheduleCloseStateDropdown}>
+              <button onClick={() => setStateDropdown(v => !v)}
+                className="nav-link"
+                style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
+                {tCommon('shopByState')} <span style={{ fontSize: '0.55rem', marginTop: 1 }}>{stateDropdown ? '▲' : '▼'}</span>
+              </button>
+              {stateDropdown && (
+                <div style={{ position: 'absolute', top: 'calc(100% + 12px)', left: 0, background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 12, boxShadow: '0 12px 40px rgba(26,10,0,0.14)', zIndex: 300, minWidth: 320, padding: '1.25rem 1.5rem', overflow: 'hidden' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2px 8px' }}>
+                    {SHOP_STATES.map(state => (
+                      <Link key={state} href={`/shop?state=${encodeURIComponent(state)}`} onClick={() => setStateDropdown(false)}
+                        style={{ padding: '5px 0', textDecoration: 'none', color: '#6B4820', fontSize: '0.82rem', fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap' }}
+                        onMouseEnter={e => (e.currentTarget.style.color = '#E8380A')}
+                        onMouseLeave={e => (e.currentTarget.style.color = '#6B4820')}>
+                        {state}
+                      </Link>
+                    ))}
                   </div>
                 </div>
               )}
@@ -204,7 +224,6 @@ export default function Navbar() {
                 <Link href={href} className="nav-link">{label}</Link>
               </li>
             ))}
-            <li><Link href="/about#contact" className="nav-cta">{tCommon('contact')}</Link></li>
             <li style={{ marginLeft: '0.25rem' }}>
               <button onClick={() => setSearchOpen(true)} aria-label="Search"
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 36, height: 36, background: 'none', border: '1.5px solid #DDB840', borderRadius: 8, cursor: 'pointer', color: '#6B4820', transition: 'all 0.15s' }}
@@ -328,19 +347,28 @@ export default function Navbar() {
                       </div>
                     </div>
                   ))}
-                  <div style={{ fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#D4A000', marginTop: '0.5rem', marginBottom: 2 }}>{tCommon('shopByState')}</div>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px 12px' }}>
-                    {SHOP_STATES.map(state => (
-                      <Link key={state} href={`/shop?state=${encodeURIComponent(state)}`} onClick={() => { setMenuOpen(false); setMobileShopOpen(false) }}
-                        style={{ color: '#6B4820', textDecoration: 'none', fontSize: '0.82rem', fontFamily: "'Inter', sans-serif" }}>
-                        {state}
-                      </Link>
-                    ))}
-                  </div>
                   <Link href="/shop" onClick={() => { setMenuOpen(false); setMobileShopOpen(false) }}
                     style={{ color: '#E8380A', fontWeight: 700, textDecoration: 'none', fontSize: '0.82rem', marginTop: 4 }}>
                     {tCommon('viewAll')} →
                   </Link>
+                </div>
+              )}
+            </div>
+
+            {/* Shop by State expandable */}
+            <div>
+              <button onClick={() => setMobileStateOpen(v => !v)}
+                style={{ width: '100%', background: 'none', border: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontFamily: "'Inter', sans-serif", fontWeight: 700, color: '#1B2E4A', fontSize: '0.95rem', padding: '4px 0', borderBottom: '1px solid #EDD060', cursor: 'pointer' }}>
+                {tCommon('shopByState')} <span style={{ fontSize: '0.7rem', color: '#A07840' }}>{mobileStateOpen ? '▲' : '▼'}</span>
+              </button>
+              {mobileStateOpen && (
+                <div style={{ paddingTop: '0.75rem', paddingLeft: '0.5rem', display: 'flex', flexWrap: 'wrap', gap: '6px 12px' }}>
+                  {SHOP_STATES.map(state => (
+                    <Link key={state} href={`/shop?state=${encodeURIComponent(state)}`} onClick={() => { setMenuOpen(false); setMobileStateOpen(false) }}
+                      style={{ color: '#6B4820', textDecoration: 'none', fontSize: '0.82rem', fontFamily: "'Inter', sans-serif" }}>
+                      {state}
+                    </Link>
+                  ))}
                 </div>
               )}
             </div>
@@ -351,10 +379,6 @@ export default function Navbar() {
                 {label}
               </Link>
             ))}
-            <Link href="/about#contact" onClick={() => setMenuOpen(false)}
-              style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, color: '#fff', background: '#E8380A', textDecoration: 'none', fontSize: '0.95rem', padding: '8px 14px', borderRadius: 4, textAlign: 'center' }}>
-              {tCommon('contact')}
-            </Link>
             {user ? (
               <>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: '1px solid #EDD060' }}>
