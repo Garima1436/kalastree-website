@@ -8,12 +8,14 @@ import { getServerLang, getT } from '@/lib/i18n/server'
 
 export const revalidate = 120
 
-async function getProducts(category?: string, subcategory?: string, state?: string, q?: string, sort?: string) {
+async function getProducts(category?: string, subcategory?: string, state?: string, q?: string, sort?: string, minPrice?: number, maxPrice?: number) {
   let query = supabase.from('products').select('*, artisan:artisans(*)').eq('status', 'approved')
   if (category) query = query.eq('category', category)
   if (subcategory) query = query.eq('subcategory', subcategory)
   if (state) query = query.eq('state', state)
   if (q) query = query.textSearch('search_vector', q, { type: 'websearch', config: 'english' })
+  if (minPrice !== undefined) query = query.gte('price', minPrice)
+  if (maxPrice !== undefined) query = query.lte('price', maxPrice)
   if (sort === 'price_asc') query = query.order('price', { ascending: true })
   else if (sort === 'price_desc') query = query.order('price', { ascending: false })
   else query = query.order('created_at', { ascending: false })
@@ -21,9 +23,22 @@ async function getProducts(category?: string, subcategory?: string, state?: stri
   return (data ?? []) as Product[]
 }
 
-export default async function ShopPage({ searchParams }: { searchParams: Promise<{ category?: string; subcategory?: string; state?: string; q?: string; sort?: string }> }) {
+async function getPriceBounds() {
+  const [{ data: lo }, { data: hi }] = await Promise.all([
+    supabase.from('products').select('price').eq('status', 'approved').order('price', { ascending: true }).limit(1),
+    supabase.from('products').select('price').eq('status', 'approved').order('price', { ascending: false }).limit(1),
+  ])
+  return { min: lo?.[0]?.price ?? 0, max: hi?.[0]?.price ?? 10000 }
+}
+
+export default async function ShopPage({ searchParams }: { searchParams: Promise<{ category?: string; subcategory?: string; state?: string; q?: string; sort?: string; minPrice?: string; maxPrice?: string }> }) {
   const params = await searchParams
-  const products = await getProducts(params.category, params.subcategory, params.state, params.q, params.sort)
+  const minPrice = params.minPrice ? Number(params.minPrice) : undefined
+  const maxPrice = params.maxPrice ? Number(params.maxPrice) : undefined
+  const [products, priceBounds] = await Promise.all([
+    getProducts(params.category, params.subcategory, params.state, params.q, params.sort, minPrice, maxPrice),
+    getPriceBounds(),
+  ])
   const activeCategory = params.category as Category | undefined
   const lang = await getServerLang()
   const t = getT('shop', lang)
@@ -53,11 +68,16 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
         currentState={params.state}
         currentSort={params.sort}
         currentQ={params.q}
+        currentMinPrice={minPrice}
+        currentMaxPrice={maxPrice}
+        minBound={priceBounds.min}
+        maxBound={priceBounds.max}
         productCount={products.length}
         labels={{
           filterAndSort: t('filterAndSort'),
           state: t('state'),
           category: t('category'),
+          price: t('price'),
           sortBy: t('sortBy'),
           sortFeatured: t('sortFeatured'),
           sortPriceLowHigh: t('sortPriceLowHigh'),

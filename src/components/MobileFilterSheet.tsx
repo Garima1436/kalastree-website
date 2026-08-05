@@ -1,8 +1,23 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { CATEGORY_META, SUBCATEGORY_META, type Category } from '@/lib/types'
 import { INDIAN_STATES } from '@/lib/indian-states'
+import { createClient } from '@/lib/supabase-browser'
+
+async function fetchPriceBounds(category?: Category, subcategory?: string, state?: string) {
+  const supabase = createClient()
+  let lo = supabase.from('products').select('price').eq('status', 'approved')
+  let hi = supabase.from('products').select('price').eq('status', 'approved')
+  if (category) { lo = lo.eq('category', category); hi = hi.eq('category', category) }
+  if (subcategory) { lo = lo.eq('subcategory', subcategory); hi = hi.eq('subcategory', subcategory) }
+  if (state) { lo = lo.eq('state', state); hi = hi.eq('state', state) }
+  const [{ data: loData }, { data: hiData }] = await Promise.all([
+    lo.order('price', { ascending: true }).limit(1),
+    hi.order('price', { ascending: false }).limit(1),
+  ])
+  return { min: loData?.[0]?.price ?? 0, max: hiData?.[0]?.price ?? 0 }
+}
 
 type SortKey = 'featured' | 'price_asc' | 'price_desc'
 type View = 'root' | 'category'
@@ -11,6 +26,7 @@ interface Labels {
   filterAndSort: string
   state: string
   category: string
+  price: string
   sortBy: string
   sortFeatured: string
   sortPriceLowHigh: string
@@ -51,13 +67,17 @@ function CategoryRow({ label, active, expanded, onSelect, onToggle }: { label: s
 }
 
 export default function MobileFilterSheet({
-  currentCategory, currentSubcategory, currentState, currentSort, currentQ, productCount, labels,
+  currentCategory, currentSubcategory, currentState, currentSort, currentQ, currentMinPrice, currentMaxPrice, minBound, maxBound, productCount, labels,
 }: {
   currentCategory?: Category
   currentSubcategory?: string
   currentState?: string
   currentSort?: string
   currentQ?: string
+  currentMinPrice?: number
+  currentMaxPrice?: number
+  minBound: number
+  maxBound: number
   productCount: number
   labels: Labels
 }) {
@@ -68,33 +88,66 @@ export default function MobileFilterSheet({
   const [pendingSubcategory, setPendingSubcategory] = useState(currentSubcategory)
   const [pendingState, setPendingState] = useState(currentState)
   const [pendingSort, setPendingSort] = useState<SortKey>((currentSort as SortKey) ?? 'featured')
+  const [priceBounds, setPriceBounds] = useState({ min: minBound, max: maxBound })
+  const [pendingMinPrice, setPendingMinPrice] = useState(currentMinPrice ?? minBound)
+  const [pendingMaxPrice, setPendingMaxPrice] = useState(currentMaxPrice ?? maxBound)
   const [expandedCategory, setExpandedCategory] = useState<Category | undefined>(currentCategory)
   const [stateOpen, setStateOpen] = useState(false)
+  const [priceOpen, setPriceOpen] = useState(false)
+  const isFirstFetch = useRef(true)
 
   const openSheet = () => {
     setPendingCategory(currentCategory)
     setPendingSubcategory(currentSubcategory)
     setPendingState(currentState)
     setPendingSort((currentSort as SortKey) ?? 'featured')
+    setPendingMinPrice(currentMinPrice ?? minBound)
+    setPendingMaxPrice(currentMaxPrice ?? maxBound)
     setExpandedCategory(currentCategory)
     setStateOpen(false)
+    setPriceOpen(false)
+    isFirstFetch.current = true
     setView('root')
     setOpen(true)
   }
 
-  const buildUrl = (category?: string, subcategory?: string, state?: string, sort?: SortKey) => {
+  // Re-scope the price slider's min/max to whatever category/subcategory/state is
+  // currently picked, so the range always reflects the matching products' actual prices.
+  useEffect(() => {
+    if (!open) return
+    let cancelled = false
+    fetchPriceBounds(pendingCategory, pendingSubcategory, pendingState).then(bounds => {
+      if (cancelled) return
+      setPriceBounds(bounds)
+      if (isFirstFetch.current) {
+        // Preserve an already-applied price filter (clamped to the new bounds) on the first fetch after opening.
+        setPendingMinPrice(currentMinPrice !== undefined ? Math.max(currentMinPrice, bounds.min) : bounds.min)
+        setPendingMaxPrice(currentMaxPrice !== undefined ? Math.min(currentMaxPrice, bounds.max) : bounds.max)
+        isFirstFetch.current = false
+      } else {
+        // Category/state changed while browsing — reset to the full range for the new selection.
+        setPendingMinPrice(bounds.min)
+        setPendingMaxPrice(bounds.max)
+      }
+    })
+    return () => { cancelled = true }
+  }, [open, pendingCategory, pendingSubcategory, pendingState, currentMinPrice, currentMaxPrice])
+
+  const buildUrl = (category?: string, subcategory?: string, state?: string, sort?: SortKey, minPrice?: number, maxPrice?: number) => {
     const p = new URLSearchParams()
     if (category) p.set('category', category)
     if (subcategory) p.set('subcategory', subcategory)
     if (state) p.set('state', state)
     if (sort && sort !== 'featured') p.set('sort', sort)
+    if (minPrice !== undefined && minPrice > priceBounds.min) p.set('minPrice', String(minPrice))
+    if (maxPrice !== undefined && maxPrice < priceBounds.max) p.set('maxPrice', String(maxPrice))
     if (currentQ) p.set('q', currentQ)
     const qs = p.toString()
     return qs ? `/shop?${qs}` : '/shop'
   }
 
   const apply = () => {
-    router.push(buildUrl(pendingCategory, pendingSubcategory, pendingState, pendingSort))
+    router.push(buildUrl(pendingCategory, pendingSubcategory, pendingState, pendingSort, pendingMinPrice, pendingMaxPrice))
     setOpen(false)
   }
 
@@ -165,6 +218,27 @@ export default function MobileFilterSheet({
                   <span>{labels.category}</span>
                   <span style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#A07840', fontSize: '0.82rem', fontWeight: 400 }}>{categoryValueLabel} <span style={{ color: '#1B2E4A' }}>→</span></span>
                 </button>
+                <div style={{ borderBottom: '1px solid #EDE6D0' }}>
+                  <button onClick={() => setPriceOpen(v => !v)} style={{ ...rowStyle, borderBottom: 'none' }}>
+                    <span>{labels.price}</span>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#A07840', fontSize: '0.82rem', fontWeight: 400 }}>
+                      ₹{pendingMinPrice} – ₹{pendingMaxPrice}
+                      <span style={{ color: '#1B2E4A', fontSize: '0.6rem' }}>{priceOpen ? '▲' : '▼'}</span>
+                    </span>
+                  </button>
+                  {priceOpen && (
+                    <div style={{ padding: '4px 20px 20px', background: '#FFFDF5' }}>
+                      <div style={{ fontSize: '0.75rem', color: '#6B4820', marginBottom: 4 }}>Min: ₹{pendingMinPrice}</div>
+                      <input type="range" min={priceBounds.min} max={priceBounds.max} value={pendingMinPrice}
+                        onChange={e => setPendingMinPrice(Math.min(Number(e.target.value), pendingMaxPrice))}
+                        style={{ width: '100%', accentColor: '#E8380A' }} />
+                      <div style={{ fontSize: '0.75rem', color: '#6B4820', margin: '10px 0 4px' }}>Max: ₹{pendingMaxPrice}</div>
+                      <input type="range" min={priceBounds.min} max={priceBounds.max} value={pendingMaxPrice}
+                        onChange={e => setPendingMaxPrice(Math.max(Number(e.target.value), pendingMinPrice))}
+                        style={{ width: '100%', accentColor: '#E8380A' }} />
+                    </div>
+                  )}
+                </div>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px', borderBottom: '1px solid #EDE6D0' }}>
                   <span style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, fontSize: '0.92rem', color: '#1B2E4A' }}>{labels.sortBy}</span>
                   <select value={pendingSort} onChange={e => setPendingSort(e.target.value as SortKey)} style={{ border: 'none', background: 'none', color: '#6B4820', fontSize: '0.85rem', fontFamily: "'Inter', sans-serif" }}>
