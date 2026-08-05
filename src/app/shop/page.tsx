@@ -1,26 +1,29 @@
 import { supabase } from '@/lib/supabase'
 import type { Product, Category } from '@/lib/types'
-import { CATEGORY_META, SUBCATEGORY_META } from '@/lib/types'
+import { CATEGORY_META } from '@/lib/types'
 import ProductCard from '@/components/ProductCard'
-import StateFilterSelect from '@/components/StateFilterSelect'
+import MobileFilterSheet from '@/components/MobileFilterSheet'
 import Link from 'next/link'
 import { getServerLang, getT } from '@/lib/i18n/server'
 
 export const revalidate = 120
 
-async function getProducts(category?: string, subcategory?: string, state?: string, q?: string) {
-  let query = supabase.from('products').select('*, artisan:artisans(*)').eq('status', 'approved').order('created_at', { ascending: false })
+async function getProducts(category?: string, subcategory?: string, state?: string, q?: string, sort?: string) {
+  let query = supabase.from('products').select('*, artisan:artisans(*)').eq('status', 'approved')
   if (category) query = query.eq('category', category)
   if (subcategory) query = query.eq('subcategory', subcategory)
   if (state) query = query.eq('state', state)
   if (q) query = query.textSearch('search_vector', q, { type: 'websearch', config: 'english' })
+  if (sort === 'price_asc') query = query.order('price', { ascending: true })
+  else if (sort === 'price_desc') query = query.order('price', { ascending: false })
+  else query = query.order('created_at', { ascending: false })
   const { data } = await query
   return (data ?? []) as Product[]
 }
 
-export default async function ShopPage({ searchParams }: { searchParams: Promise<{ category?: string; subcategory?: string; state?: string; q?: string }> }) {
+export default async function ShopPage({ searchParams }: { searchParams: Promise<{ category?: string; subcategory?: string; state?: string; q?: string; sort?: string }> }) {
   const params = await searchParams
-  const products = await getProducts(params.category, params.subcategory, params.state, params.q)
+  const products = await getProducts(params.category, params.subcategory, params.state, params.q, params.sort)
   const activeCategory = params.category as Category | undefined
   const lang = await getServerLang()
   const t = getT('shop', lang)
@@ -44,54 +47,42 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
         </div>
       </div>
 
-      <div className="mx-auto grid max-w-[1280px] items-start gap-12 px-[5%] py-12 max-md:grid-cols-1 [grid-template-columns:220px_1fr]">
-        {/* Sidebar Filters */}
-        <aside className="max-md:hidden">
-          <div style={{ background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 10, padding: '1.5rem', position: 'sticky', top: 90 }}>
-            <div style={{ fontWeight: 700, fontSize: '0.78rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6B4820', marginBottom: '1rem' }}>{t('categories')}</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <Link href="/shop" style={{ fontSize: '0.9rem', fontWeight: !activeCategory ? 700 : 400, color: !activeCategory ? '#E8380A' : '#6B4820', textDecoration: 'none', padding: '6px 10px', borderRadius: 6, background: !activeCategory ? '#FFE8DC' : 'transparent' }}>
-                🌟 {t('allProducts')}
-              </Link>
-              {(Object.entries(CATEGORY_META) as [Category, typeof CATEGORY_META[Category]][]).map(([key, meta]) => (
-                <div key={key}>
-                  <Link href={`/shop?category=${key}`} style={{ fontSize: '0.9rem', fontWeight: activeCategory === key ? 700 : 400, color: activeCategory === key ? meta.color : '#6B4820', textDecoration: 'none', padding: '6px 10px', borderRadius: 6, background: activeCategory === key ? meta.bg : 'transparent', display: 'block' }}>
-                    {meta.icon} {meta.label}
-                  </Link>
-                  {activeCategory === key && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 2, marginLeft: 14, marginTop: 2 }}>
-                      {SUBCATEGORY_META[key].map(sc => (
-                        <Link key={sc.value} href={`/shop?category=${key}&subcategory=${sc.value}`} style={{ fontSize: '0.8rem', fontWeight: params.subcategory === sc.value ? 700 : 400, color: params.subcategory === sc.value ? meta.color : '#8A7250', textDecoration: 'none', padding: '3px 10px' }}>
-                          {sc.label}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
+      <MobileFilterSheet
+        currentCategory={activeCategory}
+        currentSubcategory={params.subcategory}
+        currentState={params.state}
+        currentSort={params.sort}
+        currentQ={params.q}
+        productCount={products.length}
+        labels={{
+          filterAndSort: t('filterAndSort'),
+          state: t('state'),
+          category: t('category'),
+          sortBy: t('sortBy'),
+          sortFeatured: t('sortFeatured'),
+          sortPriceLowHigh: t('sortPriceLowHigh'),
+          sortPriceHighLow: t('sortPriceHighLow'),
+          removeAll: t('removeAll'),
+          apply: t('apply'),
+          allStates: t('allStates'),
+          allProducts: t('allProducts'),
+          productWord: t('product'),
+          productsWord: t('products'),
+        }}
+      />
 
-            <div style={{ borderTop: '1px solid #DDB840', marginTop: '1.5rem', paddingTop: '1.5rem' }}>
-              <div style={{ fontWeight: 700, fontSize: '0.78rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6B4820', marginBottom: '1rem' }}>{t('filterByState')}</div>
-              <StateFilterSelect current={params.state} allLabel={t('allStates')} />
-            </div>
+      <div className="mx-auto max-w-[1280px] px-[5%] py-12">
+        {products.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '5rem 0', color: '#6B4820' }}>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🌾</div>
+            <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.4rem', marginBottom: '1rem' }}>{t('noProductsFound')}</p>
+            <Link href="/join" style={{ color: '#E8380A', fontWeight: 700 }}>{t('inviteArtisan')}</Link>
           </div>
-        </aside>
-
-        {/* Products Grid */}
-        <div>
-          {products.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '5rem 0', color: '#6B4820' }}>
-              <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🌾</div>
-              <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.4rem', marginBottom: '1rem' }}>{t('noProductsFound')}</p>
-              <Link href="/join" style={{ color: '#E8380A', fontWeight: 700 }}>{t('inviteArtisan')}</Link>
-            </div>
-          ) : (
-            <div className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-5 max-sm:grid-cols-2 max-sm:gap-[0.6rem]">
-              {products.map(p => <ProductCard key={p.id} product={p} />)}
-            </div>
-          )}
-        </div>
+        ) : (
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-5 max-sm:grid-cols-2 max-sm:gap-[0.6rem]">
+            {products.map(p => <ProductCard key={p.id} product={p} />)}
+          </div>
+        )}
       </div>
     </div>
   )
