@@ -143,6 +143,8 @@ export default function HeroSection({ heroImages, statsImages }: HeroSectionProp
   const [paused, setPaused] = useState(false)
   const slideRefs = useRef<(HTMLDivElement | null)[]>([])
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const touchStartX = useRef<number | null>(null)
+  const touchDeltaX = useRef(0)
 
   const slideCount = 1 + heroImages.length
 
@@ -158,6 +160,24 @@ export default function HeroSection({ heroImages, statsImages }: HeroSectionProp
   }, [slideCount, paused])
 
   const go = (next: number) => setIndex(((next % slideCount) + slideCount) % slideCount)
+
+  const SWIPE_THRESHOLD = 40
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setPaused(true)
+    touchStartX.current = e.touches[0].clientX
+    touchDeltaX.current = 0
+  }
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return
+    touchDeltaX.current = e.touches[0].clientX - touchStartX.current
+  }
+  const handleTouchEnd = () => {
+    if (touchDeltaX.current > SWIPE_THRESHOLD) go(index - 1)
+    else if (touchDeltaX.current < -SWIPE_THRESHOLD) go(index + 1)
+    touchStartX.current = null
+    touchDeltaX.current = 0
+    setPaused(false)
+  }
 
   const statText: Record<StatKey, { label: string; sub: string }> = {
     'gi-products': { label: t('statGiProductsLabel'), sub: t('statGiProductsSub') },
@@ -178,9 +198,10 @@ export default function HeroSection({ heroImages, statsImages }: HeroSectionProp
         style={{ position: 'relative', width: '100%', overflow: 'hidden', height, transition: 'height 0.5s ease', zIndex: 2 }}
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
-        onTouchStart={() => setPaused(true)}
-        onTouchEnd={() => setPaused(false)}
-        onTouchCancel={() => setPaused(false)}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchEnd}
       >
         <div style={{ display: 'flex', alignItems: 'flex-start', width: '100%', transform: `translateX(-${index * 100}%)`, transition: 'transform 0.6s cubic-bezier(0.65,0,0.35,1)' }}>
           <div ref={el => { slideRefs.current[0] = el }} style={{ flex: '0 0 100%', width: '100%', minWidth: 0 }}>
