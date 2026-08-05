@@ -37,14 +37,14 @@ export default function ArtisanCard({ artisan }: { artisan: Artisan }) {
         <div style={{
           fontFamily: "'EB Garamond', serif", fontSize: '1.15rem', fontWeight: 600, color: '#1B2E4A', marginBottom: 4,
           display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
-          lineHeight: 1.25, minHeight: '2.5em',
+          lineHeight: 1.25, minHeight: '2.5em', overflowWrap: 'anywhere', wordBreak: 'break-word',
         }}>
           {artisan.name}
         </div>
         <div style={{
           fontSize: '0.78rem', color: '#6B4820', marginBottom: 8,
           display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
-          lineHeight: 1.3, minHeight: '2rem',
+          lineHeight: 1.3, minHeight: '2rem', overflowWrap: 'anywhere', wordBreak: 'break-word',
         }}>
           {artisan.craft} · {artisan.state}
         </div>
@@ -60,6 +60,7 @@ export default function ArtisanCard({ artisan }: { artisan: Artisan }) {
         <div style={{
           fontSize: '0.75rem', color: '#D4A000', marginTop: 8, fontStyle: 'italic', minHeight: '1.2rem',
           display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden',
+          overflowWrap: 'anywhere', wordBreak: 'break-word',
         }}>
           {artisan.gi_product ?? ''}
         </div>
