@@ -75,7 +75,7 @@ export default async function ShopByStatePage() {
       </div>
 
       <div className="mx-auto max-w-[1280px] px-[5%] py-12">
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-5">
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-5 max-sm:grid-cols-2 max-sm:gap-3">
           {INDIAN_STATES.map((state, i) => {
             const img = stateImages[state]
             const count = stateCounts[state] ?? 0
@@ -83,7 +83,8 @@ export default async function ShopByStatePage() {
               <Link
                 key={state}
                 href={`/shop?state=${encodeURIComponent(state)}`}
-                style={{ position: 'relative', display: 'block', height: 200, borderRadius: 12, overflow: 'hidden', textDecoration: 'none', boxShadow: '0 6px 18px rgba(26,8,0,0.18)' }}
+                className="h-[200px] max-sm:h-[140px]"
+                style={{ position: 'relative', display: 'block', borderRadius: 12, overflow: 'hidden', textDecoration: 'none', boxShadow: '0 6px 18px rgba(26,8,0,0.18)' }}
               >
                 {img ? (
                   <Image src={img} alt={state} fill sizes="(max-width: 640px) 50vw, 25vw" style={{ objectFit: 'cover' }} />
