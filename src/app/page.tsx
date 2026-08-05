@@ -70,7 +70,7 @@ function getStatsImages(): Partial<Record<StatKey, string>> {
 async function getData() {
   const [{ data: products }, { data: artisans }, { data: allApproved }] = await Promise.all([
     supabase.from('products').select('*, artisan:artisans(*)').eq('is_featured', true).eq('status', 'approved').order('created_at', { ascending: false }).limit(8),
-    supabase.from('artisans').select('*').eq('is_featured', true).limit(6),
+    supabase.from('artisans').select('*').eq('is_featured', true).limit(30),
     supabase.from('products').select('*, artisan:artisans(*)').eq('status', 'approved').order('created_at', { ascending: false }).limit(80),
   ])
 
