@@ -11,7 +11,6 @@ import { SUBCATEGORY_META } from '@/lib/types'
 
 export default function Navbar() {
   const { t: tCommon } = useTranslation('common')
-  const { t: tNav } = useTranslation('nav')
 
   const NAV_LINKS = [
     { href: '/artisans', label: tCommon('artisans') },
@@ -26,18 +25,10 @@ export default function Navbar() {
     { key: 'food', href: '/shop?category=food', label: tCommon('foodAndNatural'), icon: '🍯' },
   ]
 
-  const SHOP_STATES = [
-    tNav('stateRajasthan'), tNav('stateUttarPradesh'), tNav('stateWestBengal'), tNav('stateKashmir'),
-    tNav('stateBihar'), tNav('stateOdisha'), tNav('statePunjab'), tNav('stateKerala'),
-    tNav('stateTamilNadu'), tNav('stateGujarat'), tNav('stateMadhyaPradesh'), tNav('stateKarnataka'),
-  ]
-
   const [menuOpen, setMenuOpen] = useState(false)
   const [userDropdown, setUserDropdown] = useState(false)
   const [shopDropdown, setShopDropdown] = useState(false)
-  const [stateDropdown, setStateDropdown] = useState(false)
   const [mobileShopOpen, setMobileShopOpen] = useState(false)
-  const [mobileStateOpen, setMobileStateOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   const [user, setUser] = useState<any>(null)
@@ -45,9 +36,7 @@ export default function Navbar() {
   const [isArtisan, setIsArtisan] = useState(false)
   const dropdownRef = useRef<HTMLLIElement>(null)
   const shopRef = useRef<HTMLLIElement>(null)
-  const stateRef = useRef<HTMLLIElement>(null)
   const shopCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const stateCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const openShopDropdown = () => {
     if (shopCloseTimer.current) clearTimeout(shopCloseTimer.current)
@@ -55,14 +44,6 @@ export default function Navbar() {
   }
   const scheduleCloseShopDropdown = () => {
     shopCloseTimer.current = setTimeout(() => setShopDropdown(false), 150)
-  }
-
-  const openStateDropdown = () => {
-    if (stateCloseTimer.current) clearTimeout(stateCloseTimer.current)
-    setStateDropdown(true)
-  }
-  const scheduleCloseStateDropdown = () => {
-    stateCloseTimer.current = setTimeout(() => setStateDropdown(false), 150)
   }
 
   useEffect(() => {
@@ -73,15 +54,11 @@ export default function Navbar() {
       if (shopRef.current && !shopRef.current.contains(e.target as Node)) {
         setShopDropdown(false)
       }
-      if (stateRef.current && !stateRef.current.contains(e.target as Node)) {
-        setStateDropdown(false)
-      }
     }
     document.addEventListener('mousedown', handler)
     return () => {
       document.removeEventListener('mousedown', handler)
       if (shopCloseTimer.current) clearTimeout(shopCloseTimer.current)
-      if (stateCloseTimer.current) clearTimeout(stateCloseTimer.current)
     }
   }, [])
 
@@ -194,30 +171,7 @@ export default function Navbar() {
               )}
             </li>
 
-            {/* Shop by State dropdown */}
-            <li ref={stateRef} style={{ position: 'relative' }}
-              onMouseEnter={openStateDropdown}
-              onMouseLeave={scheduleCloseStateDropdown}>
-              <button onClick={() => setStateDropdown(v => !v)}
-                className="nav-link"
-                style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
-                {tCommon('shopByState')} <span style={{ fontSize: '0.55rem', marginTop: 1 }}>{stateDropdown ? '▲' : '▼'}</span>
-              </button>
-              {stateDropdown && (
-                <div style={{ position: 'absolute', top: 'calc(100% + 12px)', left: 0, background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 12, boxShadow: '0 12px 40px rgba(26,10,0,0.14)', zIndex: 300, minWidth: 320, padding: '1.25rem 1.5rem', overflow: 'hidden' }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2px 8px' }}>
-                    {SHOP_STATES.map(state => (
-                      <Link key={state} href={`/shop?state=${encodeURIComponent(state)}`} onClick={() => setStateDropdown(false)}
-                        style={{ padding: '5px 0', textDecoration: 'none', color: '#6B4820', fontSize: '0.82rem', fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap' }}
-                        onMouseEnter={e => (e.currentTarget.style.color = '#E8380A')}
-                        onMouseLeave={e => (e.currentTarget.style.color = '#6B4820')}>
-                        {state}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </li>
+            <li><Link href="/shop-by-state" className="nav-link">{tCommon('shopByState')}</Link></li>
 
             {NAV_LINKS.map(({ href, label }) => (
               <li key={href}>
@@ -355,23 +309,10 @@ export default function Navbar() {
               )}
             </div>
 
-            {/* Shop by State expandable */}
-            <div>
-              <button onClick={() => setMobileStateOpen(v => !v)}
-                style={{ width: '100%', background: 'none', border: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontFamily: "'Inter', sans-serif", fontWeight: 700, color: '#1B2E4A', fontSize: '0.95rem', padding: '4px 0', borderBottom: '1px solid #EDD060', cursor: 'pointer' }}>
-                {tCommon('shopByState')} <span style={{ fontSize: '0.7rem', color: '#A07840' }}>{mobileStateOpen ? '▲' : '▼'}</span>
-              </button>
-              {mobileStateOpen && (
-                <div style={{ paddingTop: '0.75rem', paddingLeft: '0.5rem', display: 'flex', flexWrap: 'wrap', gap: '6px 12px' }}>
-                  {SHOP_STATES.map(state => (
-                    <Link key={state} href={`/shop?state=${encodeURIComponent(state)}`} onClick={() => { setMenuOpen(false); setMobileStateOpen(false) }}
-                      style={{ color: '#6B4820', textDecoration: 'none', fontSize: '0.82rem', fontFamily: "'Inter', sans-serif" }}>
-                      {state}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
+            <Link href="/shop-by-state" onClick={() => setMenuOpen(false)}
+              style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, color: '#1B2E4A', textDecoration: 'none', fontSize: '0.95rem', letterSpacing: '0.04em', padding: '4px 0', borderBottom: '1px solid #EDD060' }}>
+              {tCommon('shopByState')}
+            </Link>
 
             {NAV_LINKS.map(({ href, label }) => (
               <Link key={href} href={href} onClick={() => setMenuOpen(false)}
