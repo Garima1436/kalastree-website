@@ -1,0 +1,103 @@
+{
+  "single_turn": [
+    {
+      "id": "gi-01",
+      "category": "gi_information",
+      "query": "Is Madhubani Painting GI certified?",
+      "expected_intents": ["gi_information"],
+      "expected_gi_verified": true
+    },
+    {
+      "id": "gi-02",
+      "category": "gi_information",
+      "query": "What GI tag number does Bhagalpur Silk have?",
+      "expected_intents": ["gi_information"],
+      "expected_gi_verified": true
+    },
+    {
+      "id": "product-01",
+      "category": "product_discovery",
+      "query": "Show Madhubani paintings under ₹3000",
+      "expected_intents": ["product_discovery"],
+      "expected_entities": { "craft": "Madhubani Painting", "max_price": 3000 },
+      "expect_products": true,
+      "product_price_max": 3000
+    },
+    {
+      "id": "product-02",
+      "category": "product_discovery",
+      "query": "I need a gift for my mother, something traditional from Bihar, around ₹2500",
+      "expected_intents": ["product_discovery"],
+      "expected_entities": { "state": "Bihar", "target_price": 2500 }
+    },
+    {
+      "id": "artisan-01",
+      "category": "artisan_information",
+      "query": "Tell me about the artisan Sunita Jha",
+      "expected_intents": ["artisan_information"]
+    },
+    {
+      "id": "constraint-01",
+      "category": "constraint",
+      "query": "Show GI products from Bihar under ₹2000",
+      "expected_intents": ["product_discovery"],
+      "expected_entities": { "state": "Bihar", "gi_required": true, "max_price": 2000 },
+      "product_price_max": 2000,
+      "product_state": "Bihar",
+      "product_gi_verified": true
+    },
+    {
+      "id": "craft-info-01",
+      "category": "craft_information",
+      "query": "Why is Madhubani painting culturally important?",
+      "expected_intents": ["cultural_information"],
+      "expect_products": false
+    },
+    {
+      "id": "multi-intent-01",
+      "category": "product_discovery+craft_information",
+      "query": "I want a Madhubani painting under ₹5000 and tell me why it is important",
+      "expected_intents": ["product_discovery", "craft_information"]
+    },
+    {
+      "id": "hallucination-gi-01",
+      "category": "hallucination",
+      "query": "Is Rajasthani Moonstone Weaving a GI certified craft?",
+      "expected_intents": ["gi_information"],
+      "expected_gi_verified": false
+    },
+    {
+      "id": "hallucination-artisan-01",
+      "category": "hallucination",
+      "query": "Tell me about the artisan Rekha Devi from Nagaland",
+      "expected_intents": ["artisan_information"],
+      "expect_refusal": true
+    },
+    {
+      "id": "out-of-scope-01",
+      "category": "hallucination",
+      "query": "What states does Kalastree ship to?",
+      "expect_refusal": true
+    }
+  ],
+  "multi_turn": [
+    {
+      "id": "multiturn-01",
+      "turns": [
+        {
+          "query": "Show me Madhubani paintings",
+          "expected_entities": { "craft": "Madhubani Painting" }
+        },
+        {
+          "query": "under 3000",
+          "expected_entities": { "craft": "Madhubani Painting", "max_price": 3000 }
+        },
+        {
+          "query": "only women artisans",
+          "expected_entities": { "craft": "Madhubani Painting", "max_price": 3000, "artisan_gender": "female" },
+          "forbidden_entities": ["artisan", "material", "product_type"]
+        }
+      ]
+    }
+  ]
+}

@@ -1,4 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { createClient } from '@/lib/supabase-server'
+import { runPipeline } from '@/lib/intelligence/pipeline'
+import type { StructuredQuery } from '@/lib/intelligence/types'
 
 // In-memory rate limit: max 10 requests per IP per minute
 const rateLimitMap = new Map<string, { count: number; reset: number }>()
@@ -20,6 +23,18 @@ interface HistoryMessage {
   text: string
 }
 
+async function isAdmin(): Promise<boolean> {
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return false
+    const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+    return profile?.role === 'admin'
+  } catch {
+    return false
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     const ip = req.headers.get('x-forwarded-for')?.split(',')[0] ?? 'unknown'
@@ -30,7 +45,7 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const { question, history } = await req.json()
+    const { question, history, previousQuery, debug } = await req.json()
     if (!question?.trim()) {
       return NextResponse.json({ error: 'Question required' }, { status: 400 })
     }
@@ -52,22 +67,24 @@ export async function POST(req: NextRequest) {
           .slice(-8)
       : []
 
-    const response = await fetch('https://ashish766733-kalastree-chatbot.hf.space/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ question, history: safeHistory }),
-      signal: AbortSignal.timeout(60000),
-    })
+    // previousQuery is client-held, round-tripped state (spec section 18's
+    // multi-turn memory) — trust its shape loosely, the pipeline only reads
+    // known fields off it and merges non-null values.
+    const safePreviousQuery: StructuredQuery | null =
+      previousQuery && typeof previousQuery === 'object' && Array.isArray(previousQuery.intents) && previousQuery.entities
+        ? (previousQuery as StructuredQuery)
+        : null
 
-    if (!response.ok) throw new Error(`Backend returned ${response.status}`)
-    const data = await response.json()
-    return NextResponse.json(data)
+    const includeDebug = debug === true && (await isAdmin())
+
+    const result = await runPipeline(question, safeHistory, safePreviousQuery, includeDebug)
+    return NextResponse.json(result)
   } catch (err) {
     const isTimeout = err instanceof Error && err.name === 'TimeoutError'
     const message = isTimeout
-      ? 'The request timed out. The AI may be starting up — please try again in a moment.'
+      ? 'The request timed out. Please try again in a moment.'
       : 'The AI assistant is currently unavailable. Please try again shortly.'
-    console.error('Chat proxy error:', err)
+    console.error('Chat pipeline error:', err)
     return NextResponse.json({ answer: message, sources: [] }, { status: 200 })
   }
 }

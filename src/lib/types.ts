@@ -1,5 +1,32 @@
 export type Category = 'textile' | 'handicraft' | 'agricultural' | 'food'
 
+// Mirrors the shape used ad-hoc in src/app/gi-products/GIProductsClient.tsx —
+// this is the canonical version other modules (e.g. the chat intelligence
+// pipeline's GI verification engine) should import instead of redefining it.
+export interface GIProduct {
+  id: string
+  name: string
+  name_hi: string | null
+  state: string
+  gi_tag: string
+  year: string
+  category: Category
+  accent: string
+  emoji: string
+  tagline: string
+  tagline_hi: string | null
+  women_role: string
+  women_role_hi: string | null
+  history: string
+  history_hi: string | null
+  materials: string
+  materials_hi: string | null
+  district: string
+  women_percent: number
+  image_url: string | null
+  created_at: string
+}
+
 export interface Artisan {
   id: string
   name: string
@@ -8,6 +35,9 @@ export interface Artisan {
   state: string
   craft: string
   gi_product: string | null
+  // FK added by supabase/migrations/20260809_add_gi_product_links.sql — nullable
+  // until that migration is applied and backfilled against the live DB.
+  gi_product_id: string | null
   story: string | null
   bio: string | null
   is_verified: boolean
@@ -27,6 +57,9 @@ export interface Product {
   price: number
   images: string[]
   gi_tag: string | null
+  // FK added by supabase/migrations/20260809_add_gi_product_links.sql — nullable
+  // until that migration is applied and backfilled against the live DB.
+  gi_product_id: string | null
   category: Category
   subcategory: string | null
   state: string | null
@@ -85,6 +118,11 @@ export type Database = {
         Row: Review
         Insert: Omit<Review, 'id' | 'created_at'>
         Update: Partial<Omit<Review, 'id' | 'created_at'>>
+      }
+      gi_products: {
+        Row: GIProduct
+        Insert: Omit<GIProduct, 'id' | 'created_at'>
+        Update: Partial<Omit<GIProduct, 'id' | 'created_at'>>
       }
     }
   }

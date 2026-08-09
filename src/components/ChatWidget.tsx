@@ -1,13 +1,34 @@
 'use client'
 import { useState, useRef, useEffect } from 'react'
+import Link from 'next/link'
+import Image from 'next/image'
 import ReactMarkdown from 'react-markdown'
 import { useLanguage } from '@/lib/i18n/LanguageContext'
 import chatbotDict from '@/lib/i18n/dictionaries/chatbot'
+import type { StructuredQuery, DebugInfo } from '@/lib/intelligence/types'
+
+interface ChatProduct {
+  id: string
+  name: string
+  slug: string
+  price: number
+  image: string | null
+  state: string | null
+  giVerified: boolean
+  giTag: string | null
+  artisan: { name: string; slug: string } | null
+  craft: string | null
+  score: number
+  matchedConstraints: string[]
+  whyRecommended: string
+}
 
 interface Message {
   role: 'user' | 'ai'
   text: string
   sources?: string[]
+  products?: ChatProduct[]
+  debug?: DebugInfo
 }
 
 export default function ChatWidget() {
@@ -29,8 +50,18 @@ export default function ChatWidget() {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
+  // Debug mode is opt-in via ?debug=1 AND still gated server-side to admins
+  // only — a non-admin visiting this URL gets no debug data back. Read
+  // lazily (not in an effect) since it never affects rendered markup, only
+  // a later fetch payload, so there's no hydration-mismatch concern.
+  const [debugRequested] = useState(() => typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('debug') === '1')
+  const [debugOpenFor, setDebugOpenFor] = useState<number | null>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
+  // Multi-turn memory: the last resolved structured query is kept
+  // client-side and round-tripped so follow-ups like "under ₹3000" inherit
+  // prior entities (craft, state, ...) without the user repeating them.
+  const structuredQueryRef = useRef<StructuredQuery | null>(null)
 
   useEffect(() => {
     if (open && messages.length === 0) {
@@ -57,10 +88,22 @@ export default function ChatWidget() {
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: q, history: historySnapshot }),
+        body: JSON.stringify({
+          question: q,
+          history: historySnapshot,
+          previousQuery: structuredQueryRef.current,
+          debug: debugRequested,
+        }),
       })
       const data = await res.json()
-      setMessages(m => [...m, { role: 'ai', text: data.answer || t('noAnswer'), sources: data.sources }])
+      structuredQueryRef.current = data.structuredQuery ?? null
+      setMessages(m => [...m, {
+        role: 'ai',
+        text: data.answer || t('noAnswer'),
+        sources: data.sources,
+        products: data.products,
+        debug: data.debug,
+      }])
     } catch {
       setMessages(m => [...m, { role: 'ai', text: t('connectErrorShort') }])
     }
@@ -109,6 +152,64 @@ export default function ChatWidget() {
                 {msg.sources && msg.sources.length > 0 && (
                   <div style={{ fontSize: '0.68rem', color: '#A07840', marginTop: 3, paddingLeft: 4 }}>
                     <span style={{ color: '#D4A000', fontWeight: 700 }}>{t('sourcesLabel')}</span> {msg.sources.join(', ')}
+                  </div>
+                )}
+
+                {msg.products && msg.products.length > 0 && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8, width: '100%' }}>
+                    {msg.products.map(p => (
+                      <Link key={p.id} href={`/shop/${p.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                        <div style={{
+                          display: 'flex', gap: 10, padding: 8, background: '#fff',
+                          border: '1px solid #EDD060', borderRadius: 12, cursor: 'pointer',
+                        }}>
+                          <div style={{
+                            position: 'relative', width: 52, height: 52, borderRadius: 8, flexShrink: 0, overflow: 'hidden',
+                            background: '#FFE8DC', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          }}>
+                            {p.image
+                              ? <Image src={p.image} alt={p.name} fill sizes="52px" style={{ objectFit: 'cover' }} />
+                              : <span style={{ fontSize: '1.3rem' }}>🎁</span>}
+                          </div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#1B2E4A', fontFamily: "'Inter', sans-serif", overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              {p.name}
+                            </div>
+                            <div style={{ fontSize: '0.72rem', color: '#6B4820', marginTop: 1 }}>
+                              ₹{p.price.toLocaleString('en-IN')} {p.artisan && `· ${p.artisan.name}`}
+                            </div>
+                            <div style={{ display: 'flex', gap: 4, marginTop: 3, flexWrap: 'wrap' }}>
+                              {p.giVerified && (
+                                <span style={{ fontSize: '0.6rem', fontWeight: 700, color: '#fff', background: '#1A7A32', borderRadius: 4, padding: '1px 6px' }}>
+                                  GI Verified
+                                </span>
+                              )}
+                              {p.state && (
+                                <span style={{ fontSize: '0.6rem', color: '#A07840' }}>{p.state}</span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+
+                {msg.debug && (
+                  <div style={{ marginTop: 6, width: '100%' }}>
+                    <button
+                      onClick={() => setDebugOpenFor(debugOpenFor === i ? null : i)}
+                      style={{ fontSize: '0.65rem', color: '#A07840', background: 'none', border: 'none', cursor: 'pointer', padding: 0, textDecoration: 'underline' }}>
+                      {debugOpenFor === i ? 'Hide' : 'Show'} pipeline debug info
+                    </button>
+                    {debugOpenFor === i && (
+                      <pre style={{
+                        fontSize: '0.62rem', background: '#1B2E4A', color: '#D4E0FF', padding: 8, borderRadius: 8,
+                        marginTop: 4, maxHeight: 200, overflow: 'auto', whiteSpace: 'pre-wrap', wordBreak: 'break-word',
+                      }}>
+                        {JSON.stringify(msg.debug, null, 2)}
+                      </pre>
+                    )}
                   </div>
                 )}
               </div>
@@ -168,7 +269,7 @@ export default function ChatWidget() {
               </button>
             </div>
             <div style={{ fontSize: '0.65rem', color: '#C0A050', marginTop: 6, textAlign: 'center', fontFamily: "'Inter', sans-serif" }}>
-              {t('poweredByLabel')} Gemini 2.5 Flash · KalaStree PhD Research
+              {t('poweredByLabel')} GPT-4o Mini · KalaStree PhD Research
             </div>
           </div>
         </div>
