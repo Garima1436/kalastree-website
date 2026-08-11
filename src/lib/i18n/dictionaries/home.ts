@@ -52,9 +52,9 @@ const dict = {
     statGiProductsSub: 'Authentic. Verified. Unique.',
     statWomenArtisansLabel: 'WOMEN ARTISANS',
     statWomenArtisansSub: 'Empowered. Skilled. Proud.',
-    statStatesLabel: 'STATES',
+    statStatesLabel: 'INDIAN STATES',
     statStatesSub: 'Diverse. Rich. United.',
-    statMarketplaceLabel: 'MARKETPLACE',
+    statMarketplaceLabel: 'GLOBAL MARKETPLACE',
     statMarketplaceSub: 'Bringing India to the World.',
     statMarketplaceNum: 'GLOBAL',
 
@@ -126,9 +126,9 @@ const dict = {
     statGiProductsSub: 'प्रामाणिक। सत्यापित। अद्वितीय।',
     statWomenArtisansLabel: 'महिला कारीगर',
     statWomenArtisansSub: 'सशक्त। कुशल। गौरवान्वित।',
-    statStatesLabel: 'राज्य',
+    statStatesLabel: 'भारतीय राज्य',
     statStatesSub: 'विविध। समृद्ध। एकजुट।',
-    statMarketplaceLabel: 'मार्केटप्लेस',
+    statMarketplaceLabel: 'वैश्विक बाज़ार',
     statMarketplaceSub: 'भारत को दुनिया तक पहुंचाते हुए।',
     statMarketplaceNum: 'वैश्विक',
 

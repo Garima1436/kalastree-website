@@ -48,8 +48,8 @@ function getCategoryImages(): Partial<Record<Category, string>> {
   return result
 }
 
-type StatKey = 'gi-products' | 'women-artisans' | 'states' | 'marketplace'
-const STAT_KEYS: StatKey[] = ['gi-products', 'women-artisans', 'states', 'marketplace']
+type StatKey = 'gi-products' | 'women-artisans' | 'indian-states' | 'global-marketplace'
+const STAT_KEYS: StatKey[] = ['gi-products', 'women-artisans', 'indian-states', 'global-marketplace']
 
 function getStatsImages(): Partial<Record<StatKey, string>> {
   const result: Partial<Record<StatKey, string>> = {}

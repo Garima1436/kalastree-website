@@ -6,13 +6,13 @@ import { useTranslation } from '@/lib/i18n/useTranslation'
 
 const AUTO_MS = 5000
 
-type StatKey = 'gi-products' | 'women-artisans' | 'states' | 'marketplace'
+type StatKey = 'gi-products' | 'women-artisans' | 'indian-states' | 'global-marketplace'
 
-const STATS: { key: StatKey; num: string }[] = [
-  { key: 'gi-products', num: '478' },
-  { key: 'women-artisans', num: '2,500+' },
-  { key: 'states', num: '16' },
-  { key: 'marketplace', num: 'GLOBAL' },
+const STATS: { key: StatKey }[] = [
+  { key: 'gi-products' },
+  { key: 'women-artisans' },
+  { key: 'indian-states' },
+  { key: 'global-marketplace' },
 ]
 
 const STATE_NAME_MAP: Record<string, string> = {
@@ -182,8 +182,8 @@ export default function HeroSection({ heroImages, statsImages }: HeroSectionProp
   const statText: Record<StatKey, { label: string; sub: string }> = {
     'gi-products': { label: t('statGiProductsLabel'), sub: t('statGiProductsSub') },
     'women-artisans': { label: t('statWomenArtisansLabel'), sub: t('statWomenArtisansSub') },
-    'states': { label: t('statStatesLabel'), sub: t('statStatesSub') },
-    'marketplace': { label: t('statMarketplaceLabel'), sub: t('statMarketplaceSub') },
+    'indian-states': { label: t('statStatesLabel'), sub: t('statStatesSub') },
+    'global-marketplace': { label: t('statMarketplaceLabel'), sub: t('statMarketplaceSub') },
   }
 
   return (
@@ -271,10 +271,9 @@ export default function HeroSection({ heroImages, statsImages }: HeroSectionProp
           with centered text overlaid. */}
       <div style={{ position: 'relative', zIndex: 2, padding: 'clamp(0.7rem,1.8vw,1.25rem) clamp(0.6rem,2vw,1.5rem)' }}>
         <div className="stats-grid" style={{ display: 'flex', width: '100%', gap: 'clamp(0.5rem,1.5vw,1rem)' }}>
-          {STATS.map(({ key, num }) => {
+          {STATS.map(({ key }) => {
             const bg = statsImages[key]
             const { label, sub } = statText[key]
-            const displayNum = key === 'marketplace' ? t('statMarketplaceNum') : num
             return (
               <div
                 key={key}
@@ -293,8 +292,7 @@ export default function HeroSection({ heroImages, statsImages }: HeroSectionProp
                   </>
                 )}
                 <div style={{ position: 'relative', minWidth: 0 }}>
-                  <div style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.1rem,2.8vw,1.9rem)', fontWeight: 700, color: bg ? '#fff' : '#D4A000', lineHeight: 1, whiteSpace: 'nowrap' }}>{displayNum}</div>
-                  <div style={{ fontSize: 'clamp(0.48rem,1.1vw,0.65rem)', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: bg ? '#fff' : '#3A1C08', marginTop: 3 }}>{label}</div>
+                  <div style={{ fontSize: 'clamp(0.6rem,1.3vw,0.78rem)', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: bg ? '#fff' : '#3A1C08' }}>{label}</div>
                   <div className="stat-sub" style={{ fontSize: 'clamp(0.48rem,1vw,0.6rem)', color: bg ? 'rgba(255,255,255,0.85)' : 'rgba(139,94,30,0.8)', marginTop: 2, fontStyle: 'italic', whiteSpace: 'nowrap' }}>{sub}</div>
                 </div>
               </div>
