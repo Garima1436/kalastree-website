@@ -31,6 +31,20 @@ interface Message {
   debug?: DebugInfo
 }
 
+// Strips common Markdown syntax before sending text to TTS — otherwise it
+// reads punctuation like "**" and "#" out loud instead of just the words.
+// Deliberately simple (regex-based, not a full parser): good enough for the
+// bold/italic/heading/list/link shapes the LLM's answers actually use.
+function stripMarkdownForSpeech(text: string): string {
+  return text
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // [label](url) -> label
+    .replace(/[*_#>`]+/g, '') // bold/italic/heading/quote/code markers
+    .replace(/^\s*[-•]\s+/gm, '') // bullet markers
+    .replace(/\n{2,}/g, '. ') // paragraph breaks -> pause
+    .replace(/\n/g, ' ')
+    .trim()
+}
+
 export default function ChatWidget() {
   // 'chatbot' namespace isn't added to the shared registry.ts yet (out of scope for
   // this workstream), so we read the dictionary directly here using the same
@@ -67,6 +81,21 @@ export default function ChatWidget() {
   // instead of a fresh, unrelated search.
   const previousEvidenceRef = useRef<Evidence[] | null>(null)
 
+  // Voice input/output. Deliberately wraps the EXISTING text pipeline
+  // (record -> transcribe -> send() exactly like a typed message -> answer
+  // text -> speak) rather than any direct speech-to-speech model, so voice
+  // questions still go through the full deterministic pipeline (GI
+  // verification, eligibility, etc.) — nothing about /api/chat changes.
+  const [recording, setRecording] = useState(false)
+  const [transcribing, setTranscribing] = useState(false)
+  const [playingIndex, setPlayingIndex] = useState<number | null>(null)
+  const [micSupported] = useState(() =>
+    typeof window !== 'undefined' && !!navigator.mediaDevices?.getUserMedia && typeof MediaRecorder !== 'undefined'
+  )
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null)
+  const audioChunksRef = useRef<Blob[]>([])
+  const audioPlayerRef = useRef<HTMLAudioElement | null>(null)
+
   useEffect(() => {
     if (open && messages.length === 0) {
       setMessages([{ role: 'ai', text: `Namaste! 🌾 ${t('greetingBody')}` }])
@@ -78,13 +107,18 @@ export default function ChatWidget() {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, loading])
 
-  const send = async () => {
-    const q = input.trim()
+  // overrideText/opts let voice input feed a transcribed question through
+  // this exact same path a typed message takes — the deterministic pipeline
+  // behind /api/chat never knows or cares whether the question was typed or
+  // spoken.
+  const send = async (overrideText?: string, opts?: { viaVoice?: boolean }) => {
+    const q = (overrideText ?? input).trim()
     if (!q || loading) return
-    setInput('')
+    if (overrideText === undefined) setInput('')
 
     // Snapshot history before adding the new user message (exclude the initial greeting)
     const historySnapshot = messages.filter(m => !(m.role === 'ai' && m.text.startsWith('Namaste!')))
+    const aiMessageIndex = messages.length + 1 // user goes at messages.length, AI right after
 
     setMessages(m => [...m, { role: 'user', text: q }])
     setLoading(true)
@@ -103,17 +137,92 @@ export default function ChatWidget() {
       const data = await res.json()
       structuredQueryRef.current = data.structuredQuery ?? null
       previousEvidenceRef.current = data.evidence ?? null
+      const answerText = data.answer || t('noAnswer')
       setMessages(m => [...m, {
         role: 'ai',
-        text: data.answer || t('noAnswer'),
+        text: answerText,
         sources: data.sources,
         products: data.products,
         debug: data.debug,
       }])
+      // A question asked by voice gets its answer read back automatically —
+      // closes the speech-to-speech loop. A typed question never
+      // auto-plays (each AI message also has a manual "listen" button).
+      if (opts?.viaVoice) playAnswer(answerText, aiMessageIndex)
     } catch {
       setMessages(m => [...m, { role: 'ai', text: t('connectErrorShort') }])
     }
     setLoading(false)
+  }
+
+  const playAnswer = async (text: string, index: number) => {
+    if (audioPlayerRef.current) {
+      audioPlayerRef.current.pause()
+      audioPlayerRef.current = null
+    }
+    if (playingIndex === index) { setPlayingIndex(null); return } // clicking again stops it
+
+    const plain = stripMarkdownForSpeech(text)
+    if (!plain) return
+    setPlayingIndex(index)
+    try {
+      const res = await fetch('/api/text-to-speech', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: plain }),
+      })
+      if (!res.ok) throw new Error('tts request failed')
+      const url = URL.createObjectURL(await res.blob())
+      const audio = new Audio(url)
+      audioPlayerRef.current = audio
+      audio.onended = () => { setPlayingIndex(null); URL.revokeObjectURL(url) }
+      audio.onerror = () => { setPlayingIndex(null); URL.revokeObjectURL(url) }
+      await audio.play()
+    } catch {
+      setPlayingIndex(null)
+    }
+  }
+
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      const recorder = new MediaRecorder(stream)
+      audioChunksRef.current = []
+      recorder.ondataavailable = e => { if (e.data.size > 0) audioChunksRef.current.push(e.data) }
+      recorder.onstop = () => {
+        stream.getTracks().forEach(track => track.stop())
+        const blob = new Blob(audioChunksRef.current, { type: recorder.mimeType || 'audio/webm' })
+        transcribeAndSend(blob)
+      }
+      mediaRecorderRef.current = recorder
+      recorder.start()
+      setRecording(true)
+    } catch {
+      setMessages(m => [...m, { role: 'ai', text: t('micPermissionError') }])
+    }
+  }
+
+  const stopRecording = () => {
+    mediaRecorderRef.current?.stop()
+    setRecording(false)
+  }
+
+  const transcribeAndSend = async (blob: Blob) => {
+    setTranscribing(true)
+    try {
+      const form = new FormData()
+      form.append('audio', blob, 'speech.webm')
+      const res = await fetch('/api/speech-to-text', { method: 'POST', body: form })
+      const data = await res.json()
+      if (!res.ok || !data.text) {
+        setMessages(m => [...m, { role: 'ai', text: t('voiceTranscribeError') }])
+      } else {
+        await send(data.text, { viaVoice: true })
+      }
+    } catch {
+      setMessages(m => [...m, { role: 'ai', text: t('voiceTranscribeError') }])
+    }
+    setTranscribing(false)
   }
 
   return (
@@ -155,6 +264,19 @@ export default function ChatWidget() {
                 }} className="chat-bubble">
                   {msg.role === 'ai' ? <ReactMarkdown>{msg.text}</ReactMarkdown> : msg.text}
                 </div>
+                {msg.role === 'ai' && (
+                  <button
+                    onClick={() => playAnswer(msg.text, i)}
+                    aria-label={playingIndex === i ? t('stopListenAria') : t('listenAria')}
+                    style={{
+                      background: 'none', border: 'none', cursor: 'pointer', padding: '3px 4px 0',
+                      color: playingIndex === i ? '#E8380A' : '#C0A050', fontSize: '0.72rem',
+                      display: 'flex', alignItems: 'center', gap: 3,
+                    }}
+                  >
+                    {playingIndex === i ? '⏸' : '🔊'}
+                  </button>
+                )}
                 {msg.sources && msg.sources.length > 0 && (
                   <div style={{ fontSize: '0.68rem', color: '#A07840', marginTop: 3, paddingLeft: 4 }}>
                     <span style={{ color: '#D4A000', fontWeight: 700 }}>{t('sourcesLabel')}</span> {msg.sources.join(', ')}
@@ -254,19 +376,37 @@ export default function ChatWidget() {
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }}
-                placeholder={t('askPlaceholderShort')}
+                placeholder={recording ? t('listeningLabel') : transcribing ? t('transcribingLabel') : t('askPlaceholderShort')}
+                disabled={recording || transcribing}
                 rows={1}
                 style={{
                   flex: 1, resize: 'none', border: '1.5px solid #DDB840', borderRadius: 10,
                   padding: '9px 12px', fontFamily: "'Inter', sans-serif", fontSize: '0.85rem',
-                  background: '#FFF8EE', outline: 'none', color: '#1B2E4A', lineHeight: 1.4,
+                  background: recording || transcribing ? '#FFF3D6' : '#FFF8EE', outline: 'none', color: '#1B2E4A', lineHeight: 1.4,
                   maxHeight: 80, overflowY: 'auto',
                 }}
               />
-              <button onClick={send} disabled={loading || !input.trim()}
+              {micSupported && (
+                <button
+                  onClick={() => (recording ? stopRecording() : startRecording())}
+                  disabled={loading || transcribing}
+                  aria-label={recording ? t('micAriaStop') : t('micAriaStart')}
+                  className={recording ? 'mic-recording' : undefined}
+                  style={{
+                    width: 38, height: 38, borderRadius: '50%', border: 'none', flexShrink: 0,
+                    background: recording ? '#E8380A' : '#FFE8A8',
+                    color: recording ? '#fff' : '#1B2E4A',
+                    cursor: loading || transcribing ? 'not-allowed' : 'pointer',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem',
+                    transition: 'background 0.2s', opacity: transcribing ? 0.6 : 1,
+                  }}>
+                  🎙
+                </button>
+              )}
+              <button onClick={() => send()} disabled={loading || !input.trim() || recording || transcribing}
                 style={{
                   width: 38, height: 38, borderRadius: '50%', border: 'none', flexShrink: 0,
-                  background: loading || !input.trim() ? '#DDB840' : '#E8380A',
+                  background: loading || !input.trim() || recording || transcribing ? '#DDB840' : '#E8380A',
                   color: '#fff', cursor: loading || !input.trim() ? 'not-allowed' : 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem',
                   transition: 'background 0.2s',
@@ -305,6 +445,8 @@ export default function ChatWidget() {
       <style>{`
         @keyframes chatSlideUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
         @keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
+        @keyframes micPulse { 0%,100%{box-shadow:0 0 0 0 rgba(232,56,10,0.45)} 50%{box-shadow:0 0 0 8px rgba(232,56,10,0)} }
+        .mic-recording { animation: micPulse 1.4s ease-in-out infinite; }
         @media(max-width:480px){
           .chat-panel { width:92vw !important; right:4vw !important; bottom:76px !important; height:70vh !important; }
           .chat-fab { bottom:12px !important; right:12px !important; width:48px !important; height:48px !important; }
