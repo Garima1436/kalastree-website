@@ -99,4 +99,25 @@ describe('mergeEntities', () => {
     expect(merged.state).toBe('Bihar')
     expect(merged.max_price).toBe(3000)
   })
+
+  // Regression: reproduced live on kalastree.com — "show me anything under
+  // ₹100" (no anchor at all) followed by "products from Bihar made by a
+  // woman artisan" kept max_price: 100 stuck on the Bihar search, silently
+  // zeroing out two real, in-budget products.
+  it('clears price/gi_required when a fully generic (anchor-less) turn is followed by one that introduces the first anchor', () => {
+    const previous = { ...EMPTY_ENTITIES, max_price: 100, price_mode: 'max' as const, gi_required: true }
+    const extracted = { ...EMPTY_ENTITIES, state: 'Bihar', artisan_gender: 'female' as const, artisan_gender_mode: 'required' as const }
+    const merged = mergeEntities(previous, extracted)
+    expect(merged.state).toBe('Bihar')
+    expect(merged.max_price).toBeNull()
+    expect(merged.price_mode).toBeNull()
+    expect(merged.gi_required).toBeNull()
+  })
+
+  it('does NOT clear price when the previous turn already had an anchor (ordinary refinement, not a fresh request)', () => {
+    const previous = { ...EMPTY_ENTITIES, craft: 'Madhubani Painting', max_price: 3000 }
+    const extracted = { ...EMPTY_ENTITIES, state: 'Bihar' }
+    const merged = mergeEntities(previous, extracted)
+    expect(merged.max_price).toBe(3000)
+  })
 })

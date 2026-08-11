@@ -117,6 +117,28 @@ function isTopicShift(previous: ExtractedEntities, extracted: ExtractedEntities)
   return craftChanged || productTypeChanged
 }
 
+const ANCHOR_FIELDS = ['state', 'craft', 'product_type'] as const satisfies readonly (keyof ExtractedEntities)[]
+
+// Fields that only make sense scoped to a specific anchored search (a
+// state/craft/product_type). Reset when the conversation moves from a
+// fully generic, anchor-less query straight to one that introduces its
+// FIRST anchor — otherwise an old, unrelated modifier keeps silently
+// applying to a completely different request. Reproduced: "show me
+// anything under ₹100" (no anchor at all) followed by "products from
+// Bihar made by a woman artisan" kept max_price: 100 stuck on the Bihar
+// search, zeroing out real, in-budget results. Deliberately NOT triggered
+// when `previous` already had an anchor (state/craft/product_type simply
+// changing, e.g. stole -> paintings, is an ordinary refinement within the
+// same shopping thread — see the topic-shift test for that case, where
+// price/state correctly keep applying).
+const MODIFIER_FIELDS = [
+  'min_price', 'max_price', 'target_price', 'price_mode', 'gi_required',
+] as const satisfies readonly (keyof ExtractedEntities)[]
+
+function hasAnyAnchor(e: ExtractedEntities): boolean {
+  return ANCHOR_FIELDS.some(f => e[f] !== null)
+}
+
 // `extracted` must already be normalized (see understandQuery) so its
 // craft/state are compared like-for-like against `previous`, which was
 // normalized in the turn it was extracted.
@@ -124,9 +146,13 @@ function isTopicShift(previous: ExtractedEntities, extracted: ExtractedEntities)
 export function mergeEntities(previous: ExtractedEntities | null, extracted: ExtractedEntities): ExtractedEntities {
   if (!previous) return extracted
 
-  const base = isTopicShift(previous, extracted)
-    ? { ...previous, ...Object.fromEntries(SHAPE_FIELDS.map(f => [f, null])) }
-    : previous
+  let base = previous
+  if (isTopicShift(previous, extracted)) {
+    base = { ...base, ...Object.fromEntries(SHAPE_FIELDS.map(f => [f, null])) }
+  }
+  if (!hasAnyAnchor(previous) && hasAnyAnchor(extracted)) {
+    base = { ...base, ...Object.fromEntries(MODIFIER_FIELDS.map(f => [f, null])) }
+  }
 
   const merged = { ...base }
   for (const key of Object.keys(extracted) as (keyof ExtractedEntities)[]) {
@@ -172,6 +198,17 @@ export async function understandQuery(
   entities.state = normalizeState(entities.state)
 
   const merged = mergeEntities(previousQuery?.entities ?? null, entities)
+
+  // entities.artisan (the FRESH extraction, pre-merge) decides whether the
+  // merged artisan should persist: if this turn isn't itself asking about
+  // an artisan and didn't restate a name, drop whatever carried forward.
+  // Reproduced: asking "who is Garima Awasthi" once, then every later,
+  // unrelated turn kept entities.artisan = "Garima Awasthi" (mergeEntities
+  // has no other reason to clear it), which kept wrongly triggering the
+  // founder-evidence injection in pipeline.ts on plain product searches.
+  if (!intents.includes('artisan_information') && entities.artisan === null) {
+    merged.artisan = null
+  }
 
   return { raw_query: question, intents, entities: merged }
 }

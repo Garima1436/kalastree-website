@@ -57,8 +57,14 @@ interface MultiTurnCase {
     expected_intents?: string[]
     expected_entities?: Partial<ExtractedEntities>
     forbidden_entities?: (keyof ExtractedEntities)[]
+    // Weaker than forbidden_entities (which requires null): asserts the
+    // field is not STUCK on a specific stale value, without requiring it
+    // to be null — correct when the user's current message legitimately
+    // supplies a fresh, different, non-null value for that same field.
+    forbidden_entity_values?: Partial<ExtractedEntities>
     required_answer_substring?: string[]
     forbidden_answer_substring?: string[]
+    expect_products?: boolean
   }[]
 }
 
@@ -202,7 +208,20 @@ async function runMultiTurnCase(c: MultiTurnCase): Promise<CaseResult[]> {
       )
     }
 
+    for (const [field, staleValue] of Object.entries(turn.forbidden_entity_values ?? {})) {
+      const actual = result.structuredQuery.entities[field as keyof ExtractedEntities]
+      record(
+        actual !== staleValue, `stale:${field}`, passed, failed,
+        `stale:${field}: still stuck on ${JSON.stringify(staleValue)} from an earlier turn`
+      )
+    }
+
     checkAnswerSubstrings(result.answer, turn.required_answer_substring, turn.forbidden_answer_substring, passed, failed)
+
+    if (turn.expect_products !== undefined) {
+      const hasProducts = result.products.length > 0
+      record(hasProducts === turn.expect_products, 'expect_products', passed, failed, `expect_products: expected ${turn.expect_products}, got ${hasProducts}`)
+    }
 
     results.push({ id: `${c.id}:turn${i + 1}`, category: 'multi_turn', query: turn.query, passed_checks: passed, failed_checks: failed, latency_ms })
   }

@@ -176,7 +176,7 @@
         { "query": "Any stole" },
         {
           "query": "What paintings are available",
-          "forbidden_entities": ["product_type"],
+          "forbidden_entity_values": { "product_type": "stole" },
           "forbidden_answer_substring": ["not verified in the gi registry", "not verified"]
         }
       ]
@@ -192,6 +192,30 @@
           "query": "Where did you get that information?",
           "expected_intents": ["source_inquiry"],
           "required_answer_substring": ["Bhagalpur"]
+        }
+      ]
+    },
+    {
+      "id": "multiturn-stale-carryover-01",
+      "turns": [
+        {
+          "query": "Who is Garima Awasthi?",
+          "expected_intents": ["artisan_information"]
+        },
+        {
+          "query": "Show me anything below ₹100",
+          "forbidden_entities": ["artisan"],
+          "forbidden_answer_substring": ["Garima Awasthi", "founder"]
+        },
+        {
+          "query": "Show me products from Bihar made by a woman artisan.",
+          "forbidden_entities": ["artisan"],
+          "expected_entities": { "state": "Bihar", "artisan_gender": "female" },
+          "expect_products": true
+        },
+        {
+          "query": "Show me products from Bihar",
+          "expect_products": true
         }
       ]
     }
