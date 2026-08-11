@@ -7,7 +7,7 @@ import type { StructuredQuery, ExtractedEntities } from './types'
 function query(entities: Partial<ExtractedEntities>): StructuredQuery {
   const base: ExtractedEntities = {
     state: null, region: null, gi_required: null, craft: null, product_type: null,
-    artisan: null, artisan_gender: null, min_price: null, max_price: null,
+    artisan: null, artisan_gender: null, artisan_gender_mode: null, min_price: null, max_price: null,
     target_price: null, price_mode: null, quantity: null, gifting_purpose: null,
     cultural_preference: null, material: null, colour: null, size: null, occasion: null,
     traditional: null, handmade: null,

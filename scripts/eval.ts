@@ -15,7 +15,7 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import type { ExtractedEntities, StructuredQuery } from '../src/lib/intelligence/types'
+import type { Evidence, ExtractedEntities, StructuredQuery } from '../src/lib/intelligence/types'
 import type { runPipeline as RunPipeline } from '../src/lib/intelligence/pipeline'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -35,17 +35,30 @@ interface SingleTurnCase {
   expected_gi_verified?: boolean
   expect_products?: boolean
   expect_refusal?: boolean
+  // Opposite of expect_refusal: asserts the fallback message must NOT
+  // appear — for cases like a genuine, correctly-computed zero-result
+  // product search, which should get a plain "nothing found" answer, not
+  // the insufficient-evidence refusal.
+  forbid_refusal?: boolean
   product_price_max?: number
   product_state?: string
   product_gi_verified?: boolean
+  // Case-insensitive substring checks against the final answer text.
+  required_answer_substring?: string[]
+  forbidden_answer_substring?: string[]
+  // Checks a specific constraint's hard/soft classification (debug.constraints).
+  expected_constraint_kinds?: { field: string; kind: 'hard' | 'soft' }[]
 }
 
 interface MultiTurnCase {
   id: string
   turns: {
     query: string
+    expected_intents?: string[]
     expected_entities?: Partial<ExtractedEntities>
     forbidden_entities?: (keyof ExtractedEntities)[]
+    required_answer_substring?: string[]
+    forbidden_answer_substring?: string[]
   }[]
 }
 
@@ -78,6 +91,22 @@ function checkEntities(actual: ExtractedEntities, expected: Partial<ExtractedEnt
   }
 }
 
+function checkAnswerSubstrings(
+  answer: string,
+  required: string[] | undefined,
+  forbidden: string[] | undefined,
+  passed: string[],
+  failed: string[]
+) {
+  const lower = answer.toLowerCase()
+  for (const s of required ?? []) {
+    record(lower.includes(s.toLowerCase()), `contains:"${s}"`, passed, failed, `answer should contain "${s}" but didn't`)
+  }
+  for (const s of forbidden ?? []) {
+    record(!lower.includes(s.toLowerCase()), `omits:"${s}"`, passed, failed, `answer should NOT contain "${s}" but did`)
+  }
+}
+
 async function runSingleTurnCase(c: SingleTurnCase): Promise<CaseResult> {
   const start = Date.now()
   const result = await runPipeline(c.query, [], null, true)
@@ -94,6 +123,11 @@ async function runSingleTurnCase(c: SingleTurnCase): Promise<CaseResult> {
   checkEntities(result.structuredQuery.entities, c.expected_entities, failed)
   if (c.expected_entities && !failed.some(f => f.startsWith('entities'))) passed.push('entities')
 
+  for (const { field, kind } of c.expected_constraint_kinds ?? []) {
+    const actual = result.debug?.constraints.find(con => con.field === field)?.kind ?? null
+    record(actual === kind, `constraint_kind:${field}`, passed, failed, `constraint_kind:${field}: expected ${kind}, got ${actual}`)
+  }
+
   if (c.expected_gi_verified !== undefined) {
     const actual = result.debug?.verification[0]?.gi_verified ?? null
     record(actual === c.expected_gi_verified, 'gi_verified', passed, failed, `gi_verified: expected ${c.expected_gi_verified}, got ${actual}`)
@@ -107,6 +141,11 @@ async function runSingleTurnCase(c: SingleTurnCase): Promise<CaseResult> {
   if (c.expect_refusal) {
     record(result.answer.includes(REFUSAL_TEXT), 'refusal', passed, failed, 'refusal: expected the fallback refusal message')
   }
+  if (c.forbid_refusal) {
+    record(!result.answer.includes(REFUSAL_TEXT), 'forbid_refusal', passed, failed, 'forbid_refusal: got the generic fallback for what should be a confident answer')
+  }
+
+  checkAnswerSubstrings(result.answer, c.required_answer_substring, c.forbidden_answer_substring, passed, failed)
 
   if (c.product_price_max !== undefined) {
     const ok = result.products.every(p => p.price <= c.product_price_max!)
@@ -134,16 +173,24 @@ async function runMultiTurnCase(c: MultiTurnCase): Promise<CaseResult[]> {
   const results: CaseResult[] = []
   const history: { role: 'user' | 'ai'; text: string }[] = []
   let previousQuery: StructuredQuery | null = null
+  let previousEvidence: Evidence[] | null = null
 
   for (const [i, turn] of c.turns.entries()) {
     const start = Date.now()
-    const result = await runPipeline(turn.query, history, previousQuery, true)
+    const result = await runPipeline(turn.query, history, previousQuery, true, previousEvidence)
     const latency_ms = Date.now() - start
     previousQuery = result.structuredQuery
+    previousEvidence = result.evidence
     history.push({ role: 'user', text: turn.query }, { role: 'ai', text: result.answer })
 
     const passed: string[] = []
     const failed: string[] = []
+
+    if (turn.expected_intents) {
+      const hasAll = turn.expected_intents.every(intent => result.structuredQuery.intents.includes(intent as never))
+      record(hasAll, 'intents', passed, failed, `intents: expected ${turn.expected_intents}, got ${result.structuredQuery.intents}`)
+    }
+
     checkEntities(result.structuredQuery.entities, turn.expected_entities, failed)
     if (turn.expected_entities && !failed.some(f => f.startsWith('entities'))) passed.push('entities')
 
@@ -154,6 +201,8 @@ async function runMultiTurnCase(c: MultiTurnCase): Promise<CaseResult[]> {
         `forbidden:${field} should be null, got ${JSON.stringify(value)} (likely lifted from the assistant's own prior reply)`
       )
     }
+
+    checkAnswerSubstrings(result.answer, turn.required_answer_substring, turn.forbidden_answer_substring, passed, failed)
 
     results.push({ id: `${c.id}:turn${i + 1}`, category: 'multi_turn', query: turn.query, passed_checks: passed, failed_checks: failed, latency_ms })
   }

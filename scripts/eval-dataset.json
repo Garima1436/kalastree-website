@@ -78,6 +78,76 @@
       "category": "hallucination",
       "query": "What states does Kalastree ship to?",
       "expect_refusal": true
+    },
+    {
+      "id": "kalastree-info-01",
+      "category": "kalastree_information",
+      "query": "What is Kalastree?",
+      "expected_intents": ["kalastree_information"],
+      "forbid_refusal": true,
+      "required_answer_substring": ["GI"]
+    },
+    {
+      "id": "founder-identity-01",
+      "category": "artisan_information",
+      "query": "Who is Garima Awasthi?",
+      "expected_intents": ["artisan_information"],
+      "forbid_refusal": true,
+      "required_answer_substring": ["IIT Patna", "founder"]
+    },
+    {
+      "id": "founder-identity-02",
+      "category": "artisan_information",
+      "query": "About Garima Awasthi",
+      "expected_intents": ["artisan_information"],
+      "forbid_refusal": true,
+      "required_answer_substring": ["IIT Patna", "founder"]
+    },
+    {
+      "id": "gi-vs-marketplace-01",
+      "category": "purchase_assistance",
+      "query": "Send link to buy Pashmina shawl",
+      "expected_intents": ["purchase_assistance"],
+      "expected_gi_verified": true,
+      "forbid_refusal": true,
+      "required_answer_substring": ["GI"],
+      "forbidden_answer_substring": ["not verified", "not gi"]
+    },
+    {
+      "id": "zero-results-confidence-01",
+      "category": "product_discovery",
+      "query": "Show products below ₹100",
+      "expected_intents": ["product_discovery"],
+      "expect_products": false,
+      "forbid_refusal": true
+    },
+    {
+      "id": "artisan-gender-hard-01",
+      "category": "constraint",
+      "query": "I want a traditional gift from Bihar made by a woman artisan under ₹2,000.",
+      "expected_entities": { "state": "Bihar", "artisan_gender": "female", "artisan_gender_mode": "required" },
+      "expected_constraint_kinds": [{ "field": "artisan_gender", "kind": "hard" }]
+    },
+    {
+      "id": "artisan-gender-hard-02",
+      "category": "constraint",
+      "query": "Show me products from Bihar. Only women artisans.",
+      "expected_entities": { "artisan_gender": "female", "artisan_gender_mode": "required" },
+      "expected_constraint_kinds": [{ "field": "artisan_gender", "kind": "hard" }]
+    },
+    {
+      "id": "artisan-gender-soft-01",
+      "category": "constraint",
+      "query": "Show me products from Bihar. I prefer a woman artisan.",
+      "expected_entities": { "artisan_gender": "female", "artisan_gender_mode": "preferred" },
+      "expected_constraint_kinds": [{ "field": "artisan_gender", "kind": "soft" }]
+    },
+    {
+      "id": "artisan-gender-soft-02",
+      "category": "constraint",
+      "query": "Show me products from Bihar, preferably made by a woman artisan.",
+      "expected_entities": { "artisan_gender": "female", "artisan_gender_mode": "preferred" },
+      "expected_constraint_kinds": [{ "field": "artisan_gender", "kind": "soft" }]
     }
   ],
   "multi_turn": [
@@ -96,6 +166,32 @@
           "query": "only women artisans",
           "expected_entities": { "craft": "Madhubani Painting", "max_price": 3000, "artisan_gender": "female" },
           "forbidden_entities": ["artisan", "material", "product_type"]
+        }
+      ]
+    },
+    {
+      "id": "multiturn-topic-shift-01",
+      "turns": [
+        { "query": "Is there any dupatta" },
+        { "query": "Any stole" },
+        {
+          "query": "What paintings are available",
+          "forbidden_entities": ["product_type"],
+          "forbidden_answer_substring": ["not verified in the gi registry", "not verified"]
+        }
+      ]
+    },
+    {
+      "id": "multiturn-source-inquiry-01",
+      "turns": [
+        {
+          "query": "What GI tag number does Bhagalpur Silk have?",
+          "expected_intents": ["gi_information"]
+        },
+        {
+          "query": "Where did you get that information?",
+          "expected_intents": ["source_inquiry"],
+          "required_answer_substring": ["Bhagalpur"]
         }
       ]
     }

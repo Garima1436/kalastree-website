@@ -5,7 +5,7 @@ import type { StructuredQuery, ExtractedEntities } from './types'
 function query(entities: Partial<ExtractedEntities>): StructuredQuery {
   const base: ExtractedEntities = {
     state: null, region: null, gi_required: null, craft: null, product_type: null,
-    artisan: null, artisan_gender: null, min_price: null, max_price: null,
+    artisan: null, artisan_gender: null, artisan_gender_mode: null, min_price: null, max_price: null,
     target_price: null, price_mode: null, quantity: null, gifting_purpose: null,
     cultural_preference: null, material: null, colour: null, size: null, occasion: null,
     traditional: null, handmade: null,
@@ -40,10 +40,23 @@ describe('buildConstraints', () => {
     expect(constraints.find(c => c.field === 'gi_verified')).toMatchObject({ kind: 'hard', value: true })
   })
 
-  it('treats a requested female artisan as an always-satisfied soft constraint (every artisan on the platform is a woman)', () => {
-    const constraints = buildConstraints(query({ artisan_gender: 'female' }))
-    const genderConstraint = constraints.find(c => c.field === 'artisan_gender')
-    expect(genderConstraint?.kind).toBe('soft')
+  // Every artisan on the platform is a woman, so this constraint never
+  // actually filters anything out either way — but its `kind` still needs
+  // to honestly reflect how firmly the user stated it, for
+  // matched_constraints/explainability and in case that ever changes.
+  it('treats a firm statement ("made by a woman artisan", "only women artisans") as HARD', () => {
+    const constraints = buildConstraints(query({ artisan_gender: 'female', artisan_gender_mode: 'required' }))
+    expect(constraints.find(c => c.field === 'artisan_gender')?.kind).toBe('hard')
+  })
+
+  it('defaults to HARD when the mode is unspecified — unhedged mentions are the common case', () => {
+    const constraints = buildConstraints(query({ artisan_gender: 'female', artisan_gender_mode: null }))
+    expect(constraints.find(c => c.field === 'artisan_gender')?.kind).toBe('hard')
+  })
+
+  it('treats an explicitly hedged preference ("I prefer...", "preferably...") as SOFT', () => {
+    const constraints = buildConstraints(query({ artisan_gender: 'female', artisan_gender_mode: 'preferred' }))
+    expect(constraints.find(c => c.field === 'artisan_gender')?.kind).toBe('soft')
   })
 
   it('omits price constraints entirely when no price was mentioned', () => {

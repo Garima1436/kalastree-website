@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase-server'
 import { runPipeline } from '@/lib/intelligence/pipeline'
-import type { StructuredQuery } from '@/lib/intelligence/types'
+import type { Evidence, StructuredQuery } from '@/lib/intelligence/types'
 
 // In-memory rate limit: max 10 requests per IP per minute
 const rateLimitMap = new Map<string, { count: number; reset: number }>()
@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const { question, history, previousQuery, debug } = await req.json()
+    const { question, history, previousQuery, previousEvidence, debug } = await req.json()
     if (!question?.trim()) {
       return NextResponse.json({ error: 'Question required' }, { status: 400 })
     }
@@ -75,9 +75,15 @@ export async function POST(req: NextRequest) {
         ? (previousQuery as StructuredQuery)
         : null
 
+    // previousEvidence is client-held, round-tripped state (same pattern as
+    // previousQuery) — used only for a source_inquiry follow-up ("where did
+    // you get that?"), which answers strictly from what actually supported
+    // the last answer instead of a fresh, unrelated retrieval.
+    const safePreviousEvidence: Evidence[] | null = Array.isArray(previousEvidence) ? previousEvidence : null
+
     const includeDebug = debug === true && (await isAdmin())
 
-    const result = await runPipeline(question, safeHistory, safePreviousQuery, includeDebug)
+    const result = await runPipeline(question, safeHistory, safePreviousQuery, includeDebug, safePreviousEvidence)
     return NextResponse.json(result)
   } catch (err) {
     const isTimeout = err instanceof Error && err.name === 'TimeoutError'

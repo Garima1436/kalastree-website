@@ -5,7 +5,7 @@ import Image from 'next/image'
 import ReactMarkdown from 'react-markdown'
 import { useLanguage } from '@/lib/i18n/LanguageContext'
 import chatbotDict from '@/lib/i18n/dictionaries/chatbot'
-import type { StructuredQuery, DebugInfo } from '@/lib/intelligence/types'
+import type { StructuredQuery, Evidence, DebugInfo } from '@/lib/intelligence/types'
 
 interface ChatProduct {
   id: string
@@ -62,6 +62,10 @@ export default function ChatWidget() {
   // client-side and round-tripped so follow-ups like "under ₹3000" inherit
   // prior entities (craft, state, ...) without the user repeating them.
   const structuredQueryRef = useRef<StructuredQuery | null>(null)
+  // Same pattern, for the last answer's evidence — lets a follow-up like
+  // "where did you get that?" be answered from what was actually used,
+  // instead of a fresh, unrelated search.
+  const previousEvidenceRef = useRef<Evidence[] | null>(null)
 
   useEffect(() => {
     if (open && messages.length === 0) {
@@ -92,11 +96,13 @@ export default function ChatWidget() {
           question: q,
           history: historySnapshot,
           previousQuery: structuredQueryRef.current,
+          previousEvidence: previousEvidenceRef.current,
           debug: debugRequested,
         }),
       })
       const data = await res.json()
       structuredQueryRef.current = data.structuredQuery ?? null
+      previousEvidenceRef.current = data.evidence ?? null
       setMessages(m => [...m, {
         role: 'ai',
         text: data.answer || t('noAnswer'),

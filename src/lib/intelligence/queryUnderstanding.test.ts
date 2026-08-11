@@ -1,10 +1,10 @@
 import { describe, it, expect } from 'vitest'
-import { groundInCurrentMessage } from './queryUnderstanding'
+import { groundInCurrentMessage, mergeEntities } from './queryUnderstanding'
 import type { ExtractedEntities } from './types'
 
 const EMPTY_ENTITIES: ExtractedEntities = {
   state: null, region: null, gi_required: null, craft: null, product_type: null,
-  artisan: null, artisan_gender: null, min_price: null, max_price: null,
+  artisan: null, artisan_gender: null, artisan_gender_mode: null, min_price: null, max_price: null,
   target_price: null, price_mode: null, quantity: null, gifting_purpose: null,
   cultural_preference: null, material: null, colour: null, size: null, occasion: null,
   traditional: null, handmade: null,
@@ -50,5 +50,53 @@ describe('groundInCurrentMessage', () => {
     expect(grounded.craft).toBe('Madhubani Painting')
     expect(grounded.state).toBe('Bihar')
     expect(grounded.max_price).toBe(3000)
+  })
+})
+
+describe('mergeEntities', () => {
+  it('carries forward craft/state/price for a genuine refinement (no new craft/product_type stated)', () => {
+    const previous = { ...EMPTY_ENTITIES, craft: 'Madhubani Painting', state: 'Bihar' }
+    const extracted = { ...EMPTY_ENTITIES, max_price: 3000 }
+    const merged = mergeEntities(previous, extracted)
+    expect(merged.craft).toBe('Madhubani Painting')
+    expect(merged.state).toBe('Bihar')
+    expect(merged.max_price).toBe(3000)
+  })
+
+  // Regression: reproduced against the live pipeline as
+  // dupatta -> stole -> paintings. "stole" (product_type) stuck around into
+  // an unrelated later question about paintings, silently narrowing it.
+  it('clears the OTHER shape fields when the new turn introduces a different product_type', () => {
+    const previous = { ...EMPTY_ENTITIES, product_type: 'stole', material: 'silk' }
+    const extracted = { ...EMPTY_ENTITIES, product_type: 'paintings' }
+    const merged = mergeEntities(previous, extracted)
+    expect(merged.product_type).toBe('paintings')
+    expect(merged.material).toBeNull()
+  })
+
+  it('clears the OTHER shape fields when the new turn introduces a different craft', () => {
+    const previous = { ...EMPTY_ENTITIES, craft: 'Bhagalpur Silk', product_type: 'saree', occasion: 'wedding' }
+    const extracted = { ...EMPTY_ENTITIES, craft: 'Madhubani Painting' }
+    const merged = mergeEntities(previous, extracted)
+    expect(merged.craft).toBe('Madhubani Painting')
+    expect(merged.product_type).toBeNull()
+    expect(merged.occasion).toBeNull()
+  })
+
+  it('does NOT clear shape fields when craft/product_type simply repeat the same value', () => {
+    const previous = { ...EMPTY_ENTITIES, craft: 'Madhubani Painting', material: 'Tussar Silk' }
+    const extracted = { ...EMPTY_ENTITIES, craft: 'Madhubani Painting', max_price: 3000 }
+    const merged = mergeEntities(previous, extracted)
+    expect(merged.craft).toBe('Madhubani Painting')
+    expect(merged.material).toBe('Tussar Silk')
+    expect(merged.max_price).toBe(3000)
+  })
+
+  it('does not treat a topic shift as clearing state/price — those persist across an actual topic change', () => {
+    const previous = { ...EMPTY_ENTITIES, product_type: 'stole', state: 'Bihar', max_price: 3000 }
+    const extracted = { ...EMPTY_ENTITIES, product_type: 'paintings' }
+    const merged = mergeEntities(previous, extracted)
+    expect(merged.state).toBe('Bihar')
+    expect(merged.max_price).toBe(3000)
   })
 })

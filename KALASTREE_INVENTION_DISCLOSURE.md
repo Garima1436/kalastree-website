@@ -1,8 +1,8 @@
 # KalaStree GI-Aware AI Commerce Intelligence Engine — Technical Disclosure
 
-**Status:** Objective description of the implemented system as of 2026-08-09. This document records what was built and why, for internal reference and future prior-art analysis. **It does not assert that any part of this system is patentable** — patentability is a separate legal determination made later, if at all, through prior-art search.
+**Status:** Objective description of the implemented system as of 2026-08-10. This document records what was built and why, for internal reference and future prior-art analysis. **It does not assert that any part of this system is patentable** — patentability is a separate legal determination made later, if at all, through prior-art search.
 
-**Scope:** This disclosure covers Phase 1 (the deterministic pipeline, product-aware chat, debug mode) and Phase 2 (automated tests, evaluation harness, latency/metrics logging) of the "GI-aware AI commerce intelligence engine" project. Deferred: full production deployment of the Python backend's new endpoint, and further phases of the evaluation dataset.
+**Scope:** This disclosure covers Phase 1 (the deterministic pipeline, product-aware chat, debug mode), Phase 2 (automated tests, evaluation harness, latency/metrics logging), and Phase 3 (§21 below — bug fixes found through real production usage: a company-information domain, GI/marketplace decoupling, multi-turn topic-shift handling, and evidence-chain traceability) of the "GI-aware AI commerce intelligence engine" project. See also `KALASTREE_AI_ARCHITECTURE.md` for the plain architecture reference.
 
 ---
 
@@ -209,3 +209,23 @@ route.ts: isAdmin() — checks Supabase session → profiles.role
                               ChatWidget renders a collapsible
                               JSON panel beneath the answer
 ```
+
+---
+
+## 21. Phase 3 — Fixes From Real Production Usage
+
+Phases 1–2 covered the initial pipeline build and its own test infrastructure. Phase 3 addresses six defects found through actual production use of kalastree.com — each reproduced locally with full debug output before being fixed, per the same discipline as Phases 1–2.
+
+**21.1 — Company-information domain.** `general_question` had no evidence source at all, so "What is Kalastree?" always fell to the refusal fallback. Added `kalastree_information` as a distinct intent, and a small static evidence module (`src/lib/intelligence/kalastreeInfo.ts`) sourced verbatim from the site's own existing About page copy (`src/lib/i18n/dictionaries/about.ts`) — not invented, and deliberately not a new Chroma/DB source, since this content changes rarely.
+
+**21.2 — Name collision between two real entities.** "Who is Garima Awasthi?" resolved against the `artisans` marketplace table via a naive `ilike` match and answered with an unrelated, coincidentally-same-named artisan — stating this confidently as fact, when the real Garima Awasthi is KalaStree's founder. Fixed by checking the founder's name (`isFounderName`, `kalastreeInfo.ts`) *before* the marketplace lookup in `pipeline.ts`; the founder wins the collision, with any same-named marketplace artisan surfaced as a clearly-separate, brief note rather than blended into the founder's identity or dropped silently.
+
+**21.3 — GI verification and marketplace availability conflated.** A GI-verified craft with zero KalaStree listings ("send link to buy Pashmina shawl") produced the blunt fallback string despite `verifyGI` correctly returning `gi_verified: true` with full evidence — the response-generation prompt had no rule telling the model these are two independent facts. Added an explicit rule to `responseGenerator.ts`'s system prompt: state GI status and marketplace availability separately; never phrase "not currently sold" as "not verified," or vice versa.
+
+**21.4 — Stale entities surviving a genuine topic change.** Reproduced via `dupatta → stole → paintings`: `product_type: "stole"` silently persisted into an unrelated later query about paintings, narrowing it incorrectly. `queryUnderstanding.ts`'s multi-turn entity merge (`mergeEntities`) now detects when the newly-extracted `craft` or `product_type` differs from the previous turn's and clears the *other* shape-describing fields (the sibling of craft/product_type, plus material/colour/occasion/gifting_purpose/cultural_preference) before merging — state, price, and artisan_gender continue to persist across turns as before, since carrying those across an actual topic change remains correct behavior.
+
+**21.5 — Unsupported claims and broken evidence chains.** A raw research-corpus factoid ("22 GI products from Maharashtra") was stated as if confirmed, and a follow-up asking for its source did a fresh, unrelated retrieval that found nothing and refused — because no evidence persisted across turns. Two-part fix: (a) the response-generation prompt now requires unverified (`research_corpus`-sourced) statistics to be caveated as research data, not stated as confirmed counts; (b) a new `source_inquiry` intent, detected by `queryUnderstanding.ts`, causes `pipeline.ts` to *replace* freshly-retrieved evidence with the client-round-tripped evidence from the prior turn (`previousEvidence`, mirroring the existing `previousQuery` pattern — no server session state) — a sourcing question is answered from what was actually used, or honestly declared unsubstantiated if it wasn't.
+
+**21.6 — Confident zero-results treated as missing information.** A correctly-computed empty product search ("show products below ₹100" — genuinely nothing that cheap) triggered the same insufficient-evidence refusal as an unanswerable factual question. Added a prompt rule distinguishing the two: a real, completed search with zero matches gets a plain "nothing found" answer; the fallback sentence is reserved for questions with no bearing evidence at all.
+
+All six are covered by dedicated cases in `scripts/eval-dataset.json` (`kalastree-info-01`, `founder-identity-01/02`, `gi-vs-marketplace-01`, `zero-results-confidence-01`, `multiturn-topic-shift-01`, `multiturn-source-inquiry-01`) plus unit tests for the two purely-deterministic mechanisms (`mergeEntities` topic-shift clearing, `isFounderName`).

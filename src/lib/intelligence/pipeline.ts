@@ -15,8 +15,9 @@ import { filterEligible } from './eligibility'
 import { rankProducts } from './ranking'
 import { buildEvidence } from './evidence'
 import { generateResponse } from './responseGenerator'
+import { KALASTREE_EVIDENCE, isFounderName } from './kalastreeInfo'
 import { PRODUCT_INTENTS } from './types'
-import type { DebugInfo, StructuredQuery } from './types'
+import type { DebugInfo, Evidence, StructuredQuery } from './types'
 
 interface HistoryMessage {
   role: 'user' | 'ai'
@@ -29,6 +30,11 @@ export interface PipelineResult {
   products: ReturnType<typeof publicProduct>[]
   matchedConstraints: string[]
   structuredQuery: StructuredQuery
+  // This turn's evidence, round-tripped by the client as `previousEvidence`
+  // on the next request — lets a follow-up "where did you get that?" (see
+  // source_inquiry below) answer from what was actually used, instead of a
+  // fresh, unrelated retrieval that can't find it again.
+  evidence: Evidence[]
   debug: DebugInfo | null
 }
 
@@ -54,7 +60,8 @@ export async function runPipeline(
   question: string,
   history: HistoryMessage[],
   previousQuery: StructuredQuery | null,
-  includeDebug: boolean
+  includeDebug: boolean,
+  previousEvidence: Evidence[] | null = null
 ): Promise<PipelineResult> {
   const t0 = Date.now()
   const structuredQuery = await understandQuery(question, history, previousQuery)
@@ -75,51 +82,90 @@ export async function runPipeline(
   const eligible = needsProducts ? filterEligible(candidates, constraints, giProducts) : []
   const ranked = needsProducts ? rankProducts(eligible, structuredQuery.entities, constraints.length) : []
 
-  const evidence = buildEvidence(verification, ranked, narrative)
+  let evidence = buildEvidence(verification, ranked, narrative)
+
+  // KalaStree-the-company domain (mission, founder) — a name matching the
+  // founder wins any collision with a same-named marketplace artisan
+  // (confirmed bug: "who is Garima Awasthi" was answering with an unrelated
+  // artisan of the same name instead of the actual founder). Runs BEFORE
+  // the marketplace artisan lookup below, deliberately.
+  const artisanNameIsFounder = isFounderName(structuredQuery.entities.artisan)
+  if (structuredQuery.intents.includes('kalastree_information') || artisanNameIsFounder) {
+    evidence.unshift(...KALASTREE_EVIDENCE)
+  }
 
   // artisan_information ("who made this?", "tell me about artisan X") has
   // its own deterministic lookup — separate from the product pipeline,
   // since the user is asking about a person, not shopping.
   if (structuredQuery.intents.includes('artisan_information') && structuredQuery.entities.artisan) {
-    const artisan = await findArtisanByName(structuredQuery.entities.artisan)
-    if (artisan) {
-      evidence.unshift({
-        source_id: `artisans:${artisan.id}`,
-        source_type: 'database',
-        source_title: artisan.name,
-        source_reference: `artisans.id=${artisan.id}`,
-        retrieved_text: `${artisan.name} — ${artisan.craft} artisan from ${artisan.state}. ${artisan.bio ?? artisan.story ?? ''}`.trim(),
-        relevance_score: 1,
-        verification_status: artisan.is_verified ? 'verified' : 'not_verified',
-      })
-
-      // Without this, the LLM only sees the artisan's bio and (having
-      // never been told whether products exist) tends to wrongly assert
-      // "no products found" — an unverified claim. Give it the real count.
-      const { data: artisanProducts } = await supabaseAdmin
-        .from('products').select('name, price, stock').eq('artisan_id', artisan.id).gt('stock', 0)
-      evidence.push({
-        source_id: `artisans:${artisan.id}:products`,
-        source_type: 'database',
-        source_title: `${artisan.name}'s products`,
-        source_reference: `products.artisan_id=${artisan.id}`,
-        retrieved_text: artisanProducts?.length
-          ? artisanProducts.map(p => `${p.name} — ₹${p.price}`).join('; ')
-          : `${artisan.name} currently has no in-stock products listed.`,
-        relevance_score: 1,
-        verification_status: 'verified',
-      })
+    if (artisanNameIsFounder) {
+      // Founder evidence already added above. Still surface a same-named
+      // marketplace artisan if one exists, but clearly as a SEPARATE
+      // person — never blended into the founder's identity.
+      const namesake = await findArtisanByName(structuredQuery.entities.artisan)
+      if (namesake) {
+        evidence.push({
+          source_id: `artisans:${namesake.id}:namesake`,
+          source_type: 'database',
+          source_title: `Separate marketplace artisan also named ${namesake.name}`,
+          source_reference: `artisans.id=${namesake.id}`,
+          retrieved_text: `Note: KalaStree also has an unrelated marketplace artisan who happens to share this name — ${namesake.name}, a ${namesake.craft} artisan from ${namesake.state}. This is a different person from the KalaStree founder.`,
+          relevance_score: 0.5,
+          verification_status: namesake.is_verified ? 'verified' : 'not_verified',
+        })
+      }
     } else {
-      evidence.unshift({
-        source_id: `artisans:not_found:${structuredQuery.entities.artisan}`,
-        source_type: 'database',
-        source_title: 'Artisan Lookup',
-        source_reference: 'artisans lookup (no match)',
-        retrieved_text: `No artisan named "${structuredQuery.entities.artisan}" was found in the verified artisan records.`,
-        relevance_score: 1,
-        verification_status: 'not_verified',
-      })
+      const artisan = await findArtisanByName(structuredQuery.entities.artisan)
+      if (artisan) {
+        evidence.unshift({
+          source_id: `artisans:${artisan.id}`,
+          source_type: 'database',
+          source_title: artisan.name,
+          source_reference: `artisans.id=${artisan.id}`,
+          retrieved_text: `${artisan.name} — ${artisan.craft} artisan from ${artisan.state}. ${artisan.bio ?? artisan.story ?? ''}`.trim(),
+          relevance_score: 1,
+          verification_status: artisan.is_verified ? 'verified' : 'not_verified',
+        })
+
+        // Without this, the LLM only sees the artisan's bio and (having
+        // never been told whether products exist) tends to wrongly assert
+        // "no products found" — an unverified claim. Give it the real count.
+        const { data: artisanProducts } = await supabaseAdmin
+          .from('products').select('name, price, stock').eq('artisan_id', artisan.id).gt('stock', 0)
+        evidence.push({
+          source_id: `artisans:${artisan.id}:products`,
+          source_type: 'database',
+          source_title: `${artisan.name}'s products`,
+          source_reference: `products.artisan_id=${artisan.id}`,
+          retrieved_text: artisanProducts?.length
+            ? artisanProducts.map(p => `${p.name} — ₹${p.price}`).join('; ')
+            : `${artisan.name} currently has no in-stock products listed.`,
+          relevance_score: 1,
+          verification_status: 'verified',
+        })
+      } else {
+        evidence.unshift({
+          source_id: `artisans:not_found:${structuredQuery.entities.artisan}`,
+          source_type: 'database',
+          source_title: 'Artisan Lookup',
+          source_reference: 'artisans lookup (no match)',
+          retrieved_text: `No artisan named "${structuredQuery.entities.artisan}" was found in the verified artisan records.`,
+          relevance_score: 1,
+          verification_status: 'not_verified',
+        })
+      }
     }
+  }
+
+  // source_inquiry ("where did you get that?") must answer from what was
+  // ACTUALLY used to produce the previous answer, not a fresh retrieval on
+  // the sourcing question's own text — that finds nothing related and
+  // produces an untraceable-claim refusal instead of the real answer.
+  // Deliberately REPLACES (not merges) the evidence gathered above: a pure
+  // "where did that come from" question shouldn't be answered by newly
+  // retrieved, unrelated facts.
+  if (structuredQuery.intents.includes('source_inquiry')) {
+    evidence = previousEvidence ?? []
   }
 
   const t4 = Date.now()
@@ -181,6 +227,7 @@ export async function runPipeline(
     products: topRanked.map(publicProduct),
     matchedConstraints,
     structuredQuery,
+    evidence,
     debug,
   }
 }

@@ -22,6 +22,13 @@ export type Intent =
   | 'cultural_information'
   | 'order_related'
   | 'general_question'
+  // KalaStree-the-company itself (mission, founder, what the platform is) —
+  // distinct from any GI/craft/artisan/product domain.
+  | 'kalastree_information'
+  // "where did you get that", "what's your source for X" — answered from
+  // the PRIOR turn's evidence (round-tripped by the client), not a fresh
+  // unrelated retrieval. See pipeline.ts.
+  | 'source_inquiry'
 
 // Intents that require the product pipeline (constraints -> eligibility ->
 // ranking). Everything else answers from verified/narrative knowledge only —
@@ -49,6 +56,12 @@ export interface ExtractedEntities {
   product_type: string | null
   artisan: string | null
   artisan_gender: 'female' | 'male' | null
+  // How firmly artisan_gender was stated — "made by a woman artisan" /
+  // "only women artisans" is required (hard); "I prefer.../preferably..."
+  // is preferred (soft). null when artisan_gender itself wasn't mentioned,
+  // or the phrasing's firmness couldn't be determined (defaults to hard —
+  // see constraints.ts — since unhedged mentions are the common case).
+  artisan_gender_mode: 'required' | 'preferred' | null
   min_price: number | null
   max_price: number | null
   target_price: number | null
@@ -94,7 +107,10 @@ export interface VerificationResult {
   gi_product?: GIProduct
 }
 
-export type SourceType = 'database' | 'research_corpus'
+// 'static' = hardcoded facts sourced from the site's own existing UI copy
+// (src/lib/i18n/dictionaries/about.ts) — used for the KalaStree-company/
+// founder domain, which has no row in Supabase and no corpus document.
+export type SourceType = 'database' | 'research_corpus' | 'static'
 
 export interface Evidence {
   source_id: string

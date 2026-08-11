@@ -21,7 +21,7 @@ describe('resolveGIProduct', () => {
   it('resolves a GI whose name contains parentheses', async () => {
     const result = await resolveGIProduct({
       state: null, region: null, gi_required: null, craft: 'Bhagalpur Silk (Tussar)', product_type: null,
-      artisan: null, artisan_gender: null, min_price: null, max_price: null, target_price: null,
+      artisan: null, artisan_gender: null, artisan_gender_mode: null, min_price: null, max_price: null, target_price: null,
       price_mode: null, quantity: null, gifting_purpose: null, cultural_preference: null, material: null,
       colour: null, size: null, occasion: null, traditional: null, handmade: null,
     })
@@ -31,7 +31,7 @@ describe('resolveGIProduct', () => {
   it('resolves by exact craft name match', async () => {
     const result = await resolveGIProduct({
       state: null, region: null, gi_required: null, craft: 'Madhubani Painting', product_type: null,
-      artisan: null, artisan_gender: null, min_price: null, max_price: null, target_price: null,
+      artisan: null, artisan_gender: null, artisan_gender_mode: null, min_price: null, max_price: null, target_price: null,
       price_mode: null, quantity: null, gifting_purpose: null, cultural_preference: null, material: null,
       colour: null, size: null, occasion: null, traditional: null, handmade: null,
     })
@@ -41,7 +41,7 @@ describe('resolveGIProduct', () => {
   it('returns null for an unregistered craft', async () => {
     const result = await resolveGIProduct({
       state: null, region: null, gi_required: null, craft: 'Nonexistent Weaving', product_type: null,
-      artisan: null, artisan_gender: null, min_price: null, max_price: null, target_price: null,
+      artisan: null, artisan_gender: null, artisan_gender_mode: null, min_price: null, max_price: null, target_price: null,
       price_mode: null, quantity: null, gifting_purpose: null, cultural_preference: null, material: null,
       colour: null, size: null, occasion: null, traditional: null, handmade: null,
     })

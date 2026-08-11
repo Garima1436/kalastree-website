@@ -22,12 +22,16 @@ export function buildConstraints(query: StructuredQuery): Constraint[] {
   }
 
   // Every artisan on KalaStree is a woman ("Heritage by Her") — there is no
-  // artisan_gender column to filter on. If the user asked for a female
-  // artisan, that's trivially satisfied by every product; surface it as an
-  // informational (soft, always-matched) constraint for explainability
-  // rather than fabricating a data field to filter on.
+  // artisan_gender column to filter on, so this is trivially satisfied by
+  // every product either way (see eligibility.ts). Its `kind` still needs
+  // to be correct, though, for matched_constraints/explainability to
+  // honestly reflect what the user actually asked for: a firm statement
+  // ("made by a woman artisan", "only women artisans") is hard; an
+  // explicitly hedged one ("I prefer...", "preferably...") is soft.
+  // Unhedged mentions default to hard, matching how most users phrase it.
   if (e.artisan_gender === 'female') {
-    constraints.push({ field: 'artisan_gender', operator: '=', value: 'female', kind: 'soft', label: 'female artisan' })
+    const kind = e.artisan_gender_mode === 'preferred' ? 'soft' : 'hard'
+    constraints.push({ field: 'artisan_gender', operator: '=', value: 'female', kind, label: 'female artisan' })
   }
 
   // "under X" -> hard max. "around X" -> soft target (spec example 4:
