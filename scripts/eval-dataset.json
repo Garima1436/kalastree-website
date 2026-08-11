@@ -249,6 +249,27 @@
           "forbidden_answer_substring": ["does not contain enough information"]
         }
       ]
+    },
+    {
+      "id": "multiturn-state-pivot-01",
+      "turns": [
+        {
+          "query": "Tell me about Madhubani Painting",
+          "expected_entities": { "craft": "Madhubani Painting" }
+        },
+        {
+          "query": "Show me products from Bihar made by a woman artisan",
+          "expected_entities": { "craft": "Madhubani Painting", "state": "Bihar" },
+          "expect_products": true
+        },
+        {
+          "query": "What products does Madhya Pradesh have?",
+          "expected_entities": { "state": "Madhya Pradesh" },
+          "forbidden_entity_values": { "craft": "Madhubani Painting" },
+          "expect_products": true,
+          "forbidden_answer_substring": ["not GI-registered", "not GI registered", "no products"]
+        }
+      ]
     }
   ]
 }

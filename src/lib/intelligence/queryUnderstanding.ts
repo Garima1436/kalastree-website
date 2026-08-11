@@ -104,18 +104,30 @@ export function groundInCurrentMessage(extracted: ExtractedEntities, question: s
 // turn had, the request has moved to a new topic — the OTHER shape fields
 // from the old topic (e.g. "stole" from "any stole?") must not silently
 // keep narrowing an unrelated new search (e.g. "what paintings are
-// available?"). Reproduced in testing: dupatta -> stole -> paintings left
-// product_type: "stole" stuck on the paintings query. state/price/
-// artisan_gender are NOT shape fields — carrying those across an actual
-// topic change is still correct (e.g. "Bihar" should keep applying).
+// available?"). Reproduced in testing: dupatta -> stole -> paintings left// product_type: "stole" stuck on the paintings query. price/artisan_gender
+// are NOT shape fields — carrying those across an actual topic change is
+// still correct. state is also NOT in this list (a state pivot doesn't
+// clear itself), but a state PIVOT does trigger the same clear — see
+// isTopicShift below.
 const SHAPE_FIELDS = [
   'craft', 'product_type', 'material', 'colour', 'occasion', 'gifting_purpose', 'cultural_preference',
 ] as const satisfies readonly (keyof ExtractedEntities)[]
 
+// A state pivot (Bihar -> Madhya Pradesh, an explicit different value, not
+// just adding a first-time state) is also a topic shift: reproduced in
+// testing (Hindi) — "मधुबनी पेंटिंग" (craft=Madhubani Painting, Bihar) then
+// "मध्य प्रदेश के क्या प्रोडक्ट्स हैं" (state=Madhya Pradesh, no craft
+// restated) left craft: "Madhubani Painting" stuck, so the system silently
+// searched for a Bihar-only craft inside an unrelated state and reported it
+// as "not GI-registered" — factually wrong and not what was asked. Only
+// fires when BOTH previous and extracted states are non-null and differ;
+// first-time state assignment (previous.state === null) is an ordinary
+// refinement (e.g. "show paintings" -> "from Bihar") and must not clear.
 function isTopicShift(previous: ExtractedEntities, extracted: ExtractedEntities): boolean {
   const craftChanged = extracted.craft !== null && extracted.craft !== previous.craft
   const productTypeChanged = extracted.product_type !== null && extracted.product_type !== previous.product_type
-  return craftChanged || productTypeChanged
+  const stateChanged = extracted.state !== null && previous.state !== null && extracted.state !== previous.state
+  return craftChanged || productTypeChanged || stateChanged
 }
 
 const ANCHOR_FIELDS = ['state', 'craft', 'product_type'] as const satisfies readonly (keyof ExtractedEntities)[]

@@ -120,4 +120,35 @@ describe('mergeEntities', () => {
     const merged = mergeEntities(previous, extracted)
     expect(merged.max_price).toBe(3000)
   })
+
+  // Regression: reproduced live (Hindi) — "मुझे मधुबनी पेंटिंग के बारे में
+  // बताओ" (craft=Madhubani Painting) -> "बिहार से..." (state=Bihar) ->
+  // "मध्य प्रदेश के क्या प्रोडक्ट्स हैं" (state=Madhya Pradesh, no craft
+  // restated) left craft: "Madhubani Painting" stuck, so the system silently
+  // searched for a Bihar-only craft inside an unrelated state and reported
+  // it as "not GI-registered" instead of answering what was actually asked.
+  it('clears the OTHER shape fields when the new turn pivots to a different, already-anchored state', () => {
+    const previous = { ...EMPTY_ENTITIES, craft: 'Madhubani Painting', state: 'Bihar', material: 'silk' }
+    const extracted = { ...EMPTY_ENTITIES, state: 'Madhya Pradesh' }
+    const merged = mergeEntities(previous, extracted)
+    expect(merged.state).toBe('Madhya Pradesh')
+    expect(merged.craft).toBeNull()
+    expect(merged.material).toBeNull()
+  })
+
+  it('does NOT clear shape fields when state simply repeats the same value', () => {
+    const previous = { ...EMPTY_ENTITIES, craft: 'Madhubani Painting', state: 'Bihar' }
+    const extracted = { ...EMPTY_ENTITIES, state: 'Bihar', max_price: 3000 }
+    const merged = mergeEntities(previous, extracted)
+    expect(merged.craft).toBe('Madhubani Painting')
+    expect(merged.state).toBe('Bihar')
+  })
+
+  it('does NOT clear shape fields when state is introduced for the first time (previous had none)', () => {
+    const previous = { ...EMPTY_ENTITIES, craft: 'Madhubani Painting' }
+    const extracted = { ...EMPTY_ENTITIES, state: 'Bihar' }
+    const merged = mergeEntities(previous, extracted)
+    expect(merged.craft).toBe('Madhubani Painting')
+    expect(merged.state).toBe('Bihar')
+  })
 })
