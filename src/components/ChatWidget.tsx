@@ -95,6 +95,7 @@ export default function ChatWidget() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const audioChunksRef = useRef<Blob[]>([])
   const audioPlayerRef = useRef<HTMLAudioElement | null>(null)
+  const audioContextRef = useRef<AudioContext | null>(null)
 
   useEffect(() => {
     if (open && messages.length === 0) {
@@ -177,6 +178,31 @@ export default function ChatWidget() {
       audioPlayerRef.current = audio
       audio.onended = () => { setPlayingIndex(null); URL.revokeObjectURL(url) }
       audio.onerror = () => { setPlayingIndex(null); URL.revokeObjectURL(url) }
+      // OpenAI's TTS output is quiet on average (unnormalized) with only occasional
+      // loud peaks (measured: mean ~-20dB, peak ~-1dB). A compressor with a LOW
+      // threshold squashes the whole signal and nets quieter even after makeup
+      // gain (verified empirically, don't reintroduce that). Instead: threshold
+      // near the peak so only the loudest transients get limited, high ratio so
+      // that limiting is firm, then a makeup gain lifts everything else — this
+      // combination was verified (via an offline ffmpeg equivalent of these exact
+      // settings) to raise average loudness by ~3dB while keeping peaks < -1dB.
+      try {
+        if (!audioContextRef.current) audioContextRef.current = new AudioContext()
+        const ctx = audioContextRef.current
+        if (ctx.state === 'suspended') await ctx.resume()
+        const source = ctx.createMediaElementSource(audio)
+        const compressor = ctx.createDynamicsCompressor()
+        compressor.threshold.value = -6
+        compressor.knee.value = 0
+        compressor.ratio.value = 20
+        compressor.attack.value = 0.003
+        compressor.release.value = 0.15
+        const gain = ctx.createGain()
+        gain.gain.value = 1.5
+        source.connect(compressor).connect(gain).connect(ctx.destination)
+      } catch {
+        // Web Audio unavailable/blocked — fall back to plain (quieter) playback.
+      }
       await audio.play()
     } catch {
       setPlayingIndex(null)

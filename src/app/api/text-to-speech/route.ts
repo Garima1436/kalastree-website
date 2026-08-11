@@ -39,9 +39,10 @@ export async function POST(req: NextRequest) {
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: 'tts-1',
+        model: 'gpt-4o-mini-tts',
         voice: 'nova',
         input: text,
+        instructions: 'Speak with a warm, natural Indian English accent.',
         response_format: 'mp3',
       }),
       signal: AbortSignal.timeout(30000),
