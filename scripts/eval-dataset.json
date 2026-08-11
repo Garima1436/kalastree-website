@@ -247,6 +247,28 @@
           "expect_products": false,
           "required_answer_substring": ["women artisans"],
           "forbidden_answer_substring": ["does not contain enough information"]
+        },
+        {
+          "query": "What products does Madhya Pradesh have?",
+          "forbidden_entity_values": { "artisan_gender": "male" },
+          "expect_products": true,
+          "forbidden_answer_substring": ["exclusively features women artisans", "no male artisans"]
+        }
+      ]
+    },
+    {
+      "id": "multiturn-state-aggregate-01",
+      "turns": [
+        {
+          "query": "Show me products from Bihar",
+          "expected_entities": { "state": "Bihar" },
+          "expect_products": true
+        },
+        {
+          "query": "Which states have products available?",
+          "expected_entities": { "state": null },
+          "required_answer_substring": ["Bihar"],
+          "forbidden_answer_substring": ["does not contain enough information", "not currently available"]
         }
       ]
     },

@@ -6,10 +6,10 @@
 // intents that need them (spec example 3: "do not recommend products
 // unless appropriate").
 import { supabaseAdmin } from '@/lib/supabase-admin'
-import { understandQuery } from './queryUnderstanding'
+import { understandQuery, isAllStatesRequest } from './queryUnderstanding'
 import { buildConstraints } from './constraints'
 import { verifyGI } from './verification'
-import { getAllGIProducts, findArtisanByName } from './relationships'
+import { getAllGIProducts, findArtisanByName, getProductCountsByState } from './relationships'
 import { retrieveCandidateProducts, retrieveNarrativeEvidence } from './retrieval'
 import { filterEligible } from './eligibility'
 import { rankProducts } from './ranking'
@@ -102,6 +102,33 @@ export async function runPipeline(
   // short fragment like "made by men" doesn't reliably classify that way).
   if (structuredQuery.entities.artisan_gender === 'male') {
     evidence.unshift(WOMEN_ONLY_PLATFORM_EVIDENCE)
+  }
+
+  // A cross-state aggregate question ("which states have products", "list
+  // products from every state") needs a real, live breakdown — not a
+  // single-state-scoped search (state_information isn't in PRODUCT_INTENTS,
+  // so candidates/ranked stay empty here) and not research-corpus estimates.
+  // Gated on isAllStatesRequest(question) directly, not just on the LLM's
+  // own state_information+state:null classification — the LLM alone isn't
+  // precise enough here (regression caught by eval: "what states does
+  // Kalastree ship to" — a shipping/logistics question with nothing to do
+  // with product availability — was independently classified the same way
+  // and got answered with the products-by-state breakdown instead of a
+  // correct refusal).
+  if (isAllStatesRequest(question) && structuredQuery.intents.includes('state_information')) {
+    const byState = await getProductCountsByState()
+    evidence.unshift({
+      source_id: 'products:state_breakdown',
+      source_type: 'database',
+      source_title: 'Products by State',
+      source_reference: 'products table, grouped by state',
+      retrieved_text: byState.length
+        ? `KalaStree currently has in-stock products from ${byState.length} state(s): ` +
+          byState.map(s => `${s.state} (${s.count} product${s.count === 1 ? '' : 's'}, e.g. ${s.examples.join('; ')})`).join('. ') + '.'
+        : 'KalaStree currently has no in-stock products from any state.',
+      relevance_score: 1,
+      verification_status: 'verified',
+    })
   }
 
   // artisan_information ("who made this?", "tell me about artisan X") has

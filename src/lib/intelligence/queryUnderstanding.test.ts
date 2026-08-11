@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { groundInCurrentMessage, mergeEntities } from './queryUnderstanding'
+import { groundInCurrentMessage, mergeEntities, isAllStatesRequest } from './queryUnderstanding'
 import type { ExtractedEntities } from './types'
 
 const EMPTY_ENTITIES: ExtractedEntities = {
@@ -150,5 +150,32 @@ describe('mergeEntities', () => {
     const merged = mergeEntities(previous, extracted)
     expect(merged.craft).toBe('Madhubani Painting')
     expect(merged.state).toBe('Bihar')
+  })
+})
+
+describe('isAllStatesRequest', () => {
+  it('detects English aggregate phrasing', () => {
+    expect(isAllStatesRequest('which states have products?')).toBe(true)
+    expect(isAllStatesRequest('list products from every state')).toBe(true)
+    expect(isAllStatesRequest('show me all states products')).toBe(true)
+  })
+
+  it('detects Hindi aggregate phrasing', () => {
+    expect(isAllStatesRequest('सारे स्टेट्स के जितने भी प्रोडक्ट्स हैं, उनको लिस्ट करके दिखाएं।')).toBe(true)
+    expect(isAllStatesRequest('कौन से स्टेट्स के कितने प्रोडक्ट्स आपके पास अविलेबल हैं?')).toBe(true)
+  })
+
+  it('does not misfire on an ordinary single-state question', () => {
+    expect(isAllStatesRequest('Show me products from Bihar')).toBe(false)
+    expect(isAllStatesRequest('बिहार से क्या प्रोडक्ट्स हैं')).toBe(false)
+  })
+
+  // Regression: "which states" is generic enough to also match an unrelated
+  // shipping/logistics question, which this feature has no data for and
+  // must not silently answer with a products-by-state breakdown instead of
+  // the correct refusal.
+  it('does not misfire on a shipping/logistics question that happens to mention states', () => {
+    expect(isAllStatesRequest('What states does Kalastree ship to?')).toBe(false)
+    expect(isAllStatesRequest('Which states do you deliver to?')).toBe(false)
   })
 })

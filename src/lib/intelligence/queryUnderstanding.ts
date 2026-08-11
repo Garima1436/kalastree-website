@@ -41,6 +41,7 @@ Extract intent(s) and entities from the user's message as JSON. Rules:
 - Conversation history is provided ONLY to resolve what the user's latest message refers back to (e.g. "under 3000" after "show me Madhubani paintings" means craft=Madhubani Painting, max_price=3000). Extract entities ONLY from words the USER actually wrote across their own turns. NEVER pull a value from the assistant's prior replies (product names, artisan names, materials, prices it mentioned) unless the user's own message repeats or confirms it themselves — the assistant's answers are not user-stated facts.
 - Phrasing variants asking about the same entity must produce the SAME intent and the SAME entities. "About X", "Who is X?", "Tell me about X", "Give information about X", and "Who is the artisan X?" are ALL artisan_information with entities.artisan = X. Likewise "What is Kalastree?", "Tell me about Kalastree", "Who founded Kalastree?", and "What does Kalastree do?" are ALL kalastree_information — do not classify a plain rewording as a different intent.
 - kalastree_information is for questions about the KalaStree company/platform itself (what it is, its mission, its founder) — NOT about a GI product, craft, artisan, or marketplace product. "Who is Garima Awasthi" is artisan_information (she may also be the founder — that's resolved later in the pipeline, not by you).
+- A question asking about state coverage IN AGGREGATE across MULTIPLE states, with no single state named — "which states have products", "how many products per state", "list products from every state" — is state_information intent with entities.state = null. This is DIFFERENT from an ordinary question about products from ONE named state ("what products does Madhya Pradesh have", "products from Bihar") — that is still product_discovery with entities.state set to the named state, exactly as for any other state question. Do not reclassify a single-named-state product question as the aggregate case.
 - source_inquiry is for a follow-up asking where a PRIOR claim came from — "where did you get that", "what's your source for X", "how do you know that", "where is that from". Use it only when the user is asking about the origin of something already said in this conversation, not when asking a new factual question.
 - The user may write in Hindi, English, or a mix of both. Regardless of input language, output entity string values (state, craft, product_type, material, colour, occasion, gifting_purpose, cultural_preference) in English using the standard canonical English name (e.g. "बिहार" -> "Bihar", "साड़ी" -> "saree") — these are matched against an English-language database. Transliterate "artisan" proper names to standard Latin spelling rather than translating them.
 
@@ -79,6 +80,42 @@ const GROUNDED_TEXT_FIELDS = [
 
 const HANDMADE_KEYWORDS = /handmade|hand-made|hand made|handcrafted|hand-crafted|artisanal/i
 const TRADITIONAL_KEYWORDS = /traditional|heritage|authentic|age-old|time-honou?red/i
+// "made by men" is a one-off policy question, not an ongoing shopping
+// preference — unlike female (a real, sticky preference on this women-only
+// platform, deliberately persisted across turns and covered by existing
+// tests), male must NOT keep applying to every later turn once asked.
+// Reproduced: with full conversation history in context, the query-
+// understanding LLM itself re-extracted artisan_gender: "male" on later,
+// completely unrelated turns (e.g. "What products does Madhya Pradesh
+// have?") — not because that turn's text said anything about gender, but
+// because "male" was still fresh in the conversation. Comparing against
+// the LLM's own fresh extraction doesn't catch this (it re-asserted "male"
+// too); only checking the actual CURRENT message text does, the same
+// pattern groundInCurrentMessage already uses for handmade/traditional.
+const MALE_GENDER_KEYWORDS = /\bmen\b|\bmale\b|पुरुष|आदमी|मर्द/i
+
+// Explicit cross-state aggregate requests ("which states have products",
+// "list products from every state") are a genuinely different scope than a
+// single-state search and must not inherit a stale `state` from history —
+// reproduced live: state stuck at "Delhi" (from an unrelated earlier turn)
+// made "list all products from every state" silently answer about Delhi
+// alone and falsely claim other states' data was unavailable, when the
+// same conversation had already shown real Bihar/Madhya Pradesh products.
+// This is a deterministic backstop (LLM intent/entity classification is not
+// reliable enough alone — established elsewhere in this file/project).
+const ALL_STATES_KEYWORDS =
+  /\ball states\b|\bevery state\b|\beach state\b|\bwhich states\b|\bhow many states\b|सभी राज्य|सारे (राज्य|स्टेट)|हर (राज्य|स्टेट)|कौन.?से (राज्य|स्टेट)/i
+
+// "Which states" is generic enough to also match unrelated questions this
+// feature has no data for — e.g. "what states does Kalastree ship to"
+// (shipping/logistics, not product-availability). Regression caught by the
+// eval suite: that question started returning the products-by-state
+// breakdown instead of correctly refusing (no shipping data exists).
+const SHIPPING_EXCLUSION = /\bship(ping|s)?\b|\bdeliver/i
+
+export function isAllStatesRequest(question: string): boolean {
+  return ALL_STATES_KEYWORDS.test(question) && !SHIPPING_EXCLUSION.test(question)
+}
 
 // Only checks entities freshly extracted THIS turn — previously-merged
 // values already passed this check in the turn they were extracted.
@@ -221,6 +258,22 @@ export async function understandQuery(
   // founder-evidence injection in pipeline.ts on plain product searches.
   if (!intents.includes('artisan_information') && entities.artisan === null) {
     merged.artisan = null
+  }
+
+  // See MALE_GENDER_KEYWORDS above — checks the actual message text, not
+  // the LLM's own (unreliable, history-influenced) fresh extraction.
+  if (merged.artisan_gender === 'male' && !MALE_GENDER_KEYWORDS.test(question)) {
+    merged.artisan_gender = null
+    merged.artisan_gender_mode = null
+  }
+
+  // Deterministic backstop: force-clear any stale state/region and route to
+  // state_information regardless of what the LLM extracted this turn — see
+  // isAllStatesRequest above.
+  if (isAllStatesRequest(question)) {
+    merged.state = null
+    merged.region = null
+    if (!intents.includes('state_information')) intents = [...intents, 'state_information']
   }
 
   return { raw_query: question, intents, entities: merged }

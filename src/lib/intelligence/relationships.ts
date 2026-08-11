@@ -43,6 +43,36 @@ export async function findArtisansForGIProduct(giProductId: string): Promise<Art
   return (data ?? []) as Artisan[]
 }
 
+export interface StateProductSummary {
+  state: string
+  count: number
+  examples: string[]
+}
+
+// Real, live counts — not a research-corpus estimate. Used for aggregate
+// "which states / how many products per state / list products from every
+// state" questions (see pipeline.ts), which need an actual cross-state
+// breakdown rather than a single-state-scoped search.
+export async function getProductCountsByState(): Promise<StateProductSummary[]> {
+  const { data, error } = await supabaseAdmin.from('products').select('state, name').gt('stock', 0)
+  if (error) {
+    console.error('getProductCountsByState failed:', error)
+    return []
+  }
+
+  const byState = new Map<string, string[]>()
+  for (const row of data ?? []) {
+    if (!row.state) continue
+    const names = byState.get(row.state) ?? []
+    names.push(row.name)
+    byState.set(row.state, names)
+  }
+
+  return [...byState.entries()]
+    .map(([state, names]) => ({ state, count: names.length, examples: names.slice(0, 3) }))
+    .sort((a, b) => b.count - a.count)
+}
+
 export async function findArtisanByName(name: string): Promise<Artisan | null> {
   const { data } = await supabaseAdmin
     .from('artisans')
