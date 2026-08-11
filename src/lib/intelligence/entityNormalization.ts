@@ -51,9 +51,29 @@ function normalizeText(s: string): string {
   return s.trim().toLowerCase().replace(/\s+/g, ' ')
 }
 
+function levenshtein(a: string, b: string): number {
+  const rows = a.length + 1
+  const cols = b.length + 1
+  const dp: number[][] = Array.from({ length: rows }, () => new Array(cols).fill(0))
+  for (let i = 0; i < rows; i++) dp[i][0] = i
+  for (let j = 0; j < cols; j++) dp[0][j] = j
+  for (let i = 1; i < rows; i++) {
+    for (let j = 1; j < cols; j++) {
+      dp[i][j] = a[i - 1] === b[j - 1]
+        ? dp[i - 1][j - 1]
+        : 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1])
+    }
+  }
+  return dp[rows - 1][cols - 1]
+}
+
 // Best-effort fuzzy match: exact -> synonym table -> substring either
-// direction. No token-overlap scoring — deliberately simple, since a wrong
-// normalization here would silently corrupt a hard constraint downstream.
+// direction -> bounded edit-distance (last resort, for typos substring
+// matching can't catch — e.g. "madhyadpradesh" for "Madhya Pradesh", one
+// inserted character, no shared contiguous substring long enough to
+// contain the other). Threshold is intentionally tight (relative to
+// candidate length, capped) so this doesn't silently resolve to the wrong
+// entity — a wrong match here would corrupt a hard constraint downstream.
 function fuzzyMatch(input: string, candidates: string[]): string | null {
   const normalized = normalizeText(input)
   const resolved = KNOWN_SYNONYMS[normalized] ?? normalized
@@ -65,7 +85,17 @@ function fuzzyMatch(input: string, candidates: string[]): string | null {
     const c = normalizeText(candidate)
     if (c.includes(resolved) || resolved.includes(c)) return candidate
   }
-  return null
+
+  let best: { candidate: string; distance: number } | null = null
+  for (const candidate of candidates) {
+    const c = normalizeText(candidate)
+    const distance = levenshtein(resolved, c)
+    const threshold = Math.min(3, Math.max(1, Math.floor(c.length * 0.15)))
+    if (distance <= threshold && (!best || distance < best.distance)) {
+      best = { candidate, distance }
+    }
+  }
+  return best?.candidate ?? null
 }
 
 export async function normalizeCraft(input: string | null): Promise<string | null> {

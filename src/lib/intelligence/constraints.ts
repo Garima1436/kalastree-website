@@ -22,16 +22,25 @@ export function buildConstraints(query: StructuredQuery): Constraint[] {
   }
 
   // Every artisan on KalaStree is a woman ("Heritage by Her") — there is no
-  // artisan_gender column to filter on, so this is trivially satisfied by
-  // every product either way (see eligibility.ts). Its `kind` still needs
-  // to be correct, though, for matched_constraints/explainability to
-  // honestly reflect what the user actually asked for: a firm statement
-  // ("made by a woman artisan", "only women artisans") is hard; an
-  // explicitly hedged one ("I prefer...", "preferably...") is soft.
-  // Unhedged mentions default to hard, matching how most users phrase it.
+  // artisan_gender column to filter on, so a request for a FEMALE artisan
+  // is trivially satisfied by every product either way (see eligibility.ts).
+  // Its `kind` still needs to be correct for matched_constraints/
+  // explainability to honestly reflect what the user actually asked for: a
+  // firm statement ("made by a woman artisan", "only women artisans") is
+  // hard; an explicitly hedged one ("I prefer...", "preferably...") is
+  // soft. Unhedged mentions default to hard, matching how most users phrase it.
   if (e.artisan_gender === 'female') {
     const kind = e.artisan_gender_mode === 'preferred' ? 'soft' : 'hard'
     constraints.push({ field: 'artisan_gender', operator: '=', value: 'female', kind, label: 'female artisan' })
+  } else if (e.artisan_gender === 'male') {
+    // The inverse: a request for a MALE artisan can never be satisfied on
+    // this platform. Still add it as a hard constraint (rather than
+    // silently ignoring it, which previously let the intent-classification
+    // fall through to a generic "insufficient information" refusal) so
+    // eligibility deterministically returns zero products, and the
+    // response generator has a real, verified fact to explain why (see the
+    // women-only-platform evidence injected in pipeline.ts).
+    constraints.push({ field: 'artisan_gender', operator: '=', value: 'male', kind: 'hard', label: 'male artisan' })
   }
 
   // "under X" -> hard max. "around X" -> soft target (spec example 4:

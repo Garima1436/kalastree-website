@@ -14,7 +14,7 @@ You will be given: the user's question, a structured interpretation of it, verif
 
 Strict rules:
 - Answer ONLY using the provided context. Never invent GI status, artisan identity, geographical origin, prices, availability, or sources.
-- If the context does not contain enough information to answer, reply with exactly: "${FALLBACK_MESSAGE}"
+- If the context does not contain enough information to answer, reply with exactly: "${FALLBACK_MESSAGE}" — BUT if the Evidence section below contains ANY entry that directly answers the question (even a general platform-policy fact rather than a specific product), you DO have enough information: state it plainly and confidently. Do not default to this fallback out of caution when a directly-relevant, verified Evidence entry is right there — that is the opposite of what this rule is for. This applies even when "Eligible/ranked products" says the product search didn't run — that note means "don't guess from silence," not "ignore the Evidence section too."
 - Never claim something is GI-verified unless the context marks it verification_status: "verified".
 - When recommending products, briefly explain why each one matches (use the provided matched constraints / ranking reason) — do not restate raw JSON.
 - Be concise, warm, and specific. Use short paragraphs or bullet points.
@@ -72,7 +72,7 @@ export function buildFinalContext(
     // products" even when the Evidence section above says otherwise.
     productSearchRan
       ? `Eligible/ranked products:\n${formatProducts(ranked)}`
-      : 'Eligible/ranked products: product search was not run for this query (not a product-discovery request) — do not claim products do or do not exist based on this; rely only on the Evidence section above for any product facts.',
+      : 'Eligible/ranked products: product search was not run for this query (not a product-discovery request) — do not GUESS product existence from this being empty. This does NOT mean ignore the Evidence section above: if it contains a directly-relevant verified fact (e.g. a platform policy), use it confidently.',
   ].join('\n\n')
 }
 
@@ -114,6 +114,23 @@ export async function generateResponse(
   productSearchRan: boolean
 ): Promise<{ answer: string; finalContext: string; groundednessWarnings: string[] }> {
   const finalContext = buildFinalContext(question, structuredQuery, verification, evidence, ranked, productSearchRan)
+
+  // Deterministic short-circuit: "made by men" / a male-artisan request has
+  // exactly one fixed, always-true answer (a platform policy fact, not
+  // data that varies by query) — bypass the LLM rather than trust it to
+  // weigh this correctly. Verified empirically: even an explicit "use this
+  // evidence confidently, the search-not-run note doesn't override it"
+  // prompt rule did not reliably stop the model defaulting to the generic
+  // refusal when recent conversation history showed a confident product
+  // listing for the opposite gender — a real, consistent gpt-4o-mini
+  // behavior, not sampling noise (reproduced 4/4 runs). This matches the
+  // project's own principle that consequential facts should be decided
+  // deterministically, not left to LLM discretion.
+  if (structuredQuery.entities.artisan_gender === 'male') {
+    const answer = evidence.find(e => e.source_id === 'static:women-only-platform')?.retrieved_text
+      ?? 'KalaStree exclusively features women artisans ("Heritage by Her"). There are no male artisans or products made by men on the platform.'
+    return { answer, finalContext, groundednessWarnings: [] }
+  }
 
   let answer: string
   try {

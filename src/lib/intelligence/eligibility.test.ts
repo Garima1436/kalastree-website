@@ -67,4 +67,16 @@ describe('filterEligible', () => {
     expect(a?.giVerification?.gi_verified).toBe(true)
     expect(b?.giVerification?.gi_verified).toBe(false)
   })
+
+  // Regression: reproduced live — "made by men" previously fell through to
+  // a generic refusal instead of a confident, correct "no such products"
+  // answer. Every artisan on this platform is a woman, so a male-artisan
+  // request must deterministically reject every candidate.
+  it('rejects every product when a male artisan is requested — no artisan on this platform is male', () => {
+    const q = query({ artisan_gender: 'male' })
+    const constraints = buildConstraints(q)
+    expect(constraints.find(c => c.field === 'artisan_gender')).toMatchObject({ kind: 'hard', value: 'male' })
+    const eligible = filterEligible([productA, productC], constraints, giRegistry)
+    expect(eligible).toHaveLength(0)
+  })
 })

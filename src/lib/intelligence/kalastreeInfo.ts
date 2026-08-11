@@ -48,3 +48,27 @@ export function isFounderName(name: string | null): boolean {
   if (!name) return false
   return name.trim().toLowerCase() === FOUNDER_NAME.toLowerCase()
 }
+
+// Same "sourced from real, existing site content" rule as KALASTREE_EVIDENCE
+// above — this is a direct restatement of the brand tagline ("Heritage by
+// Her") and mission copy already on the site, not a new claim.
+//
+// Injected whenever entities.artisan_gender === 'male' (see pipeline.ts),
+// regardless of which intent the query landed on. Reproduced without this:
+// "made by men" / "products made by men?" got the generic
+// insufficient-evidence refusal instead of the true, confident answer —
+// because the query didn't reliably classify as product_discovery on its
+// own, so the product pipeline (which now correctly returns zero eligible
+// products for a male-artisan request — see eligibility.ts) never ran.
+// This fact is available independent of that pipeline running at all.
+export const WOMEN_ONLY_PLATFORM_EVIDENCE: Evidence = {
+  source_id: 'static:women-only-platform',
+  source_type: 'static',
+  source_title: 'KalaStree Artisan Policy',
+  source_reference: 'src/lib/i18n/dictionaries/about.ts (About page copy — "Heritage by Her")',
+  retrieved_text:
+    'KalaStree exclusively features women artisans ("Heritage by Her"). There are no male artisans and no ' +
+    'products made by men on the platform.',
+  relevance_score: 1,
+  verification_status: 'verified',
+}

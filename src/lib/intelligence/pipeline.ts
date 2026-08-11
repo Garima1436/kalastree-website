@@ -15,7 +15,7 @@ import { filterEligible } from './eligibility'
 import { rankProducts } from './ranking'
 import { buildEvidence } from './evidence'
 import { generateResponse } from './responseGenerator'
-import { KALASTREE_EVIDENCE, isFounderName } from './kalastreeInfo'
+import { KALASTREE_EVIDENCE, WOMEN_ONLY_PLATFORM_EVIDENCE, isFounderName } from './kalastreeInfo'
 import { PRODUCT_INTENTS } from './types'
 import type { DebugInfo, Evidence, StructuredQuery } from './types'
 
@@ -92,6 +92,16 @@ export async function runPipeline(
   const artisanNameIsFounder = isFounderName(structuredQuery.entities.artisan)
   if (structuredQuery.intents.includes('kalastree_information') || artisanNameIsFounder) {
     evidence.unshift(...KALASTREE_EVIDENCE)
+  }
+
+  // A request for a male artisan/product is answerable with a fixed,
+  // verified platform fact regardless of which intent the query landed on
+  // — deliberately NOT gated on needsProducts (see constraints.ts/
+  // eligibility.ts for the case where it IS product_discovery, which now
+  // correctly returns zero eligible products; this covers the case where a
+  // short fragment like "made by men" doesn't reliably classify that way).
+  if (structuredQuery.entities.artisan_gender === 'male') {
+    evidence.unshift(WOMEN_ONLY_PLATFORM_EVIDENCE)
   }
 
   // artisan_information ("who made this?", "tell me about artisan X") has

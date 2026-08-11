@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { findUngroundedPrices } from './responseGenerator'
-import type { Evidence, ExtractedEntities } from './types'
+import { findUngroundedPrices, generateResponse } from './responseGenerator'
+import type { Evidence, ExtractedEntities, StructuredQuery } from './types'
 
 const EMPTY_ENTITIES: ExtractedEntities = {
   state: null, region: null, gi_required: null, craft: null, product_type: null,
@@ -52,5 +52,42 @@ describe('findUngroundedPrices', () => {
     const evidence = evidenceWithText('Surya Dev Painting — ₹8500; Silk Stole — ₹2160')
     const warnings = findUngroundedPrices('Her pieces include an ₹8500 painting and a ₹2160 stole', evidence, EMPTY_ENTITIES)
     expect(warnings).toHaveLength(0)
+  })
+})
+
+describe('generateResponse — male-artisan deterministic short-circuit', () => {
+  // Regression: reproduced live — "made by men", asked right after a
+  // confident product listing for women artisans, consistently (4/4 runs)
+  // got the generic insufficient-evidence refusal from the LLM despite the
+  // correct fact being right there in evidence — even after strengthening
+  // the prompt to explicitly say "use this evidence confidently." Since
+  // this fact never varies by query (every artisan on the platform is a
+  // woman), it's answered deterministically instead of trusting the LLM —
+  // this test verifies that path never reaches the network (no API key set
+  // here; if it fell through to callOpenAI, the test would fail/throw).
+  const structuredQuery: StructuredQuery = {
+    raw_query: 'made by men',
+    intents: ['general_question'],
+    entities: { ...EMPTY_ENTITIES, artisan_gender: 'male' },
+  }
+
+  it('answers directly from the women-only-platform evidence without calling the LLM', async () => {
+    const evidence: Evidence[] = [{
+      source_id: 'static:women-only-platform',
+      source_type: 'static',
+      source_title: 'KalaStree Artisan Policy',
+      source_reference: 'x',
+      retrieved_text: 'KalaStree exclusively features women artisans. There are no male artisans.',
+      relevance_score: 1,
+      verification_status: 'verified',
+    }]
+    const result = await generateResponse('made by men', structuredQuery, null, evidence, [], [], false)
+    expect(result.answer).toBe('KalaStree exclusively features women artisans. There are no male artisans.')
+    expect(result.groundednessWarnings).toEqual([])
+  })
+
+  it('falls back to a hardcoded default if the evidence entry is somehow missing', async () => {
+    const result = await generateResponse('made by men', structuredQuery, null, [], [], [], false)
+    expect(result.answer).toContain('women artisans')
   })
 })

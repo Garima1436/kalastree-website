@@ -66,10 +66,12 @@ function satisfiesConstraint(
       return product.price >= Number(constraint.value)
     case 'availability':
       return product.stock > 0
-    // Every artisan on this platform is a woman ("Heritage by Her") — see
-    // constraints.ts. Structurally always satisfied.
+    // Every artisan on this platform is a woman ("Heritage by Her") — a
+    // request for "female" is structurally always satisfied; a request for
+    // "male" can never be satisfied (see constraints.ts, which only ever
+    // builds this constraint with one of those two values).
     case 'artisan_gender':
-      return true
+      return constraint.value === 'female'
     // Soft: "close enough" to the target price (within 25%), used only for
     // the matched-constraints explanation, not for eligibility filtering
     // (target_price is never a hard constraint — see constraints.ts).

@@ -148,6 +148,22 @@
       "query": "Show me products from Bihar, preferably made by a woman artisan.",
       "expected_entities": { "artisan_gender": "female", "artisan_gender_mode": "preferred" },
       "expected_constraint_kinds": [{ "field": "artisan_gender", "kind": "soft" }]
+    },
+    {
+      "id": "male-artisan-01",
+      "category": "constraint",
+      "query": "Show me products made by men",
+      "expect_products": false,
+      "forbid_refusal": true,
+      "required_answer_substring": ["women artisans"]
+    },
+    {
+      "id": "state-typo-01",
+      "category": "product_discovery",
+      "query": "products from madhyadpradesh",
+      "expected_entities": { "state": "Madhya Pradesh" },
+      "expect_products": true,
+      "product_state": "Madhya Pradesh"
     }
   ],
   "multi_turn": [
@@ -216,6 +232,21 @@
         {
           "query": "Show me products from Bihar",
           "expect_products": true
+        }
+      ]
+    },
+    {
+      "id": "multiturn-male-artisan-01",
+      "turns": [
+        {
+          "query": "Show me products from Bihar made by a woman artisan.",
+          "expect_products": true
+        },
+        {
+          "query": "made by men",
+          "expect_products": false,
+          "required_answer_substring": ["women artisans"],
+          "forbidden_answer_substring": ["does not contain enough information"]
         }
       ]
     }
