@@ -1,15 +1,16 @@
 import { createClient } from '@/lib/supabase-server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { NextRequest, NextResponse } from 'next/server'
-import Razorpay from 'razorpay'
-import Stripe from 'stripe'
 import { Resend } from 'resend'
-import { getSecret } from '@/lib/secrets'
+import { CANCEL_WINDOW_MS, cancelOrderWithSideEffects } from '@/lib/orders/cancellation'
 
-const CANCEL_WINDOW_MS = 48 * 60 * 60 * 1000
-const CANCELLABLE_STATUSES = ['paid', 'confirmed', 'processing']
-
-async function sendCancellationEmailToCustomer(email: string, name: string, orderShortId: string, isRefunded: boolean) {
+async function sendCancellationEmailToCustomer(
+  email: string,
+  name: string,
+  orderShortId: string,
+  isRefunded: boolean,
+  refundEligible: boolean
+) {
   const apiKey = process.env.RESEND_API_KEY
   if (!apiKey) return
   const resend = new Resend(apiKey)
@@ -29,7 +30,9 @@ async function sendCancellationEmailToCustomer(email: string, name: string, orde
         <p style="color:#6B4820;line-height:1.8;">
           ${isRefunded
             ? 'Your payment has been refunded and should reflect in your account within 5–7 business days, depending on your bank.'
-            : 'Since this was a Cash on Delivery order, no payment was collected — there is nothing to refund.'}
+            : refundEligible
+              ? 'Your order is cancelled. Your payment refund is being reviewed by our team and will be processed shortly.'
+              : 'Since this was a Cash on Delivery order, no payment was collected — there is nothing to refund.'}
         </p>
         <p style="color:#A07840;font-size:12px;text-align:center;margin-top:24px;">Questions? Write to <a href="mailto:garima@kalastree.com" style="color:#E8380A;">garima@kalastree.com</a></p>
       </div>
@@ -72,91 +75,20 @@ export async function PATCH(req: NextRequest) {
   const { orderId } = await req.json()
   if (!orderId) return NextResponse.json({ error: 'Missing orderId' }, { status: 400 })
 
-  const { data: order } = await supabaseAdmin
-    .from('orders')
-    .select('id, status, user_id, created_at, payment_method, total, user_name, user_email')
-    .eq('id', orderId)
-    .single()
+  const result = await cancelOrderWithSideEffects({
+    orderId,
+    requireUserId: user.id,
+    enforceWindowMs: CANCEL_WINDOW_MS,
+  })
 
-  if (!order || order.user_id !== user.id) {
-    return NextResponse.json({ error: 'Order not found' }, { status: 404 })
+  if (!result.ok) {
+    return NextResponse.json({ error: result.error ?? 'Could not cancel this order' }, { status: result.status })
   }
 
-  if (!CANCELLABLE_STATUSES.includes(order.status)) {
-    return NextResponse.json({ error: 'This order can no longer be cancelled — it has already shipped.' }, { status: 400 })
-  }
-
-  const placedAt = new Date(order.created_at).getTime()
-  if (Date.now() - placedAt > CANCEL_WINDOW_MS) {
-    return NextResponse.json({ error: 'The 48-hour cancellation window for this order has passed.' }, { status: 400 })
-  }
-
-  // Atomic, status-guarded update — only actually cancels if the order is
-  // still in a cancellable state at the moment this runs, so a race with the
-  // artisan shipping it in the same instant can't leave things inconsistent.
-  const { data: updated, error: updateError } = await supabaseAdmin
-    .from('orders')
-    .update({ status: 'cancelled' })
-    .eq('id', orderId)
-    .in('status', CANCELLABLE_STATUSES)
-    .select('id')
-
-  if (updateError) return NextResponse.json({ error: updateError.message }, { status: 500 })
-  if (!updated || updated.length === 0) {
-    return NextResponse.json({ error: 'This order can no longer be cancelled — it has already shipped.' }, { status: 409 })
-  }
-
-  const { data: items } = await supabaseAdmin
-    .from('order_items')
-    .select('product_id, product_name, quantity')
-    .eq('order_id', orderId)
-
-  // Restock every item — never happened anywhere in the codebase before this.
-  if (items?.length) {
-    await Promise.all(items.map((item: any) =>
-      supabaseAdmin.rpc('increment_stock', { p_product_id: item.product_id, p_qty: item.quantity })
-    ))
-  }
-
-  // Refund the captured payment for prepaid orders. COD orders never collected
-  // money (payment happens at delivery), so there's nothing to refund there.
-  let refunded = false
-  if (order.payment_method !== 'cod') {
-    const { data: payment } = await supabaseAdmin
-      .from('payments').select('*').eq('order_id', orderId).single()
-
-    if (payment && payment.status === 'captured') {
-      try {
-        if (payment.razorpay_payment_id) {
-          const [keyId, keySecret] = await Promise.all([
-            getSecret('RAZORPAY_KEY_ID'),
-            getSecret('RAZORPAY_KEY_SECRET'),
-          ])
-          if (!keyId || !keySecret) throw new Error('Razorpay secrets not configured')
-          const razorpay = new Razorpay({ key_id: keyId, key_secret: keySecret })
-          await razorpay.payments.refund(payment.razorpay_payment_id, {
-            amount: Math.round(Number(payment.amount) * 100),
-          })
-        } else if (payment.stripe_payment_intent_id) {
-          const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
-          await stripe.refunds.create({ payment_intent: payment.stripe_payment_intent_id })
-        }
-        await supabaseAdmin.from('payments').update({
-          status: 'refunded',
-          refunded_amount: payment.amount,
-          refunded_at: new Date().toISOString(),
-        }).eq('order_id', orderId)
-        refunded = true
-      } catch (err: any) {
-        // The order is already cancelled for the customer — that part succeeded.
-        // The refund itself failed and needs a human to process it manually;
-        // payment.status is deliberately left as 'captured' (not 'refunded') so
-        // a cancelled order with a still-captured payment is visible as needing
-        // follow-up, rather than silently losing the failure.
-        console.error(`Refund failed for order ${orderId}:`, err)
-      }
-    }
-  }
+  const order = result.order!
+  const items = result.items ?? []
+  const refunded = !!result.refunded
+  const refundEligible = !!result.refundEligible
 
   const shortId = orderId.slice(0, 8).toUpperCase()
 
@@ -164,7 +96,7 @@ export async function PATCH(req: NextRequest) {
   // shouldn't undo a cancellation that already succeeded).
   try {
     if (order.user_email) {
-      await sendCancellationEmailToCustomer(order.user_email, order.user_name ?? '', shortId, refunded)
+      await sendCancellationEmailToCustomer(order.user_email, order.user_name ?? '', shortId, refunded, refundEligible)
     }
   } catch (e) {
     console.error('Customer cancellation email failed:', e)

@@ -3,6 +3,7 @@ import { supabaseAdmin } from '@/lib/supabase-admin'
 import { Resend } from 'resend'
 import { NextRequest, NextResponse } from 'next/server'
 import { createShipment } from '@/lib/ithink'
+import { cancelOrderWithSideEffects } from '@/lib/orders/cancellation'
 
 async function sendShippedEmail(order: any, trackingUrl: string | undefined, shortId: string) {
   const apiKey = process.env.RESEND_API_KEY
@@ -66,6 +67,14 @@ export async function PATCH(req: NextRequest) {
   }
 
   const updates: any = { status }
+
+  if (status === 'cancelled') {
+    const result = await cancelOrderWithSideEffects({ orderId })
+    if (!result.ok) {
+      return NextResponse.json({ error: result.error ?? 'Could not cancel this order' }, { status: result.status })
+    }
+    return NextResponse.json({ success: true, refunded: result.refunded ?? false })
+  }
 
   // When shipping: auto-create the shipment with iThink Logistics to get a real
   // AWB, generate the delivery OTP, and email the customer with tracking info.

@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase-server'
+import { supabaseAdmin } from '@/lib/supabase-admin'
 import UpdateOrderStatus from './UpdateOrderStatus'
 import { getServerLang } from '@/lib/i18n/server'
 import { Lang } from '@/lib/i18n/constants'
@@ -36,6 +37,16 @@ export default async function AdminOrdersPage() {
     .select('*, order_items(*)')
     .order('created_at', { ascending: false })
 
+  const orderIds = (orders ?? []).map((order: any) => order.id)
+  const { data: payments } = orderIds.length > 0
+    ? await supabaseAdmin
+        .from('payments')
+        .select('order_id, status')
+        .in('order_id', orderIds)
+    : { data: [] }
+
+  const paymentStatusByOrder = new Map((payments ?? []).map((p: any) => [p.order_id, p.status]))
+
   return (
     <div>
       <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: '2rem', fontWeight: 700, color: '#1B2E4A', marginBottom: '2rem' }}>
@@ -51,6 +62,8 @@ export default async function AdminOrdersPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           {orders.map((order: any) => {
             const sc = STATUS_COLOR[order.status] ?? STATUS_COLOR.pending
+            const paymentStatus = paymentStatusByOrder.get(order.id)
+            const refundPendingManual = order.status === 'cancelled' && order.payment_method !== 'cod' && paymentStatus === 'captured'
             return (
               <div key={order.id} style={{ background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 10, padding: '1.5rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1rem' }}>
@@ -81,6 +94,13 @@ export default async function AdminOrdersPage() {
                         {(statusLabel[order.status] ?? order.status).toUpperCase()}
                       </span>
                     </div>
+                    {refundPendingManual && (
+                      <div style={{ marginTop: 8 }}>
+                        <span style={{ display: 'inline-block', padding: '4px 10px', borderRadius: 20, fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.04em', background: '#FEF3C7', color: '#92400E', border: '1px solid #F59E0B' }}>
+                          REFUND PENDING - MANUAL ACTION REQUIRED
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </div>
 
