@@ -24,6 +24,8 @@ const PAYMENT_STATUS_LABEL: Record<string, string> = {
   refunded: 'REFUNDED',
   cod_pending: 'COD PENDING',
   cod_collected: 'COD COLLECTED',
+  created: 'INITIATED',
+  pending: 'INITIATED',
   failed: 'FAILED',
 }
 
@@ -32,6 +34,8 @@ const PAYMENT_STATUS_STYLE: Record<string, { bg: string; color: string; border: 
   refunded: { bg: '#E0EAFF', color: '#1E3A8A', border: '#93C5FD' },
   cod_pending: { bg: '#FEF3C7', color: '#92400E', border: '#FCD34D' },
   cod_collected: { bg: '#DCFCE7', color: '#166534', border: '#86EFAC' },
+  created: { bg: '#FEF3C7', color: '#92400E', border: '#FCD34D' },
+  pending: { bg: '#FEF3C7', color: '#92400E', border: '#FCD34D' },
   failed: { bg: '#FEE2E2', color: '#B91C1C', border: '#FCA5A5' },
 }
 
@@ -61,7 +65,28 @@ export default async function AdminOrdersPage() {
         .in('order_id', orderIds)
     : { data: [] }
 
-  const paymentStatusByOrder = new Map((payments ?? []).map((p: any) => [p.order_id, p.status]))
+  const PAYMENT_STATUS_PRIORITY: Record<string, number> = {
+    refunded: 70,
+    captured: 60,
+    cod_collected: 50,
+    cod_pending: 40,
+    created: 30,
+    pending: 30,
+    failed: 20,
+  }
+
+  const paymentStatusByOrder = new Map<string, string>()
+  for (const payment of payments ?? []) {
+    const current = paymentStatusByOrder.get(payment.order_id)
+    const nextStatus = payment.status as string
+    if (!current) {
+      paymentStatusByOrder.set(payment.order_id, nextStatus)
+      continue
+    }
+    const currentRank = PAYMENT_STATUS_PRIORITY[current] ?? 0
+    const nextRank = PAYMENT_STATUS_PRIORITY[nextStatus] ?? 0
+    if (nextRank >= currentRank) paymentStatusByOrder.set(payment.order_id, nextStatus)
+  }
 
   return (
     <div>
@@ -81,7 +106,9 @@ export default async function AdminOrdersPage() {
             const paymentStatus = paymentStatusByOrder.get(order.id)
             const refundPendingManual = order.status === 'cancelled' && order.payment_method !== 'cod' && paymentStatus === 'captured'
             const paymentChip = paymentStatus ? (PAYMENT_STATUS_STYLE[paymentStatus] ?? PAYMENT_STATUS_STYLE.failed) : null
-            const paymentLabel = paymentStatus ? (PAYMENT_STATUS_LABEL[paymentStatus] ?? paymentStatus.toUpperCase()) : 'UNKNOWN'
+            const paymentLabel = paymentStatus
+              ? (PAYMENT_STATUS_LABEL[paymentStatus] ?? paymentStatus.toUpperCase())
+              : (order.payment_method !== 'cod' && order.status === 'cancelled' ? 'NOT CHARGED' : 'UNKNOWN')
             return (
               <div key={order.id} style={{ background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 10, padding: '1.5rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1rem' }}>
