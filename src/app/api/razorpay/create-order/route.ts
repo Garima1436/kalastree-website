@@ -89,8 +89,8 @@ export async function POST(req: NextRequest) {
       receipt: (order.order_number ?? order.id).slice(0, 40),
     })
 
-    // 4. Save payment record
-    await supabase.from('payments').insert({
+    // 4. Save payment record (service role avoids guest/RLS insert failures)
+    await supabaseAdmin.from('payments').insert({
       order_id: order.id,
       razorpay_order_id: rzpOrder.id,
       amount,

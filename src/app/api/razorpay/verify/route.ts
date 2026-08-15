@@ -20,14 +20,32 @@ export async function POST(req: NextRequest) {
 
     // Idempotent — skip if the webhook already processed this payment
     const { data: existingPayment } = await supabaseAdmin
-      .from('payments').select('status').eq('razorpay_order_id', razorpay_order_id).single()
+      .from('payments').select('status').eq('razorpay_order_id', razorpay_order_id).maybeSingle()
     if (existingPayment?.status === 'captured') {
       return NextResponse.json({ success: true })
     }
 
-    await supabaseAdmin.from('payments').update({
-      razorpay_payment_id, razorpay_signature, status: 'captured',
-    }).eq('razorpay_order_id', razorpay_order_id)
+    if (existingPayment) {
+      await supabaseAdmin.from('payments').update({
+        razorpay_payment_id, razorpay_signature, status: 'captured',
+      }).eq('razorpay_order_id', razorpay_order_id)
+    } else {
+      const { data: orderForAmount } = await supabaseAdmin
+        .from('orders')
+        .select('total')
+        .eq('id', orderId)
+        .maybeSingle()
+
+      await supabaseAdmin.from('payments').insert({
+        order_id: orderId,
+        razorpay_order_id: razorpay_order_id,
+        razorpay_payment_id,
+        razorpay_signature,
+        amount: Number(orderForAmount?.total ?? 0),
+        currency: 'INR',
+        status: 'captured',
+      })
+    }
 
     await supabaseAdmin.from('orders').update({ status: 'paid' }).eq('id', orderId)
 

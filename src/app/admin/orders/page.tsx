@@ -106,9 +106,10 @@ export default async function AdminOrdersPage() {
             const paymentStatus = paymentStatusByOrder.get(order.id)
             const refundPendingManual = order.status === 'cancelled' && order.payment_method !== 'cod' && paymentStatus === 'captured'
             const paymentChip = paymentStatus ? (PAYMENT_STATUS_STYLE[paymentStatus] ?? PAYMENT_STATUS_STYLE.failed) : null
+            const onlineChargedLifecycle = ['paid', 'processing', 'shipped', 'delivered', 'cancelled'].includes(order.status)
             const paymentLabel = paymentStatus
               ? (PAYMENT_STATUS_LABEL[paymentStatus] ?? paymentStatus.toUpperCase())
-              : (order.payment_method !== 'cod' && order.status === 'cancelled' ? 'NOT CHARGED' : 'UNKNOWN')
+              : (order.payment_method !== 'cod' && onlineChargedLifecycle ? 'PAID (RECORD MISSING)' : 'UNKNOWN')
             return (
               <div key={order.id} style={{ background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 10, padding: '1.5rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1rem' }}>
