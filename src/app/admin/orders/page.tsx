@@ -19,6 +19,22 @@ const STATUS_COLOR: Record<string, { bg: string; color: string }> = {
   cancelled:  { bg: '#FEE2E2', color: '#B91C1C' },
 }
 
+const PAYMENT_STATUS_LABEL: Record<string, string> = {
+  captured: 'PAID',
+  refunded: 'REFUNDED',
+  cod_pending: 'COD PENDING',
+  cod_collected: 'COD COLLECTED',
+  failed: 'FAILED',
+}
+
+const PAYMENT_STATUS_STYLE: Record<string, { bg: string; color: string; border: string }> = {
+  captured: { bg: '#DCFCE7', color: '#166534', border: '#86EFAC' },
+  refunded: { bg: '#E0EAFF', color: '#1E3A8A', border: '#93C5FD' },
+  cod_pending: { bg: '#FEF3C7', color: '#92400E', border: '#FCD34D' },
+  cod_collected: { bg: '#DCFCE7', color: '#166534', border: '#86EFAC' },
+  failed: { bg: '#FEE2E2', color: '#B91C1C', border: '#FCA5A5' },
+}
+
 export default async function AdminOrdersPage() {
   const lang = await getServerLang()
   const t = getT(lang)
@@ -64,6 +80,8 @@ export default async function AdminOrdersPage() {
             const sc = STATUS_COLOR[order.status] ?? STATUS_COLOR.pending
             const paymentStatus = paymentStatusByOrder.get(order.id)
             const refundPendingManual = order.status === 'cancelled' && order.payment_method !== 'cod' && paymentStatus === 'captured'
+            const paymentChip = paymentStatus ? (PAYMENT_STATUS_STYLE[paymentStatus] ?? PAYMENT_STATUS_STYLE.failed) : null
+            const paymentLabel = paymentStatus ? (PAYMENT_STATUS_LABEL[paymentStatus] ?? paymentStatus.toUpperCase()) : 'UNKNOWN'
             return (
               <div key={order.id} style={{ background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 10, padding: '1.5rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1rem' }}>
@@ -89,6 +107,20 @@ export default async function AdminOrdersPage() {
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'flex-end' }}>
                       <span style={{ fontSize: '0.68rem', fontWeight: 700, color: '#6B4820' }}>
                         {order.payment_method === 'cod' ? '💵 COD' : '💳 Online'}
+                      </span>
+                      <span
+                        style={{
+                          padding: '3px 10px',
+                          borderRadius: 20,
+                          fontSize: '0.68rem',
+                          fontWeight: 700,
+                          letterSpacing: '0.04em',
+                          background: paymentChip?.bg ?? '#F3F4F6',
+                          color: paymentChip?.color ?? '#374151',
+                          border: `1px solid ${paymentChip?.border ?? '#D1D5DB'}`,
+                        }}
+                      >
+                        {paymentLabel}
                       </span>
                       <span style={{ padding: '3px 12px', borderRadius: 20, fontSize: '0.7rem', fontWeight: 700, background: sc.bg, color: sc.color }}>
                         {(statusLabel[order.status] ?? order.status).toUpperCase()}
