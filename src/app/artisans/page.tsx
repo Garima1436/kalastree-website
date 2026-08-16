@@ -46,16 +46,6 @@ export default async function ArtisansPage() {
       </div>
 
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: '4rem 5%' }}>
-        {/* Stats bar */}
-        <div style={{ background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 10, padding: '1.5rem 2rem', display: 'flex', gap: '3rem', flexWrap: 'wrap', marginBottom: '3rem', justifyContent: 'center' }}>
-          {([['60–80%', t('statSectorWorkforce')], ['0.393', t('statEmpowermentIndex')], ['2,500', t('statWomenSurveyed')], ['0%', t('statPlatformsBuilt')]] as const).map(([n, l]) => (
-            <div key={l} style={{ textAlign: 'center' }}>
-              <div style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.8rem', fontWeight: 700, color: '#E8380A' }}>{n}</div>
-              <div style={{ fontSize: '0.75rem', color: '#6B4820', maxWidth: 160, lineHeight: 1.4 }}>{l}</div>
-            </div>
-          ))}
-        </div>
-
         {artisans.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '5rem 0', color: '#6B4820' }}>
             <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>👩‍🎨</div>
