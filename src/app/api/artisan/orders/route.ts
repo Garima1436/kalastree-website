@@ -155,7 +155,7 @@ export async function PATCH(req: NextRequest) {
         phone: order.phone,
         email: order.user_email,
         items: myItems.map((i: any) => ({ product_name: i.product_name, product_quantity: i.quantity, product_price: i.price })),
-        weightGrams, lengthCm, widthCm, heightCm,
+        weightKg: weightGrams / 1000, lengthCm, widthCm, heightCm,
         pickupAddressId: artisan.ithink_pickup_address_id,
         returnAddressId: artisan.ithink_return_address_id ?? artisan.ithink_pickup_address_id,
         paymentMode: order.payment_method === 'cod' ? 'COD' : 'Prepaid',

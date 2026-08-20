@@ -45,7 +45,7 @@ export default function ArtisanProductForm({ artisanId, initialData, mode = 'new
     state: initialData?.state ?? '',
     stock: initialData?.stock?.toString() ?? '1',
     image_url: initialData?.images?.[0] ?? '',
-    weight_grams: initialData?.weight_grams?.toString() ?? '',
+    weight_grams: initialData?.weight_grams != null ? (initialData.weight_grams / 1000).toString() : '',
     length_cm: initialData?.length_cm?.toString() ?? '',
     width_cm: initialData?.width_cm?.toString() ?? '',
     height_cm: initialData?.height_cm?.toString() ?? '',
@@ -80,7 +80,7 @@ export default function ArtisanProductForm({ artisanId, initialData, mode = 'new
       price: parseFloat(form.price), gi_tag: form.gi_tag || null,
       category: form.category, subcategory: form.subcategory || null, state: form.state || null,
       stock: parseInt(form.stock), artisan_id: artisanId, images,
-      weight_grams: form.weight_grams ? parseInt(form.weight_grams) : null,
+      weight_grams: form.weight_grams ? Math.round(parseFloat(form.weight_grams) * 1000) : null,
       length_cm: form.length_cm ? parseInt(form.length_cm) : null,
       width_cm: form.width_cm ? parseInt(form.width_cm) : null,
       height_cm: form.height_cm ? parseInt(form.height_cm) : null,
@@ -207,7 +207,7 @@ export default function ArtisanProductForm({ artisanId, initialData, mode = 'new
           <div>
             <label style={labelStyle}>Shipping weight & dimensions</label>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '0.75rem' }}>
-              <input style={inputStyle} type="number" min="0" placeholder="Weight (g)"
+              <input style={inputStyle} type="number" min="0" step="0.001" placeholder="Weight (kg)"
                 value={form.weight_grams} onChange={e => set('weight_grams', e.target.value)} />
               <input style={inputStyle} type="number" min="0" placeholder="Length (cm)"
                 value={form.length_cm} onChange={e => set('length_cm', e.target.value)} />

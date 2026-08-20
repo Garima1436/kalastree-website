@@ -32,7 +32,7 @@ export interface CreateShipmentInput {
   phone: string
   email?: string
   items: ShipmentItem[]
-  weightGrams: number
+  weightKg: number
   lengthCm: number
   widthCm: number
   heightCm: number
@@ -110,11 +110,8 @@ export async function createShipment(input: CreateShipmentInput): Promise<Create
         shipment_length: String(input.lengthCm),
         shipment_width: String(input.widthCm),
         shipment_height: String(input.heightCm),
-        // iThink's docs annotate this field "#in Kg" in one example, but the
-        // sample value (400 for two t-shirts) only makes physical sense as
-        // grams — treating that annotation as a doc typo. If a real shipment
-        // gets rejected/mispriced for weight, check this first.
-        weight: String(input.weightGrams),
+        // iThink expects shipment weight in kilograms.
+        weight: String(input.weightKg),
         shipping_charges: '0',
         giftwrap_charges: '0',
         transaction_charges: '0',
