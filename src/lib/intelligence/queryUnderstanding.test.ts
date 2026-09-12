@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { groundInCurrentMessage, mergeEntities, isAllStatesRequest } from './queryUnderstanding'
+import { groundInCurrentMessage, mergeEntities, isAllStatesRequest, isGIDefinitionRequest } from './queryUnderstanding'
 import type { ExtractedEntities } from './types'
 
 const EMPTY_ENTITIES: ExtractedEntities = {
@@ -177,5 +177,30 @@ describe('isAllStatesRequest', () => {
   it('does not misfire on a shipping/logistics question that happens to mention states', () => {
     expect(isAllStatesRequest('What states does Kalastree ship to?')).toBe(false)
     expect(isAllStatesRequest('Which states do you deliver to?')).toBe(false)
+  })
+})
+
+describe('isGIDefinitionRequest', () => {
+  // Regression: reproduced live — "What is GI?" was classified
+  // general_question (not gi_information) by the query-understanding LLM,
+  // so it never reached GI_DEFINITION_EVIDENCE and fell back to the generic
+  // insufficient-evidence refusal.
+  it('detects bare definitional phrasings', () => {
+    expect(isGIDefinitionRequest('What is GI?')).toBe(true)
+    expect(isGIDefinitionRequest("what's a gi")).toBe(true)
+    expect(isGIDefinitionRequest('What does GI mean?')).toBe(true)
+    expect(isGIDefinitionRequest('What does GI stand for?')).toBe(true)
+    expect(isGIDefinitionRequest('What is a Geographical Indication?')).toBe(true)
+    expect(isGIDefinitionRequest('Explain GI')).toBe(true)
+    expect(isGIDefinitionRequest('Define GI')).toBe(true)
+  })
+
+  it('detects Hindi definitional phrasing', () => {
+    expect(isGIDefinitionRequest('जीआई क्या है')).toBe(true)
+  })
+
+  it('does not misfire on an ordinary craft/product question', () => {
+    expect(isGIDefinitionRequest('Show me Madhubani paintings')).toBe(false)
+    expect(isGIDefinitionRequest('Is Pashmina GI certified?')).toBe(false)
   })
 })

@@ -117,6 +117,25 @@ export function isAllStatesRequest(question: string): boolean {
   return ALL_STATES_KEYWORDS.test(question) && !SHIPPING_EXCLUSION.test(question)
 }
 
+// A bare "What is GI?" has no craft/product/state entity to anchor it, and
+// reproduced live: the LLM classifies it as general_question rather than
+// gi_information (no explicit rule told it otherwise, unlike
+// kalastree_information's "What is Kalastree?" example above) — so it never
+// reaches GI_DEFINITION_EVIDENCE (see pipeline.ts) and falls back to the
+// generic insufficient-evidence refusal for the single most basic question a
+// GI marketplace chatbot should answer. Same deterministic-backstop pattern
+// as isAllStatesRequest above, since the LLM alone wasn't reliable here
+// either. Safe to match broadly (including "what is GI status of Pashmina")
+// since this only ADDS the intent — pipeline.ts still only injects the
+// generic definition when verification comes back null, so a real
+// craft-specific question is unaffected.
+const GI_DEFINITION_KEYWORDS =
+  /\bwhat(?:'s| is)\s+(a\s+)?gi\b|\bwhat does\s+gi\s+(mean|stand for)\b|\bwhat is\s+(a\s+)?geographical indication\b|\b(define|explain)\s+gi\b|\bmeaning of gi\b|जीआई\s*क्या है|भौगोलिक\s*संकेत\s*क्या है/i
+
+export function isGIDefinitionRequest(question: string): boolean {
+  return GI_DEFINITION_KEYWORDS.test(question)
+}
+
 // Only checks entities freshly extracted THIS turn — previously-merged
 // values already passed this check in the turn they were extracted.
 // Exported for direct unit testing (see queryUnderstanding.test.ts).
@@ -274,6 +293,10 @@ export async function understandQuery(
     merged.state = null
     merged.region = null
     if (!intents.includes('state_information')) intents = [...intents, 'state_information']
+  }
+
+  if (isGIDefinitionRequest(question) && !intents.includes('gi_information')) {
+    intents = [...intents, 'gi_information']
   }
 
   return { raw_query: question, intents, entities: merged }
