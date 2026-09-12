@@ -10,12 +10,12 @@ import { understandQuery, isAllStatesRequest } from './queryUnderstanding'
 import { buildConstraints } from './constraints'
 import { verifyGI } from './verification'
 import { getAllGIProducts, findArtisanByName, getProductCountsByState } from './relationships'
-import { retrieveCandidateProducts, retrieveNarrativeEvidence } from './retrieval'
+import { retrieveCandidateProducts, retrieveNarrativeEvidence, warmUpChatbotBackend } from './retrieval'
 import { filterEligible } from './eligibility'
 import { rankProducts } from './ranking'
 import { buildEvidence } from './evidence'
 import { generateResponse } from './responseGenerator'
-import { KALASTREE_EVIDENCE, WOMEN_ONLY_PLATFORM_EVIDENCE, isFounderName } from './kalastreeInfo'
+import { KALASTREE_EVIDENCE, WOMEN_ONLY_PLATFORM_EVIDENCE, GI_DEFINITION_EVIDENCE, isFounderName } from './kalastreeInfo'
 import { PRODUCT_INTENTS } from './types'
 import type { DebugInfo, Evidence, StructuredQuery } from './types'
 
@@ -64,6 +64,8 @@ export async function runPipeline(
   previousEvidence: Evidence[] | null = null
 ): Promise<PipelineResult> {
   const t0 = Date.now()
+  // Fire-and-forget, before intents are known — see retrieval.ts for why.
+  warmUpChatbotBackend()
   const structuredQuery = await understandQuery(question, history, previousQuery)
   const t1 = Date.now()
   const needsProducts = structuredQuery.intents.some(i => PRODUCT_INTENTS.includes(i))
@@ -92,6 +94,16 @@ export async function runPipeline(
   const artisanNameIsFounder = isFounderName(structuredQuery.entities.artisan)
   if (structuredQuery.intents.includes('kalastree_information') || artisanNameIsFounder) {
     evidence.unshift(...KALASTREE_EVIDENCE)
+  }
+
+  // A generic "what is a GI?" (no craft/state entity, so verifyGI above
+  // returned null — nothing to look up) previously depended entirely on the
+  // external research-corpus retrieval, which has no real definitional
+  // passage and can also return nothing on a cold-started backend. Give it
+  // the static definition instead. A specific question ("is Pashmina GI
+  // tagged?") already gets a real verification result and doesn't need this.
+  if (structuredQuery.intents.includes('gi_information') && !verification) {
+    evidence.unshift(GI_DEFINITION_EVIDENCE)
   }
 
   // A request for a male artisan/product is answerable with a fixed,

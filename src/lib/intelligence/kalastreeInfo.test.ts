@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { isFounderName, KALASTREE_EVIDENCE, FOUNDER_NAME } from './kalastreeInfo'
+import { isFounderName, KALASTREE_EVIDENCE, GI_DEFINITION_EVIDENCE, FOUNDER_NAME } from './kalastreeInfo'
 
 describe('isFounderName', () => {
   it('matches the founder name case-insensitively', () => {
@@ -33,5 +33,17 @@ describe('KALASTREE_EVIDENCE', () => {
 
   it('includes the founder name in at least one entry', () => {
     expect(KALASTREE_EVIDENCE.some(e => e.retrieved_text.includes(FOUNDER_NAME))).toBe(true)
+  })
+})
+
+describe('GI_DEFINITION_EVIDENCE', () => {
+  it('is marked verified static evidence', () => {
+    expect(GI_DEFINITION_EVIDENCE.source_type).toBe('static')
+    expect(GI_DEFINITION_EVIDENCE.verification_status).toBe('verified')
+  })
+
+  it('actually defines what a GI is', () => {
+    expect(GI_DEFINITION_EVIDENCE.retrieved_text).toMatch(/geographical origin/i)
+    expect(GI_DEFINITION_EVIDENCE.retrieved_text).toMatch(/DPIIT/)
   })
 })

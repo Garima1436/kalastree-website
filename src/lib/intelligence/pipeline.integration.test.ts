@@ -20,6 +20,16 @@ describe('GI queries', () => {
     expect(result.answer).not.toMatch(/not certified|is not gi/i)
     expect(result.sources.some(s => s.toLowerCase().includes('madhubani'))).toBe(true)
   }, TIMEOUT)
+
+  // Regression: a generic "what is GI?" has no craft/state entity to verify
+  // against, so it previously depended entirely on the flaky external
+  // research-corpus retrieval and fell through to the generic
+  // insufficient-evidence fallback — see GI_DEFINITION_EVIDENCE.
+  it('explains what a GI is for a generic definitional question', async () => {
+    const result = await runPipeline('What is GI?', [], null, false)
+    expect(result.answer).not.toContain('does not contain enough information')
+    expect(result.answer.toLowerCase()).toMatch(/geographical/i)
+  }, TIMEOUT)
 })
 
 describe('product queries', () => {

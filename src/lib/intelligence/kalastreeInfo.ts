@@ -49,6 +49,34 @@ export function isFounderName(name: string | null): boolean {
   return name.trim().toLowerCase() === FOUNDER_NAME.toLowerCase()
 }
 
+// A generic "what is a GI?" has no product/craft/state entity for
+// verification.ts to check (verifyGI returns null with nothing to look up),
+// and previously fell through to the external research-corpus retrieval
+// alone — a PhD survey-data corpus with no actual definitional passage, and
+// one that also silently returns nothing on a cold-started backend (see
+// retrieval.ts's 15s timeout). Net effect: the single most basic question a
+// GI marketplace chatbot should answer ("what is GI?") was hitting the
+// generic insufficient-evidence fallback. This is settled, publicly
+// documented fact (DPIIT / the GI Act, 1999) — not corpus- or DB-derived —
+// so it is a static block like KALASTREE_EVIDENCE above, not a retrieval.
+export const GI_DEFINITION_EVIDENCE: Evidence = {
+  source_id: 'static:gi-definition',
+  source_type: 'static',
+  source_title: 'What is a Geographical Indication (GI)?',
+  source_reference: 'Geographical Indications of Goods (Registration and Protection) Act, 1999 (DPIIT)',
+  retrieved_text:
+    'A Geographical Indication (GI) is a name or sign used on products that corresponds to a specific geographical ' +
+    'origin, where a given quality, reputation, or other characteristic of the product is essentially attributable ' +
+    'to that place of origin. In India, GI tags are registered and administered by the Geographical Indications ' +
+    'Registry under the Department for Promotion of Industry and Internal Trade (DPIIT), under the Geographical ' +
+    'Indications of Goods (Registration and Protection) Act, 1999. A GI tag legally protects the name so that only ' +
+    'producers from that specific region/community can use it, helping establish authenticity and often commanding ' +
+    'a price premium for the makers. Well-known Indian GI examples include Darjeeling Tea, Pashmina, and Madhubani ' +
+    'Painting. KalaStree cross-checks each listed product against the DPIIT GI registry before marking it verified.',
+  relevance_score: 1,
+  verification_status: 'verified',
+}
+
 // Same "sourced from real, existing site content" rule as KALASTREE_EVIDENCE
 // above — this is a direct restatement of the brand tagline ("Heritage by
 // Her") and mission copy already on the site, not a new claim.

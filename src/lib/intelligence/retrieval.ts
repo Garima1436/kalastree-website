@@ -76,12 +76,40 @@ export async function retrieveCandidateProducts(entities: ExtractedEntities): Pr
   return candidates
 }
 
+// The chatbot backend is a free-tier Hugging Face Space, which sleeps after
+// inactivity — a cold container can take well over retrieveNarrativeEvidence's
+// own 15s timeout to wake (measured 20s+ manually). Two best-effort, non-fatal
+// mitigations for that, both module-scoped in-memory state:
+//
+// 1. warmUpChatbotBackend() is fired at the very start of the pipeline (see
+//    pipeline.ts), in parallel with query understanding, before intents are
+//    even known — so a sleeping container gets a head start waking up before
+//    /retrieve is actually needed. It's fired unconditionally (not gated on
+//    intent) because query understanding hasn't run yet; the ping itself is
+//    a negligible cost either way.
+// 2. A short cooldown after a failed/timed-out call — once we know the
+//    backend just failed to respond in time, the NEXT narrative-intent
+//    question in the same burst skips straight to "no narrative evidence"
+//    instead of paying the same ~15s timeout again. This degrades gracefully
+//    to the old always-try behavior in a serverless deployment where each
+//    invocation is a fresh process (no shared memory) — it only helps when
+//    the runtime happens to reuse a warm instance across requests, but never
+//    hurts when it can't.
+const BACKEND_COOLDOWN_MS = 20000
+let backendCooldownUntil = 0
+
+export function warmUpChatbotBackend(): void {
+  if (Date.now() < backendCooldownUntil) return
+  fetch(`${CHATBOT_BACKEND_URL}/`, { signal: AbortSignal.timeout(20000) }).catch(() => {})
+}
+
 // Narrative/cultural evidence from the Python backend's existing Chroma
 // vector store — only called for intents that actually need it, so a
 // plain product lookup doesn't pay the extra network hop.
 export async function retrieveNarrativeEvidence(question: string, intents: Intent[]): Promise<NarrativeChunk[]> {
   const needsNarrative = intents.some(i => NARRATIVE_INTENTS.includes(i))
   if (!needsNarrative) return []
+  if (Date.now() < backendCooldownUntil) return []
 
   try {
     const response = await fetch(`${CHATBOT_BACKEND_URL}/retrieve`, {
@@ -90,11 +118,16 @@ export async function retrieveNarrativeEvidence(question: string, intents: Inten
       body: JSON.stringify({ query: question, k: 5 }),
       signal: AbortSignal.timeout(15000),
     })
-    if (!response.ok) return []
+    if (!response.ok) {
+      backendCooldownUntil = Date.now() + BACKEND_COOLDOWN_MS
+      return []
+    }
+    backendCooldownUntil = 0
     const data = await response.json()
     return Array.isArray(data.chunks) ? data.chunks : []
   } catch (err) {
     console.error('Narrative evidence retrieval failed (non-fatal):', err)
+    backendCooldownUntil = Date.now() + BACKEND_COOLDOWN_MS
     return []
   }
 }
