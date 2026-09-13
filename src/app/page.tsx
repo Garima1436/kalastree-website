@@ -5,6 +5,7 @@ import ProductCarousel from '@/components/ProductCarousel'
 import ArtisanCard from '@/components/ArtisanCard'
 import CategoryGrid from '@/components/CategoryGrid'
 import HeroSection from '@/components/HeroCarousel'
+import Reveal from '@/components/Reveal'
 import Link from 'next/link'
 import fs from 'fs'
 import path from 'path'
@@ -107,7 +108,7 @@ export default async function HomePage() {
 
       {/* FEATURED PRODUCTS */}
       <section style={{ padding: '2.5rem 5% 5rem', background: '#E8E3D9' }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto' }}>
+        <Reveal style={{ maxWidth: 1280, margin: '0 auto' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '3rem', flexWrap: 'wrap', gap: '1rem' }}>
             <div>
               <p style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#1A7A32', marginBottom: '0.4rem' }}>{t('featuredEyebrow')}</p>
@@ -128,7 +129,7 @@ export default async function HomePage() {
           ) : (
             <ProductCarousel products={products} />
           )}
-        </div>
+        </Reveal>
       </section>
 
       {/* CATEGORY ROWS — one horizontally-scrolling rail per category, only shown if it has products */}
@@ -136,7 +137,7 @@ export default async function HomePage() {
         const meta = CATEGORY_META[key]
         return (
           <section key={key} style={{ padding: '0 5% 3rem', background: '#E8E3D9' }}>
-            <div style={{ maxWidth: 1280, margin: '0 auto' }}>
+            <Reveal style={{ maxWidth: 1280, margin: '0 auto' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
                 <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.4rem, 2.4vw, 1.9rem)', fontWeight: 700, color: '#1B2E4A' }}>
                   {meta.icon} {meta.label}
@@ -146,21 +147,21 @@ export default async function HomePage() {
                 </Link>
               </div>
               <ProductCarousel products={byCategory[key]!} />
-            </div>
+            </Reveal>
           </section>
         )
       })}
 
       {/* GI CATEGORIES */}
       <section style={{ padding: '1rem 5% 5rem', background: '#E8E3D9' }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto' }}>
+        <Reveal style={{ maxWidth: 1280, margin: '0 auto' }}>
           <div className="folk-divider" style={{ margin: '0 0 1rem' }}><span>✦ ✧ ✦</span></div>
           <p style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#1A7A32', textAlign: 'center', marginBottom: '0.6rem' }}>{t('categoryEyebrow')}</p>
           <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.8rem, 3vw, 2.6rem)', fontWeight: 700, color: '#1B2E4A', textAlign: 'center', marginBottom: '3rem' }}>
             {t('categoryHeadingPrefix')} <span style={{ color: '#E8380A' }}>{t('categoryHeadingHighlight')}</span>
           </h2>
           <CategoryGrid categoryImages={categoryImages} />
-        </div>
+        </Reveal>
       </section>
 
       {/* MISSION STRIP */}
@@ -171,12 +172,12 @@ export default async function HomePage() {
             { icon: '✅', title: t('missionGiTitle'), body: t('missionGiBody') },
             { icon: '🌾', title: t('missionWomenTitle'), body: t('missionWomenBody') },
             { icon: '🤖', title: t('missionAiTitle'), body: t('missionAiBody') },
-          ].map(({ icon, title, body }) => (
-            <div key={title} style={{ textAlign: 'center' }}>
+          ].map(({ icon, title, body }, i) => (
+            <Reveal key={title} delay={i * 120} style={{ textAlign: 'center' }}>
               <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>{icon}</div>
               <div style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.2rem', fontWeight: 600, color: '#fff', marginBottom: '0.5rem' }}>{title}</div>
               <p style={{ fontSize: '0.88rem', color: 'rgba(255,255,255,0.65)', lineHeight: 1.7 }}>{body}</p>
-            </div>
+            </Reveal>
           ))}
         </div>
       </section>
@@ -184,7 +185,7 @@ export default async function HomePage() {
       {/* ARTISANS */}
       {artisans.length > 0 && (
         <section style={{ padding: '2.5rem 5% 5rem', background: '#E8E3D9' }}>
-          <div style={{ maxWidth: 1280, margin: '0 auto' }}>
+          <Reveal style={{ maxWidth: 1280, margin: '0 auto' }}>
             <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
               <p style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#1A7A32', marginBottom: '0.4rem' }}>{t('artisansEyebrow')}</p>
               <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.8rem, 3vw, 2.6rem)', fontWeight: 700, color: '#1B2E4A' }}>
@@ -199,13 +200,13 @@ export default async function HomePage() {
                 {t('viewAllArtisansLink')} →
               </Link>
             </div>
-          </div>
+          </Reveal>
         </section>
       )}
 
       {/* CTA — Join as Artisan */}
       <section style={{ padding: '5rem 5%', background: '#C8F5D8' }}>
-        <div style={{ maxWidth: 720, margin: '0 auto', textAlign: 'center' }}>
+        <Reveal style={{ maxWidth: 720, margin: '0 auto', textAlign: 'center' }}>
           <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🧵</div>
           <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.8rem, 3vw, 2.4rem)', fontWeight: 700, color: '#1A7A32', marginBottom: '1rem' }}>
             {t('ctaHeading')}
@@ -216,7 +217,7 @@ export default async function HomePage() {
           <Link href="/join" style={{ background: '#1A7A32', color: '#fff', padding: '14px 32px', borderRadius: 5, fontWeight: 700, textDecoration: 'none', fontSize: '1rem', display: 'inline-block' }}>
             {t('ctaButton')} →
           </Link>
-        </div>
+        </Reveal>
       </section>
     </>
   )

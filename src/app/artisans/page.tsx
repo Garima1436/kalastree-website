@@ -1,6 +1,7 @@
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import type { Artisan } from '@/lib/types'
 import ArtisanCard from '@/components/ArtisanCard'
+import Reveal from '@/components/Reveal'
 import Link from 'next/link'
 import { getServerLang, getT } from '@/lib/i18n/server'
 
@@ -55,9 +56,9 @@ export default async function ArtisansPage() {
             </Link>
           </div>
         ) : (
-          <div className="artisan-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1.25rem' }}>
+          <Reveal direction="none" className="artisan-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1.25rem' }}>
             {artisans.map(a => <ArtisanCard key={a.id} artisan={a} />)}
-          </div>
+          </Reveal>
         )}
       </div>
 

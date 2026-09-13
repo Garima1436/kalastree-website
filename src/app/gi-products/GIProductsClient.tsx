@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useTranslation } from '@/lib/i18n/useTranslation'
 import { localizedGiField } from '@/lib/giProductLocale'
+import Reveal from '@/components/Reveal'
 
 export interface GIProduct {
   id: string
@@ -235,7 +236,7 @@ export default function GIProductsClient({ products }: { products: GIProduct[] }
             <button onClick={() => { setSearchQuery(''); setActiveState('All States') }} style={{ marginTop: '1rem', background: '#E8380A', color: '#fff', border: 'none', borderRadius: 6, padding: '8px 20px', cursor: 'pointer', fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>{t('clearFilters')}</button>
           </div>
         ) : (
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-6 max-sm:grid-cols-2 max-sm:gap-3">
+          <Reveal direction="none" className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-6 max-sm:grid-cols-2 max-sm:gap-3">
             {filtered.map(product => (
               <div key={product.id} onClick={() => setSelectedProduct(product)}
                 className="cursor-pointer overflow-hidden rounded-xl border border-[#DDB840] bg-white shadow-[0_2px_8px_rgba(0,0,0,0.04)] transition-all duration-[180ms] hover:-translate-y-1 hover:shadow-[0_12px_32px_rgba(0,0,0,0.12)]"
@@ -256,13 +257,13 @@ export default function GIProductsClient({ products }: { products: GIProduct[] }
                 </div>
               </div>
             ))}
-          </div>
+          </Reveal>
         )}
       </div>
 
       {/* Knowledge Banner */}
       <div style={{ background: '#1B2E4A', padding: '4rem 5%', marginTop: '2rem' }}>
-        <div style={{ maxWidth: 1000, margin: '0 auto', textAlign: 'center' }}>
+        <Reveal style={{ maxWidth: 1000, margin: '0 auto', textAlign: 'center' }}>
           <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#D4A000', marginBottom: '1rem' }}>{t('aiPoweredKnowledge')}</p>
           <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.8rem, 3.5vw, 2.6rem)', fontWeight: 700, color: '#fff', marginBottom: '1rem' }}>{t('askChatbotTitle')}</h2>
           <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.1rem', color: 'rgba(255,255,255,0.7)', lineHeight: 1.8, maxWidth: 600, margin: '0 auto 2rem' }}>
@@ -272,7 +273,7 @@ export default function GIProductsClient({ products }: { products: GIProduct[] }
             <Link href="/chatbot" style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.85rem', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', background: '#E8380A', color: '#fff', padding: '12px 28px', borderRadius: 6, textDecoration: 'none' }}>{t('chatWithAi')}</Link>
             <Link href="/shop" style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.85rem', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', background: 'transparent', color: '#D4A000', border: '1.5px solid #D4A000', padding: '12px 28px', borderRadius: 6, textDecoration: 'none' }}>{t('shopGiProducts')}</Link>
           </div>
-        </div>
+        </Reveal>
       </div>
 
       {selectedProduct && <ProductModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />}

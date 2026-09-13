@@ -3,6 +3,7 @@ import type { Product, Category } from '@/lib/types'
 import { CATEGORY_META } from '@/lib/types'
 import ProductCard from '@/components/ProductCard'
 import MobileFilterSheet from '@/components/MobileFilterSheet'
+import Reveal from '@/components/Reveal'
 import Link from 'next/link'
 import { getServerLang, getT } from '@/lib/i18n/server'
 
@@ -99,9 +100,9 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
             <Link href="/join" style={{ color: '#E8380A', fontWeight: 700 }}>{t('inviteArtisan')}</Link>
           </div>
         ) : (
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-5 max-sm:grid-cols-2 max-sm:gap-[0.6rem]">
+          <Reveal direction="none" className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-5 max-sm:grid-cols-2 max-sm:gap-[0.6rem]">
             {products.map(p => <ProductCard key={p.id} product={p} />)}
-          </div>
+          </Reveal>
         )}
       </div>
     </div>

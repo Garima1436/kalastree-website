@@ -2,6 +2,7 @@ import { supabaseAdmin } from '@/lib/supabase-admin'
 import Link from 'next/link'
 import { getVideoEmbedUrl, isDirectVideoUrl } from '@/lib/videoEmbed'
 import { stripHtml } from '@/lib/richText'
+import Reveal from '@/components/Reveal'
 
 export const revalidate = 600
 
@@ -36,7 +37,7 @@ export default async function NewsEventsPage() {
             <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.4rem' }}>Nothing here yet — check back soon.</p>
           </div>
         ) : (
-          <div className="news-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
+          <Reveal direction="none" className="news-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
             {items.map((n: any) => {
               const embedUrl = n.video_url ? getVideoEmbedUrl(n.video_url) : null
               const directVideo = n.video_url && !embedUrl && isDirectVideoUrl(n.video_url)
@@ -117,7 +118,7 @@ export default async function NewsEventsPage() {
                 <div key={n.id}>{card}</div>
               )
             })}
-          </div>
+          </Reveal>
         )}
       </div>
 

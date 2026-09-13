@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import QuoteSlider from '@/components/QuoteSlider'
+import Reveal from '@/components/Reveal'
 import { getServerLang, getT } from '@/lib/i18n/server'
 
 export default async function AboutPage() {
@@ -22,7 +23,7 @@ export default async function AboutPage() {
 
       {/* Mission */}
       <section id="gi-products" style={{ padding: '5rem 5%' }}>
-        <div className="about-mission-grid" style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '5rem', alignItems: 'start' }}>
+        <Reveal className="about-mission-grid" style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '5rem', alignItems: 'start' }}>
           <div>
             <p style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#1A7A32', marginBottom: '0.6rem' }}>{t('missionEyebrow')}</p>
             <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.8rem, 3vw, 2.4rem)', fontWeight: 700, color: '#1B2E4A', marginBottom: '1.5rem' }}>
@@ -44,12 +45,12 @@ export default async function AboutPage() {
           </div>
           {/* Right column — quote slider */}
           <QuoteSlider />
-        </div>
+        </Reveal>
       </section>
 
       {/* About Garima */}
       <section id="research" style={{ padding: '5rem 5%', background: '#FFE8A8' }}>
-        <div className="about-research-grid" style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '300px 1fr', gap: '4rem', alignItems: 'center' }}>
+        <Reveal className="about-research-grid" style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '300px 1fr', gap: '4rem', alignItems: 'center' }}>
           <div style={{ textAlign: 'center' }}>
             <div style={{ width: '100%', aspectRatio: '4/5', borderRadius: '12px 50% 12px 50%', border: '2.5px solid #D4A000', overflow: 'hidden', background: '#FFF8EE', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem' }}>
               <img src="/garima.jpeg" alt="Garima Awasthi" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -72,12 +73,12 @@ export default async function AboutPage() {
               ))}
             </div>
           </div>
-        </div>
+        </Reveal>
       </section>
 
       {/* Our Story */}
       <section id="our-story" style={{ padding: '5rem 5%', background: 'var(--parchment)' }}>
-        <div className="about-research-grid" style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '300px 1fr', gap: '4rem', alignItems: 'start' }}>
+        <Reveal className="about-research-grid" style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '300px 1fr', gap: '4rem', alignItems: 'start' }}>
           <div style={{ textAlign: 'center' }}>
             <div style={{ width: '100%', aspectRatio: '4/5', borderRadius: '12px 50% 12px 50%', border: '2.5px solid #D4A000', overflow: 'hidden', background: '#FFF8EE', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem' }}>
               <span style={{ fontSize: '3rem' }}>🖼️</span>
@@ -147,12 +148,12 @@ export default async function AboutPage() {
               ))}
             </p>
           </div>
-        </div>
+        </Reveal>
       </section>
 
       {/* Memorial */}
       <section id="tribute" style={{ background: '#1B2E4A', padding: '4rem 5%', borderTop: '1px solid rgba(212,160,0,0.2)', textAlign: 'center' }}>
-        <div style={{ maxWidth: 680, margin: '0 auto' }}>
+        <Reveal style={{ maxWidth: 680, margin: '0 auto' }}>
           <div style={{ fontSize: '2.5rem', marginBottom: '1rem', animation: 'diya 3s ease-in-out infinite', display: 'inline-block' }}>🪔</div>
           <p style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#D4A000', marginBottom: '1rem' }}>{t('memorialEyebrow')}</p>
           <h3 style={{ fontFamily: "'EB Garamond', serif", fontSize: '2rem', fontWeight: 700, color: '#fff', marginBottom: '0.5rem' }}>{t('memorialTitlePart1')} <span style={{ color: '#D4A000' }}>S.B. Sharma</span></h3>
@@ -162,13 +163,13 @@ export default async function AboutPage() {
           <p style={{ fontSize: '0.88rem', color: 'rgba(255,255,255,0.5)', lineHeight: 1.75 }}>
             {t('memorialAttribution')}
           </p>
-        </div>
+        </Reveal>
         <style>{`@keyframes diya { 0%,100%{transform:scale(1) rotate(-2deg)} 50%{transform:scale(1.08) rotate(2deg)} }`}</style>
       </section>
 
       {/* Contact */}
       <section id="contact" style={{ padding: '5rem 5%' }}>
-        <div style={{ maxWidth: 700, margin: '0 auto', textAlign: 'center' }}>
+        <Reveal style={{ maxWidth: 700, margin: '0 auto', textAlign: 'center' }}>
           <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.8rem, 3vw, 2.4rem)', fontWeight: 700, color: '#1B2E4A', marginBottom: '1rem' }}>
             {t('contactTitle')}
           </h2>
@@ -184,7 +185,7 @@ export default async function AboutPage() {
             <Link href="/join" style={{ background: '#E8380A', color: '#fff', padding: '14px 32px', borderRadius: 5, fontWeight: 700, textDecoration: 'none' }}>{t('joinAsArtisanCta')}</Link>
             <Link href="/shop" style={{ background: 'transparent', color: '#E8380A', padding: '14px 32px', borderRadius: 5, border: '2px solid #E8380A', fontWeight: 700, textDecoration: 'none' }}>{t('browseProductsCta')}</Link>
           </div>
-        </div>
+        </Reveal>
       </section>
       <style>{`
         @media(max-width:768px){
