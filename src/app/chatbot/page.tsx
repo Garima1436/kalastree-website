@@ -85,7 +85,7 @@ export default function ChatbotPage() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: '1.25rem', paddingBottom: '1rem', borderBottom: '1px solid rgba(212,160,0,0.2)' }}>
             <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'linear-gradient(135deg, #E8380A, #D4A000)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem' }}>🌾</div>
             <div>
-              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#fff' }}>KalaStree AI</div>
+              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#fff' }}>KalaSakhi</div>
               <div style={{ fontSize: '0.7rem', color: '#4CAF50', fontWeight: 700, letterSpacing: '0.06em' }}>● {t('onlineStatus')}</div>
             </div>
             {history.length > 0 && (

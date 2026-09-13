@@ -269,7 +269,7 @@ export default function ChatWidget() {
               🌾
             </div>
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#fff', fontFamily: "'Inter', sans-serif" }}>KalaStree AI</div>
+              <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#fff', fontFamily: "'Inter', sans-serif" }}>KalaSakhi</div>
               <div style={{ fontSize: '0.68rem', color: '#4CAF50', fontWeight: 700, letterSpacing: '0.05em' }}>● {t('giResearchAssistant')}</div>
             </div>
             <button onClick={() => setOpen(false)}

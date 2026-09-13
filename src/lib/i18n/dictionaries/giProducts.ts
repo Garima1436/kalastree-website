@@ -31,7 +31,7 @@ const dict = {
     aiPoweredKnowledge: 'AI-Powered Knowledge',
     askChatbotTitle: 'Ask our chatbot anything about GI heritage',
     askChatbotDescription: "Trained on 800+ GI products and women artisan's survey responses — our AI can answer questions about craft history, women's involvement, market access, and more.",
-    chatWithAi: 'Chat with KalaStree AI',
+    chatWithAi: 'Chat with KalaSakhi',
     shopGiProducts: 'Shop GI Products',
   },
   hi: {
@@ -66,7 +66,7 @@ const dict = {
     aiPoweredKnowledge: 'एआई-संचालित ज्ञान',
     askChatbotTitle: 'जीआई विरासत के बारे में हमारे चैटबॉट से कुछ भी पूछें',
     askChatbotDescription: 'यह 800+ जीआई उत्पादों और महिला कारीगरों के सर्वेक्षण उत्तरों पर प्रशिक्षित है — हमारा एआई शिल्प इतिहास, महिलाओं की भागीदारी, बाज़ार पहुंच और अन्य विषयों पर सवालों के जवाब दे सकता है।',
-    chatWithAi: 'KalaStree AI से बात करें',
+    chatWithAi: 'KalaSakhi से बात करें',
     shopGiProducts: 'जीआई उत्पाद खरीदें',
   },
 } as const

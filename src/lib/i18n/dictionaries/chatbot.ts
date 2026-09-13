@@ -14,7 +14,7 @@ const dict = {
     askPlaceholderFull:
       "Ask about GI products, women's FinTech adoption, empowerment data, state-wise analysis...",
     thinkingLabel: 'Thinking...',
-    askButton: 'Ask KalaStree AI',
+    askButton: 'Ask KalaSakhi',
     tryAsking: 'Try asking:',
     sampleQ1: 'What is the FinTech adoption index for GI workers?',
     sampleQ2: 'Which state has the most GI-tagged products?',
@@ -25,7 +25,7 @@ const dict = {
     connectErrorFull: 'Unable to connect to the AI assistant. Please try again.',
     noAnswer: 'No answer returned.',
     greetingBody:
-      "I'm KalaStree AI, trained on GI research data. Ask me anything about Indian GI products, women artisans, or FinTech adoption.",
+      "I'm KalaSakhi, trained on GI research data. Ask me anything about Indian GI products, women artisans, or FinTech adoption.",
     giResearchAssistant: 'GI Research Assistant',
     openChatbotAria: 'Open AI Chatbot',
     askPlaceholderShort: 'Ask about GI products…',
@@ -58,7 +58,7 @@ const dict = {
     askPlaceholderFull:
       'जीआई उत्पादों, महिलाओं के फिनटेक अपनाने, सशक्तिकरण डेटा, राज्यवार विश्लेषण के बारे में पूछें...',
     thinkingLabel: 'सोच रहा है...',
-    askButton: 'कलास्त्री एआई से पूछें',
+    askButton: 'कलासखी से पूछें',
     tryAsking: 'यह पूछ कर देखें:',
     sampleQ1: 'जीआई कामगारों के लिए फिनटेक अपनाने का सूचकांक क्या है?',
     sampleQ2: 'किस राज्य में सबसे अधिक जीआई-टैग वाले उत्पाद हैं?',
@@ -69,7 +69,7 @@ const dict = {
     connectErrorFull: 'एआई सहायक से कनेक्ट नहीं हो सका। कृपया पुनः प्रयास करें।',
     noAnswer: 'कोई उत्तर प्राप्त नहीं हुआ।',
     greetingBody:
-      'मैं कलास्त्री एआई हूं, जीआई शोध डेटा पर प्रशिक्षित। भारतीय जीआई उत्पादों, महिला कारीगरों या फिनटेक अपनाने के बारे में मुझसे कुछ भी पूछें।',
+      'मैं कलासखी हूं, जीआई शोध डेटा पर प्रशिक्षित। भारतीय जीआई उत्पादों, महिला कारीगरों या फिनटेक अपनाने के बारे में मुझसे कुछ भी पूछें।',
     giResearchAssistant: 'जीआई शोध सहायक',
     openChatbotAria: 'एआई चैटबॉट खोलें',
     askPlaceholderShort: 'जीआई उत्पादों के बारे में पूछें…',
