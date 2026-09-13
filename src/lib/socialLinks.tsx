@@ -17,7 +17,7 @@ export const SOCIAL_LINKS = [
   },
   {
     name: 'YouTube',
-    href: '#',
+    href: 'https://youtube.com/@kalastree?si=Y6rl7HDuZpVph7Tn',
     bg: '#FF0000',
     icon: (
       <svg width="15" height="15" viewBox="0 0 24 24" fill="#fff"><path d="M23.5 6.2a3 3 0 0 0-2.11-2.12C19.51 3.5 12 3.5 12 3.5s-7.51 0-9.39.58A3 3 0 0 0 .5 6.2 31.4 31.4 0 0 0 0 12a31.4 31.4 0 0 0 .5 5.8 3 3 0 0 0 2.11 2.12C4.49 20.5 12 20.5 12 20.5s7.51 0 9.39-.58a3 3 0 0 0 2.11-2.12A31.4 31.4 0 0 0 24 12a31.4 31.4 0 0 0-.5-5.8ZM9.6 15.6V8.4l6.3 3.6Z"/></svg>
