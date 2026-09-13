@@ -55,11 +55,17 @@ export default async function ArtisansPage() {
             </Link>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1.25rem' }}>
+          <div className="artisan-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1.25rem' }}>
             {artisans.map(a => <ArtisanCard key={a.id} artisan={a} />)}
           </div>
         )}
       </div>
+
+      <style>{`
+        @media(max-width: 600px) {
+          .artisan-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 0.75rem !important; }
+        }
+      `}</style>
     </div>
   )
 }
