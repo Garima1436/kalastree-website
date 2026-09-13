@@ -21,6 +21,7 @@ export default function Footer() {
     { href: '/about', label: tFooter('ourMission') },
     { href: '/about#research', label: tFooter('research') },
     { href: '/about#our-story', label: tFooter('ourStory') },
+    { href: '/about/news', label: tFooter('newsAndEvents') },
     { href: '/join', label: tFooter('sellOnKalastree') },
     { href: '/about#contact', label: tCommon('contact') },
   ]

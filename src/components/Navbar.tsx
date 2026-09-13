@@ -15,7 +15,11 @@ export default function Navbar() {
   const NAV_LINKS = [
     { href: '/artisans', label: tCommon('artisans') },
     { href: '/gi-products', label: tCommon('giProducts') },
+  ]
+
+  const ABOUT_LINKS = [
     { href: '/about', label: tCommon('aboutUs') },
+    { href: '/about/news', label: tCommon('newsAndEvents') },
   ]
 
   const SHOP_CATEGORIES: { key: Category; href: string; label: string; icon: string }[] = [
@@ -28,7 +32,9 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [userDropdown, setUserDropdown] = useState(false)
   const [shopDropdown, setShopDropdown] = useState(false)
+  const [aboutDropdown, setAboutDropdown] = useState(false)
   const [mobileShopOpen, setMobileShopOpen] = useState(false)
+  const [mobileAboutOpen, setMobileAboutOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   const [user, setUser] = useState<any>(null)
@@ -36,7 +42,9 @@ export default function Navbar() {
   const [isArtisan, setIsArtisan] = useState(false)
   const dropdownRef = useRef<HTMLLIElement>(null)
   const shopRef = useRef<HTMLLIElement>(null)
+  const aboutRef = useRef<HTMLLIElement>(null)
   const shopCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const aboutCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const openShopDropdown = () => {
     if (shopCloseTimer.current) clearTimeout(shopCloseTimer.current)
@@ -44,6 +52,14 @@ export default function Navbar() {
   }
   const scheduleCloseShopDropdown = () => {
     shopCloseTimer.current = setTimeout(() => setShopDropdown(false), 150)
+  }
+
+  const openAboutDropdown = () => {
+    if (aboutCloseTimer.current) clearTimeout(aboutCloseTimer.current)
+    setAboutDropdown(true)
+  }
+  const scheduleCloseAboutDropdown = () => {
+    aboutCloseTimer.current = setTimeout(() => setAboutDropdown(false), 150)
   }
 
   useEffect(() => {
@@ -54,11 +70,15 @@ export default function Navbar() {
       if (shopRef.current && !shopRef.current.contains(e.target as Node)) {
         setShopDropdown(false)
       }
+      if (aboutRef.current && !aboutRef.current.contains(e.target as Node)) {
+        setAboutDropdown(false)
+      }
     }
     document.addEventListener('mousedown', handler)
     return () => {
       document.removeEventListener('mousedown', handler)
       if (shopCloseTimer.current) clearTimeout(shopCloseTimer.current)
+      if (aboutCloseTimer.current) clearTimeout(aboutCloseTimer.current)
     }
   }, [])
 
@@ -178,6 +198,30 @@ export default function Navbar() {
                 <Link href={href} className="nav-link">{label}</Link>
               </li>
             ))}
+
+            {/* About Us dropdown */}
+            <li ref={aboutRef} style={{ position: 'relative' }}
+              onMouseEnter={openAboutDropdown}
+              onMouseLeave={scheduleCloseAboutDropdown}>
+              <button onClick={() => setAboutDropdown(v => !v)}
+                className="nav-link"
+                style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
+                {tCommon('aboutUs')} <span style={{ fontSize: '0.55rem', marginTop: 1 }}>{aboutDropdown ? '▲' : '▼'}</span>
+              </button>
+              {aboutDropdown && (
+                <div style={{ position: 'absolute', top: 'calc(100% + 12px)', left: '50%', transform: 'translateX(-50%)', background: '#FFFFFF', border: '1.5px solid #DDB840', borderRadius: 12, boxShadow: '0 12px 40px rgba(26,10,0,0.14)', zIndex: 300, minWidth: 200, overflow: 'hidden' }}>
+                  {ABOUT_LINKS.map(({ href, label }, i) => (
+                    <Link key={href} href={href} onClick={() => setAboutDropdown(false)}
+                      style={{ display: 'block', padding: '12px 18px', textDecoration: 'none', color: '#1B2E4A', fontSize: '0.85rem', fontWeight: 700, fontFamily: "'Inter', sans-serif", borderBottom: i < ABOUT_LINKS.length - 1 ? '1px solid #FFE8A8' : 'none' }}
+                      onMouseEnter={e => { e.currentTarget.style.background = '#FFE8A8'; e.currentTarget.style.color = '#E8380A' }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#1B2E4A' }}>
+                      {label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </li>
+
             <li style={{ marginLeft: '0.25rem' }}>
               <button onClick={() => setSearchOpen(true)} aria-label="Search"
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 36, height: 36, background: 'none', border: '1.5px solid #DDB840', borderRadius: 8, cursor: 'pointer', color: '#6B4820', transition: 'all 0.15s' }}
@@ -320,6 +364,24 @@ export default function Navbar() {
                 {label}
               </Link>
             ))}
+
+            {/* About Us expandable */}
+            <div>
+              <button onClick={() => setMobileAboutOpen(v => !v)}
+                style={{ width: '100%', background: 'none', border: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontFamily: "'Inter', sans-serif", fontWeight: 700, color: '#1B2E4A', fontSize: '0.95rem', padding: '4px 0', borderBottom: '1px solid #EDD060', cursor: 'pointer' }}>
+                {tCommon('aboutUs')} <span style={{ fontSize: '0.7rem', color: '#A07840' }}>{mobileAboutOpen ? '▲' : '▼'}</span>
+              </button>
+              {mobileAboutOpen && (
+                <div style={{ paddingTop: '0.75rem', paddingLeft: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  {ABOUT_LINKS.map(({ href, label }) => (
+                    <Link key={href} href={href} onClick={() => { setMenuOpen(false); setMobileAboutOpen(false) }}
+                      style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, color: '#1B2E4A', textDecoration: 'none', fontSize: '0.88rem', padding: '3px 0', display: 'block' }}>
+                      {label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
             {user ? (
               <>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: '1px solid #EDD060' }}>
