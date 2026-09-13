@@ -52,7 +52,7 @@ export default async function AboutPage() {
       <section id="research" style={{ padding: '5rem 5%', background: '#FFE8A8' }}>
         <Reveal className="about-research-grid" style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '300px 1fr', gap: '4rem', alignItems: 'center' }}>
           <div style={{ textAlign: 'center' }}>
-            <div style={{ width: '100%', aspectRatio: '4/5', borderRadius: '12px 50% 12px 50%', border: '2.5px solid #D4A000', overflow: 'hidden', background: '#FFF8EE', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem' }}>
+            <div style={{ width: '100%', aspectRatio: '4/5', borderRadius: 12, overflow: 'hidden', background: '#FFF8EE', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem' }}>
               <img src="/garima.jpeg" alt="Garima Awasthi" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </div>
           </div>
@@ -78,12 +78,7 @@ export default async function AboutPage() {
 
       {/* Our Story */}
       <section id="our-story" style={{ padding: '5rem 5%', background: 'var(--parchment)' }}>
-        <Reveal className="about-research-grid" style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '300px 1fr', gap: '4rem', alignItems: 'start' }}>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ width: '100%', aspectRatio: '4/5', borderRadius: '12px 50% 12px 50%', border: '2.5px solid #D4A000', overflow: 'hidden', background: '#FFF8EE', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem' }}>
-              <span style={{ fontSize: '3rem' }}>🖼️</span>
-            </div>
-          </div>
+        <Reveal className="about-story-grid" style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 480px', gap: '3rem', alignItems: 'start' }}>
           <div>
             <p style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#1A7A32', marginBottom: '0.6rem' }}>{t('storyEyebrow')}</p>
             <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.8rem, 3vw, 2.4rem)', fontWeight: 700, color: '#1B2E4A', marginBottom: '1.5rem' }}>
@@ -148,6 +143,13 @@ export default async function AboutPage() {
               ))}
             </p>
           </div>
+
+          {/* Image — static, same as the founder photo above, not sticky */}
+          <div>
+            <div style={{ width: '100%', aspectRatio: '4/3', borderRadius: 12, overflow: 'hidden', background: '#FFF8EE', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <img src="/our-story.jpeg" alt={t('storyEyebrow')} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            </div>
+          </div>
         </Reveal>
       </section>
 
@@ -192,6 +194,7 @@ export default async function AboutPage() {
           .about-mission-grid { grid-template-columns:1fr !important; gap:2rem !important; }
           .about-research-grid { grid-template-columns:1fr !important; gap:2rem !important; }
           .about-research-grid > div:first-child { max-width:260px; margin:0 auto; }
+          .about-story-grid { grid-template-columns:1fr !important; gap:2rem !important; }
         }
       `}</style>
     </div>

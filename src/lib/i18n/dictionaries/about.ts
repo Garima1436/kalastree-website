@@ -29,7 +29,7 @@ const dict = {
     tagGiProducts: 'GI Products',
     tagSpringerAuthor: 'Springer Author',
 
-    storyEyebrow: 'Our Story',
+    storyEyebrow: 'Why KalaStree?',
     storyTitlePart1: 'A Tuesday in',
     storyPara1: "It was a Tuesday afternoon in JITWARPUR village, Bihar.\nA woman named Sunita was painting. Bamboo brush. Kohl-black ink. A fish becoming a lotus becoming something I had no word for — something her mother taught her, and her mother's mother before that.",
     storyPara2: 'She painted for eight hours.\nThe man who comes every Tuesday handed her ₹150.\nShe said thank you.',
@@ -87,7 +87,7 @@ const dict = {
     tagGiProducts: 'जीआई उत्पाद',
     tagSpringerAuthor: 'स्प्रिंगर लेखक',
 
-    storyEyebrow: 'हमारी कहानी',
+    storyEyebrow: 'कलास्त्री क्यों?',
     storyTitlePart1: 'एक मंगलवार,',
     storyPara1: 'यह बिहार के जितवारपुर गांव में एक मंगलवार की दोपहर थी।\nसुनीता नाम की एक महिला चित्र बना रही थी। बांस का ब्रश। काजल जैसी काली स्याही। एक मछली धीरे-धीरे कमल में और फिर किसी ऐसी चीज़ में बदलती जा रही थी जिसके लिए मेरे पास कोई शब्द नहीं था — कुछ ऐसा जो उसकी मां ने उसे सिखाया था, और उससे पहले उसकी नानी ने अपनी मां को।',
     storyPara2: 'उसने आठ घंटे तक चित्र बनाया।\nहर मंगलवार आने वाले उस आदमी ने उसे ₹150 थमाए।\nउसने धन्यवाद कहा।',

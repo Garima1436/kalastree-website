@@ -2,8 +2,8 @@
 
 const DEFAULT_MESSAGE = 'Hi KalaStree team, I have a query about your GI-verified products/artisans.'
 
-// Sits bottom-left, separate from ChatWidget's floating action button
-// (bottom-right, see ChatWidget.tsx) so the two never overlap.
+// Stacked directly above ChatWidget's floating action button (56px, at
+// bottom:24/right:24 — see ChatWidget.tsx) with a 12px gap between them.
 export default function WhatsAppButton({ number, message }: { number: string | null; message?: string | null }) {
   if (!number) return null
 
@@ -19,7 +19,7 @@ export default function WhatsAppButton({ number, message }: { number: string | n
         rel="noopener noreferrer"
         aria-label="Message us on WhatsApp"
         style={{
-          position: 'fixed', bottom: 24, left: 24, zIndex: 1000,
+          position: 'fixed', bottom: 92, right: 24, zIndex: 1000,
           width: 56, height: 56, borderRadius: '50%',
           background: '#25D366',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -37,7 +37,7 @@ export default function WhatsAppButton({ number, message }: { number: string | n
       </a>
       <style>{`
         @media(max-width:480px){
-          .whatsapp-fab { bottom:12px !important; left:12px !important; width:48px !important; height:48px !important; }
+          .whatsapp-fab { bottom:70px !important; right:12px !important; width:48px !important; height:48px !important; }
         }
       `}</style>
     </>
