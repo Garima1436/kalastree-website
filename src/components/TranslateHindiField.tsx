@@ -7,6 +7,10 @@ interface Props {
   value: string
   onChange: (value: string) => void
   multiline?: boolean
+  // 'html' preserves tags/attributes and only translates visible text —
+  // for rich-text HTML content (e.g. a TipTap editor's body). Defaults to
+  // markdown-preserving mode, matching every existing plain-text caller.
+  format?: 'markdown' | 'html'
   translateLabel: string
   translatingLabel: string
   hint?: string
@@ -15,7 +19,7 @@ interface Props {
 }
 
 export default function TranslateHindiField({
-  label, sourceText, value, onChange, multiline, translateLabel, translatingLabel, hint, inputStyle, labelStyle,
+  label, sourceText, value, onChange, multiline, format = 'markdown', translateLabel, translatingLabel, hint, inputStyle, labelStyle,
 }: Props) {
   const [translating, setTranslating] = useState(false)
   const [err, setErr] = useState('')
@@ -28,7 +32,7 @@ export default function TranslateHindiField({
       const res = await fetch('/api/translate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: sourceText, target: 'hi' }),
+        body: JSON.stringify({ text: sourceText, target: 'hi', format }),
       })
       const data = await res.json()
       if (!res.ok) { setErr(data.error ?? 'Translation failed'); return }

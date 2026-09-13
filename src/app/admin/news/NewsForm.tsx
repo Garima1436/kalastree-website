@@ -3,11 +3,16 @@ import { useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase-browser'
 import { useRouter } from 'next/navigation'
 import RichTextEditor from '@/components/RichTextEditor'
+import TranslateHindiField from '@/components/TranslateHindiField'
 
 interface Props {
   initialData?: any
   mode?: 'new' | 'edit'
 }
+
+// TipTap's getHTML() returns "<p></p>" (truthy) for an empty editor, not
+// "" — this treats that (and any all-empty-paragraphs variant) as empty.
+const isEmptyHtml = (html: string) => !html || /^(<p>\s*<\/p>\s*)+$/.test(html.trim())
 
 export default function NewsForm({ initialData, mode = 'new' }: Props) {
   const router = useRouter()
@@ -15,13 +20,16 @@ export default function NewsForm({ initialData, mode = 'new' }: Props) {
   const [uploading, setUploading] = useState(false)
   const [uploadingVideo, setUploadingVideo] = useState(false)
   const [error, setError] = useState('')
+  const [translatingBody, setTranslatingBody] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const videoFileInputRef = useRef<HTMLInputElement>(null)
 
   const [form, setForm] = useState({
     title: initialData?.title ?? '',
+    title_hi: initialData?.title_hi ?? '',
     author: initialData?.author ?? '',
     body: initialData?.body ?? '',
+    body_hi: initialData?.body_hi ?? '',
     image_url: initialData?.image_url ?? '',
     video_url: initialData?.video_url ?? '',
     external_link: initialData?.external_link ?? '',
@@ -29,6 +37,26 @@ export default function NewsForm({ initialData, mode = 'new' }: Props) {
   })
 
   const set = (field: string, value: any) => setForm(f => ({ ...f, [field]: value }))
+
+  const handleTranslateBody = async () => {
+    if (isEmptyHtml(form.body) || translatingBody) return
+    setTranslatingBody(true)
+    setError('')
+    try {
+      const res = await fetch('/api/translate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: form.body, target: 'hi', format: 'html' }),
+      })
+      const data = await res.json()
+      if (!res.ok) { setError(data.error ?? 'Translation failed'); return }
+      set('body_hi', data.translated)
+    } catch {
+      setError('Translation failed')
+    } finally {
+      setTranslatingBody(false)
+    }
+  }
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -84,15 +112,12 @@ export default function NewsForm({ initialData, mode = 'new' }: Props) {
     setLoading(true)
     setError('')
 
-    // TipTap's getHTML() returns "<p></p>" (truthy) for an empty editor,
-    // not "" — so an empty-body entry needs its own check rather than a
-    // plain falsy test to actually save as null.
-    const isEmptyBody = !form.body || /^(<p>\s*<\/p>\s*)+$/.test(form.body.trim())
-
     const payload = {
       title: form.title,
+      title_hi: form.title_hi || null,
       author: form.author || null,
-      body: isEmptyBody ? null : form.body,
+      body: isEmptyHtml(form.body) ? null : form.body,
+      body_hi: isEmptyHtml(form.body_hi) ? null : form.body_hi,
       image_url: form.image_url || null,
       video_url: form.video_url || null,
       external_link: form.external_link || null,
@@ -144,6 +169,18 @@ export default function NewsForm({ initialData, mode = 'new' }: Props) {
               placeholder="Introducing our Buyer Protection Program" />
           </div>
 
+          <TranslateHindiField
+            label="Title (Hindi, optional)"
+            sourceText={form.title}
+            value={form.title_hi}
+            onChange={v => set('title_hi', v)}
+            translateLabel="Auto-translate"
+            translatingLabel="Translating..."
+            hint="Shown when this entry is displayed in Hindi."
+            inputStyle={inputStyle}
+            labelStyle={labelStyle}
+          />
+
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             <div>
               <label style={labelStyle}>Author (optional)</label>
@@ -161,6 +198,25 @@ export default function NewsForm({ initialData, mode = 'new' }: Props) {
           <div>
             <label style={labelStyle}>Body</label>
             <RichTextEditor value={form.body} onChange={html => set('body', html)} storageBucket="news-events" />
+          </div>
+
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 5 }}>
+              <label style={labelStyle}>Body (Hindi, optional)</label>
+              <button
+                type="button"
+                onClick={handleTranslateBody}
+                disabled={translatingBody || isEmptyHtml(form.body)}
+                style={{
+                  fontSize: '0.7rem', fontWeight: 700, color: '#1A7A32', background: 'none', border: 'none',
+                  cursor: isEmptyHtml(form.body) ? 'not-allowed' : 'pointer', opacity: isEmptyHtml(form.body) ? 0.5 : 1, padding: 0,
+                }}
+              >
+                {translatingBody ? 'Translating...' : '🌐 Auto-translate'}
+              </button>
+            </div>
+            <RichTextEditor value={form.body_hi} onChange={html => set('body_hi', html)} storageBucket="news-events" />
+            <p style={{ fontSize: '0.72rem', color: '#A07840', marginTop: 4 }}>Shown when this entry is displayed in Hindi.</p>
           </div>
 
           <div>

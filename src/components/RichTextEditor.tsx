@@ -3,7 +3,7 @@ import { useEditor, EditorContent, ReactNodeViewRenderer } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import BaseImage from '@tiptap/extension-image'
 import Link from '@tiptap/extension-link'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase-browser'
 import ImageResizeView from './ImageResizeView'
 
@@ -85,6 +85,19 @@ export default function RichTextEditor({ value, onChange, storageBucket }: Props
       },
     },
   })
+
+  // Syncs content set from OUTSIDE the editor (e.g. a "Translate" button
+  // that fills a second, Hindi editor instance) into TipTap — `content` in
+  // useEditor above is only the INITIAL value, so without this an external
+  // value change after mount would silently not appear. Guarded against
+  // echoing the editor's own onUpdate back into itself.
+  useEffect(() => {
+    if (!editor) return
+    if (value !== editor.getHTML()) {
+      editor.commands.setContent(value)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value, editor])
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]

@@ -41,9 +41,19 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Too many translation requests. Please wait a moment.' }, { status: 429 })
   }
 
-  const { text } = await req.json()
+  const { text, format } = await req.json()
   if (!text?.trim()) return NextResponse.json({ error: 'Text required' }, { status: 400 })
   if (text.length > 8000) return NextResponse.json({ error: 'Text too long (max 8000 characters)' }, { status: 400 })
+
+  const isHtml = format === 'html'
+  const systemPrompt = isHtml
+    ? 'You translate English news/article HTML into natural, idiomatic Hindi (Devanagari script). ' +
+      'Reply with ONLY the translated HTML — no quotes, no notes, nothing else. ' +
+      'Preserve every HTML tag, attribute, and its exact structure unchanged (including <img> tags and their src/style attributes) — ' +
+      'translate ONLY the human-readable text content between tags. Never alter, remove, or add any tag or attribute.'
+    : 'You translate English e-commerce/craft copy into natural, idiomatic Hindi (Devanagari script). ' +
+      'Reply with ONLY the Hindi translation — no quotes, no notes, no romanization, nothing else. ' +
+      'Preserve any Markdown formatting (**bold**, *italic*, headings, bullet lists) and line breaks as-is.'
 
   try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -56,13 +66,7 @@ export async function POST(req: NextRequest) {
         model: 'gpt-4o-mini',
         temperature: 0.2,
         messages: [
-          {
-            role: 'system',
-            content:
-              'You translate English e-commerce/craft copy into natural, idiomatic Hindi (Devanagari script). ' +
-              'Reply with ONLY the Hindi translation — no quotes, no notes, no romanization, nothing else. ' +
-              'Preserve any Markdown formatting (**bold**, *italic*, headings, bullet lists) and line breaks as-is.',
-          },
+          { role: 'system', content: systemPrompt },
           { role: 'user', content: text },
         ],
       }),
