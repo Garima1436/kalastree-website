@@ -179,14 +179,6 @@ export default function GIProductsClient({ products }: { products: GIProduct[] }
           <p style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1rem, 2vw, 1.25rem)', color: 'rgba(255,255,255,0.75)', lineHeight: 1.85, maxWidth: 640, marginBottom: '2rem' }}>
             {t('heroDescription')}
           </p>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem' }}>
-            {[{ n: '478', l: t('statGiTags') }, { n: String(products.length), l: t('statProductsProfiled') }, { n: '16', l: t('statStatesCovered') }, { n: '2,500+', l: t('statWomenVoices') }].map(({ n, l }) => (
-              <div key={l}>
-                <div style={{ fontFamily: "'EB Garamond', serif", fontSize: '2rem', fontWeight: 700, color: '#D4A000', lineHeight: 1 }}>{n}</div>
-                <div style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.55)', marginTop: 4 }}>{l}</div>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
 
