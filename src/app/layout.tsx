@@ -4,8 +4,10 @@ import Navbar from '@/components/Navbar'
 import SocialBar from '@/components/SocialBar'
 import Footer from '@/components/Footer'
 import ChatWidget from '@/components/ChatWidget'
+import WhatsAppButton from '@/components/WhatsAppButton'
 import { LanguageProvider } from '@/lib/i18n/LanguageContext'
 import { getServerLang } from '@/lib/i18n/server'
+import { getSiteSetting } from '@/lib/site-settings'
 
 export const metadata: Metadata = {
   title: 'KalaStree — Heritage by Her | GI-Verified Indian Crafts',
@@ -15,6 +17,10 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const lang = await getServerLang()
+  const [whatsappNumber, whatsappMessage] = await Promise.all([
+    getSiteSetting('whatsapp_number'),
+    getSiteSetting('whatsapp_default_message'),
+  ])
 
   return (
     <html lang={lang}>
@@ -43,6 +49,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <main>{children}</main>
           <Footer />
           <ChatWidget />
+          <WhatsAppButton number={whatsappNumber} message={whatsappMessage} />
         </LanguageProvider>
       </body>
     </html>
