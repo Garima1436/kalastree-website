@@ -78,7 +78,7 @@ export default async function NewsEventDetailPage({ params }: { params: Promise<
       </div>
 
       <style>{`
-        .rich-text img { max-width: 100%; border-radius: 6px; margin: 1rem 0; }
+        .rich-text img { max-width: 100%; height: auto; display: block; border-radius: 6px; margin: 1rem 0; }
         .rich-text p { margin: 0 0 1em; }
         .rich-text h2 { font-family: 'EB Garamond', serif; font-size: 1.5rem; font-weight: 700; margin: 1.5em 0 0.5em; color: #1B2E4A; }
         .rich-text h3 { font-family: 'EB Garamond', serif; font-size: 1.25rem; font-weight: 700; margin: 1.25em 0 0.5em; color: #1B2E4A; }
