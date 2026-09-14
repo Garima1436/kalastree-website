@@ -44,6 +44,21 @@ const DEFAULT_EMOJI = '🏷️'
 // Most of the registry-sourced products have no photo of their own — show
 // the official GI tag mark instead of a blank/emoji-only tile.
 const DEFAULT_IMAGE = '/DISPLAYGITAG.jpeg'
+const PAGE_SIZE = 24
+
+// Windowed page-number list: always show first/last, the current page and
+// its immediate neighbors, collapsing everything else into an ellipsis —
+// otherwise a 648-product catalogue would render 27 page buttons at once.
+function getPageNumbers(current: number, total: number): (number | 'ellipsis')[] {
+  const pages = new Set<number>([1, total, current, current - 1, current + 1])
+  const sorted = Array.from(pages).filter(p => p >= 1 && p <= total).sort((a, b) => a - b)
+  const result: (number | 'ellipsis')[] = []
+  for (let i = 0; i < sorted.length; i++) {
+    if (i > 0 && sorted[i] - sorted[i - 1] > 1) result.push('ellipsis')
+    result.push(sorted[i])
+  }
+  return result
+}
 
 // There's no reliable DB relationship between a gi_products row and the
 // shop products it corresponds to (products.gi_tag is largely unpopulated —
@@ -279,6 +294,35 @@ export default function GIProductsClient({ products }: { products: GIProduct[] }
   const stateCount = (state: string) =>
     state === 'All States' ? products.length : products.filter(p => p.state === state).length
 
+  // Numbered pagination — the page number lives in the URL (?page=<n>) like
+  // the product modal, so a specific page is shareable/bookmarkable and
+  // survives browser back/forward.
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
+  const requestedPage = parseInt(searchParams.get('page') || '1', 10) || 1
+  const currentPage = Math.min(Math.max(1, requestedPage), totalPages)
+  const paginated = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
+  const gridRef = useRef<HTMLDivElement>(null)
+
+  const goToPage = (n: number) => {
+    const params = new URLSearchParams(searchParams.toString())
+    if (n <= 1) params.delete('page')
+    else params.set('page', String(n))
+    const qs = params.toString()
+    router.push(qs ? `${pathname}?${qs}` : pathname, { scroll: false })
+    gridRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
+  // Changing a filter/search/sort invalidates the current page — jump back
+  // to page 1 rather than leaving the user stranded on a now out-of-range
+  // or mismatched page. Skips the initial mount so a deep link like
+  // /gi-products?page=3 isn't immediately reset before the user does anything.
+  const didMountRef = useRef(false)
+  useEffect(() => {
+    if (!didMountRef.current) { didMountRef.current = true; return }
+    if (searchParams.get('page')) goToPage(1)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeState, activeCategory, searchQuery, sortBy])
+
   return (
     <div style={{ background: 'var(--parchment)', minHeight: '100vh' }}>
       {/* Hero */}
@@ -338,10 +382,18 @@ export default function GIProductsClient({ products }: { products: GIProduct[] }
       </div>
 
       {/* Grid */}
-      <div style={{ maxWidth: 1300, margin: '0 auto', padding: '2.5rem 4%' }}>
+      <div ref={gridRef} style={{ maxWidth: 1300, margin: '0 auto', padding: '2.5rem 4%', scrollMarginTop: 140 }}>
         <div style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
           <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.85rem', color: '#9B6820', margin: 0 }}>
-            {t('showing')} <strong style={{ color: '#1B2E4A' }}>{filtered.length}</strong> {t(filtered.length !== 1 ? 'giCertifiedProducts' : 'giCertifiedProduct')}
+            {filtered.length > PAGE_SIZE ? (
+              <>
+                {t('showing')} <strong style={{ color: '#1B2E4A' }}>{(currentPage - 1) * PAGE_SIZE + 1}–{Math.min(currentPage * PAGE_SIZE, filtered.length)}</strong> {t('of')} <strong style={{ color: '#1B2E4A' }}>{filtered.length}</strong> {t(filtered.length !== 1 ? 'giCertifiedProducts' : 'giCertifiedProduct')}
+              </>
+            ) : (
+              <>
+                {t('showing')} <strong style={{ color: '#1B2E4A' }}>{filtered.length}</strong> {t(filtered.length !== 1 ? 'giCertifiedProducts' : 'giCertifiedProduct')}
+              </>
+            )}
             {activeState !== 'All States' && <> {t('from')} <strong style={{ color: '#E8380A' }}>{activeState}</strong></>}
           </p>
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
@@ -366,7 +418,7 @@ export default function GIProductsClient({ products }: { products: GIProduct[] }
           </div>
         ) : (
           <Reveal direction="none" className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-6 max-sm:grid-cols-2 max-sm:gap-3">
-            {filtered.map(product => {
+            {paginated.map(product => {
               const tagline = localizedGiField(product.tagline, product.tagline_hi, lang)
               const accent = product.accent ?? DEFAULT_ACCENT
               return (
@@ -395,6 +447,37 @@ export default function GIProductsClient({ products }: { products: GIProduct[] }
               )
             })}
           </Reveal>
+        )}
+
+        {totalPages > 1 && (
+          <nav aria-label={t('paginationAria')} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap', marginTop: '3rem' }}>
+            <button onClick={() => goToPage(1)} disabled={currentPage === 1} aria-label={t('firstPageAria')}
+              style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.8rem', fontWeight: 700, padding: '8px 12px', borderRadius: 6, border: '1.5px solid #DDB840', background: '#fff', color: currentPage === 1 ? '#DDB840' : '#6B4820', cursor: currentPage === 1 ? 'not-allowed' : 'pointer' }}>
+              «« {t('firstPage')}
+            </button>
+            <button onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 1} aria-label={t('previousPageAria')}
+              style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.8rem', fontWeight: 700, padding: '8px 14px', borderRadius: 6, border: '1.5px solid #DDB840', background: '#fff', color: currentPage === 1 ? '#DDB840' : '#6B4820', cursor: currentPage === 1 ? 'not-allowed' : 'pointer' }}>
+              ← {t('previousPage')}
+            </button>
+            {getPageNumbers(currentPage, totalPages).map((p, i) =>
+              p === 'ellipsis' ? (
+                <span key={`ellipsis-${i}`} style={{ padding: '0 6px', color: '#A07840', fontSize: '0.85rem' }}>…</span>
+              ) : (
+                <button key={p} onClick={() => goToPage(p)} aria-current={p === currentPage ? 'page' : undefined}
+                  style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.82rem', fontWeight: 700, minWidth: 38, padding: '8px 10px', borderRadius: 6, border: p === currentPage ? '1.5px solid #E8380A' : '1.5px solid #DDB840', background: p === currentPage ? '#E8380A' : '#fff', color: p === currentPage ? '#fff' : '#6B4820', cursor: 'pointer' }}>
+                  {p}
+                </button>
+              )
+            )}
+            <button onClick={() => goToPage(currentPage + 1)} disabled={currentPage === totalPages} aria-label={t('nextPageAria')}
+              style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.8rem', fontWeight: 700, padding: '8px 14px', borderRadius: 6, border: '1.5px solid #DDB840', background: '#fff', color: currentPage === totalPages ? '#DDB840' : '#6B4820', cursor: currentPage === totalPages ? 'not-allowed' : 'pointer' }}>
+              {t('nextPage')} →
+            </button>
+            <button onClick={() => goToPage(totalPages)} disabled={currentPage === totalPages} aria-label={t('lastPageAria')}
+              style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.8rem', fontWeight: 700, padding: '8px 12px', borderRadius: 6, border: '1.5px solid #DDB840', background: '#fff', color: currentPage === totalPages ? '#DDB840' : '#6B4820', cursor: currentPage === totalPages ? 'not-allowed' : 'pointer' }}>
+              {t('lastPage')} »»
+            </button>
+          </nav>
         )}
       </div>
 
