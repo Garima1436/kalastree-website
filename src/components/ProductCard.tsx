@@ -43,11 +43,6 @@ export default function ProductCard({ product }: { product: Product }) {
           ) : (
             <span className="text-[3rem]">{cat.icon}</span>
           )}
-          {product.gi_tag && (
-            <div className="absolute top-2 left-2">
-              <span className="gi-badge">✦ {t('giTagged')}</span>
-            </div>
-          )}
         </div>
 
         {/* Info */}
