@@ -16,13 +16,17 @@ const CATEGORIES: Category[] = ['textile', 'handicraft', 'agricultural', 'food']
 const autoSlug = (name: string) =>
   name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
 
+const giProductOptionLabel = (g: { name: string; state: string; gi_tag: string }) =>
+  `${g.name} — ${g.state} (${g.gi_tag})`
+
 interface Props {
   artisans: { id: string; name: string; serial_no?: number }[]
+  giProducts: { id: string; name: string; state: string; gi_tag: string }[]
   initialData?: any
   mode?: 'new' | 'edit'
 }
 
-export default function ProductForm({ artisans, initialData, mode = 'new' }: Props) {
+export default function ProductForm({ artisans, giProducts, initialData, mode = 'new' }: Props) {
   const router = useRouter()
   const { lang } = useLanguage()
   const t = (key: keyof typeof dict.en): string => dict[lang]?.[key] ?? dict.en[key]
@@ -68,6 +72,7 @@ export default function ProductForm({ artisans, initialData, mode = 'new' }: Pro
     description_hi: initialData?.description_hi ?? '',
     price: initialData?.price?.toString() ?? '',
     gi_tag: initialData?.gi_tag ?? '',
+    gi_product_id: initialData?.gi_product_id ?? '',
     category: (initialData?.category ?? 'handicraft') as Category,
     subcategory: initialData?.subcategory ?? '',
     state: initialData?.state ?? '',
@@ -84,6 +89,9 @@ export default function ProductForm({ artisans, initialData, mode = 'new' }: Pro
 
   const set = (field: string, value: any) => setForm(f => ({ ...f, [field]: value }))
 
+  const initialGiProduct = giProducts.find(g => g.id === initialData?.gi_product_id)
+  const [giProductSearchLabel, setGiProductSearchLabel] = useState(initialGiProduct ? giProductOptionLabel(initialGiProduct) : '')
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
@@ -94,7 +102,7 @@ export default function ProductForm({ artisans, initialData, mode = 'new' }: Pro
     const payload = {
       name: form.name, name_hi: form.name_hi || null, slug,
       description: form.description, description_hi: form.description_hi || null,
-      price: parseFloat(form.price), gi_tag: form.gi_tag || null,
+      price: parseFloat(form.price), gi_tag: form.gi_tag || null, gi_product_id: form.gi_product_id || null,
       category: form.category, subcategory: form.subcategory || null, state: form.state || null,
       stock: parseInt(form.stock), is_featured: form.is_featured,
       artisan_id: form.artisan_id || null, images,
@@ -234,6 +242,33 @@ export default function ProductForm({ artisans, initialData, mode = 'new' }: Pro
                 {INDIAN_STATES.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
+          </div>
+
+          <div>
+            {/* Optional link to the real gi_products row — exact FK match,
+                so the GI Products page's "Shop this product" button and the
+                chatbot's GI-verification lookup both resolve this product
+                deterministically instead of relying on fuzzy keyword/name
+                matching. Free text, matched against the datalist by exact
+                label; leaving it unmatched clears the link rather than
+                guessing. */}
+            <label style={labelStyle}>Link to GI Product (optional)</label>
+            <input style={inputStyle} list="gi-product-options"
+              value={giProductSearchLabel}
+              onChange={e => {
+                const val = e.target.value
+                setGiProductSearchLabel(val)
+                const matched = giProducts.find(g => giProductOptionLabel(g) === val)
+                set('gi_product_id', matched?.id ?? '')
+                if (matched) set('gi_tag', matched.gi_tag)
+              }}
+              placeholder="Search by craft name..." />
+            <datalist id="gi-product-options">
+              {giProducts.map(g => <option key={g.id} value={giProductOptionLabel(g)} />)}
+            </datalist>
+            {form.gi_product_id && (
+              <div style={{ fontSize: '0.75rem', color: '#1A7A32', marginTop: 4 }}>✓ Linked — GI verification and "Shop this product" will match this exact craft.</div>
+            )}
           </div>
 
           <div>

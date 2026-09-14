@@ -9,12 +9,17 @@ import { getServerLang, getT } from '@/lib/i18n/server'
 
 export const revalidate = 120
 
-async function getProducts(category?: string, subcategory?: string, state?: string, q?: string, sort?: string, minPrice?: number, maxPrice?: number) {
+async function getProducts(category?: string, subcategory?: string, state?: string, q?: string, sort?: string, minPrice?: number, maxPrice?: number, giProductId?: string) {
   let query = supabase.from('products').select('*, artisan:artisans(*)').eq('status', 'approved')
   if (category) query = query.eq('category', category)
   if (subcategory) query = query.eq('subcategory', subcategory)
   if (state) query = query.eq('state', state)
-  if (q) query = query.textSearch('search_vector', q, { type: 'websearch', config: 'english' })
+  // Exact FK match when a product is linked to a real gi_products row —
+  // takes priority over the free-text search below, which only exists as
+  // a fallback for the (still common) case where no product has been
+  // linked to this GI craft yet.
+  if (giProductId) query = query.eq('gi_product_id', giProductId)
+  else if (q) query = query.textSearch('search_vector', q, { type: 'websearch', config: 'english' })
   if (minPrice !== undefined) query = query.gte('price', minPrice)
   if (maxPrice !== undefined) query = query.lte('price', maxPrice)
   if (sort === 'price_asc') query = query.order('price', { ascending: true })
@@ -32,12 +37,12 @@ async function getPriceBounds() {
   return { min: lo?.[0]?.price ?? 0, max: hi?.[0]?.price ?? 10000 }
 }
 
-export default async function ShopPage({ searchParams }: { searchParams: Promise<{ category?: string; subcategory?: string; state?: string; q?: string; sort?: string; minPrice?: string; maxPrice?: string }> }) {
+export default async function ShopPage({ searchParams }: { searchParams: Promise<{ category?: string; subcategory?: string; state?: string; q?: string; sort?: string; minPrice?: string; maxPrice?: string; gi_product_id?: string }> }) {
   const params = await searchParams
   const minPrice = params.minPrice ? Number(params.minPrice) : undefined
   const maxPrice = params.maxPrice ? Number(params.maxPrice) : undefined
   const [products, priceBounds] = await Promise.all([
-    getProducts(params.category, params.subcategory, params.state, params.q, params.sort, minPrice, maxPrice),
+    getProducts(params.category, params.subcategory, params.state, params.q, params.sort, minPrice, maxPrice, params.gi_product_id),
     getPriceBounds(),
   ])
   const activeCategory = params.category as Category | undefined

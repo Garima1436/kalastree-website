@@ -60,19 +60,6 @@ function getPageNumbers(current: number, total: number): (number | 'ellipsis')[]
   return result
 }
 
-// There's no reliable DB relationship between a gi_products row and the
-// shop products it corresponds to (products.gi_tag is largely unpopulated —
-// a known data gap in this project), so linking "shop this GI product" to
-// matching listings falls back to the same distinctive-keyword full-text
-// search the chatbot already uses for the identical problem (see
-// retrieval.ts's retrieveCandidateProducts). Deliberately NOT also scoped
-// by state — a state mismatch between the GI entry and a real product row
-// would silently hide true matches rather than just widen the result set.
-function giSearchKeyword(englishName: string): string {
-  const withoutParens = englishName.replace(/\([^)]*\)/g, '').trim()
-  return withoutParens.split(/\s+/)[0] || englishName
-}
-
 function CardVisual({ product }: { product: GIProduct }) {
   const { t, lang } = useTranslation('giProducts')
   const { t: tc } = useTranslation('common')
@@ -228,7 +215,7 @@ function ProductModal({ product, onClose }: { product: GIProduct; onClose: () =>
           {/* Footer */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem', marginTop: hasAnyDetail ? '1.5rem' : 0, paddingTop: hasAnyDetail ? '1.25rem' : 0, borderTop: hasAnyDetail ? '1px solid #EDD060' : 'none' }}>
             <div style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.8rem', color: '#A07840' }}>{product.gi_tag} · {t('certified')} {product.year}</div>
-            <Link href={`/shop?q=${encodeURIComponent(giSearchKeyword(product.name))}`} style={{ background: '#E8380A', color: '#fff', fontFamily: "'Inter', sans-serif", fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', padding: '8px 18px', borderRadius: 6, textDecoration: 'none' }}>
+            <Link href={`/shop?gi_product_id=${product.id}`} style={{ background: '#E8380A', color: '#fff', fontFamily: "'Inter', sans-serif", fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', padding: '8px 18px', borderRadius: 6, textDecoration: 'none' }}>
               {t('shopProductsPrefix')}{name}{t('shopProductsSuffix')} →
             </Link>
           </div>
