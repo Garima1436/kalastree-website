@@ -46,33 +46,33 @@ export default function JoinPage() {
   return (
     <div style={{ background: 'var(--parchment)', minHeight: '80vh' }}>
       {/* Header */}
-      <div style={{ background: '#1A7A32', padding: '3.5rem 5%' }}>
+      <div style={{ background: '#1A7A32', padding: '1.75rem 5%' }}>
         <div style={{ maxWidth: 800, margin: '0 auto' }}>
-          <p style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#D4A000', marginBottom: 8 }}>
+          <p style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#D4A000', marginBottom: 6 }}>
             <Link href="/" style={{ color: '#D4A000', textDecoration: 'none' }}>{tc('home')}</Link> / {t('breadcrumbSell')}
           </p>
-          <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 700, color: '#fff', marginBottom: 12 }}>
+          <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.6rem, 3vw, 2.3rem)', fontWeight: 700, color: '#fff', marginBottom: 8 }}>
             {t('heroTitlePart1')} <span style={{ color: '#D4A000' }}>{t('heroTitlePart2')}</span>
           </h1>
-          <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: '1rem', lineHeight: 1.8, maxWidth: 600 }}>
+          <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: '0.9rem', lineHeight: 1.5, maxWidth: 600 }}>
             {t('heroSubtitle')}
           </p>
         </div>
       </div>
 
       {/* Benefits */}
-      <div style={{ background: '#C8F5D8', padding: '2.5rem 5%' }}>
-        <div style={{ maxWidth: 800, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1.5rem' }}>
+      <div style={{ background: '#C8F5D8', padding: '1.5rem 5%' }}>
+        <div style={{ maxWidth: 800, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem' }}>
           {[
             { icon: '💳', title: t('benefit1Title'), body: t('benefit1Body') },
             { icon: '✅', title: t('benefit2Title'), body: t('benefit2Body') },
             { icon: '🌍', title: t('benefit3Title'), body: t('benefit3Body') },
             { icon: '🤖', title: t('benefit4Title'), body: t('benefit4Body') },
           ].map(({ icon, title, body }) => (
-            <div key={title} style={{ background: '#FFFFFF', borderRadius: 10, padding: '1.25rem', border: '1.5px solid #DDB840', textAlign: 'center' }}>
-              <div style={{ fontSize: '1.8rem', marginBottom: 8 }}>{icon}</div>
-              <div style={{ fontFamily: "'EB Garamond', serif", fontSize: '1rem', fontWeight: 600, color: '#1A7A32', marginBottom: 4 }}>{title}</div>
-              <div style={{ fontSize: '0.8rem', color: '#6B4820', lineHeight: 1.5 }}>{body}</div>
+            <div key={title} style={{ background: '#FFFFFF', borderRadius: 10, padding: '1rem', border: '1.5px solid #DDB840', textAlign: 'center' }}>
+              <div style={{ fontSize: '1.5rem', marginBottom: 6 }}>{icon}</div>
+              <div style={{ fontFamily: "'EB Garamond', serif", fontSize: '0.95rem', fontWeight: 600, color: '#1A7A32', marginBottom: 3 }}>{title}</div>
+              <div style={{ fontSize: '0.78rem', color: '#6B4820', lineHeight: 1.4 }}>{body}</div>
             </div>
           ))}
         </div>
