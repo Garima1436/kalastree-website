@@ -1,5 +1,6 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useTranslation } from '@/lib/i18n/useTranslation'
@@ -14,43 +15,63 @@ export interface GIProduct {
   gi_tag: string
   year: string
   category: 'textile' | 'handicraft' | 'agricultural' | 'food'
-  accent: string
-  emoji: string
-  tagline: string
+  // Most of these are only populated for the small set of entries someone
+  // has actually curated — the bulk-imported rows sourced directly from the
+  // official IP India registry have real name/state/gi_tag/year/category
+  // (verified facts) but no written narrative content, since that would
+  // mean inventing a tagline/history/women's-role claim rather than
+  // reporting one. Every render below treats these as optional.
+  accent: string | null
+  emoji: string | null
+  tagline: string | null
   tagline_hi: string | null
-  women_role: string
+  women_role: string | null
   women_role_hi: string | null
-  history: string
+  history: string | null
   history_hi: string | null
-  materials: string
+  materials: string | null
   materials_hi: string | null
-  district: string
-  women_percent: number
+  district: string | null
+  women_percent: number | null
   image_url: string | null
 }
 
 const CATEGORY_COLORS: Record<string, string> = {
   textile: '#1B2E4A', handicraft: '#E8380A', agricultural: '#1A7A32', food: '#C21859',
 }
+const DEFAULT_ACCENT = '#6B4820'
+const DEFAULT_EMOJI = '🏷️'
+// Most of the registry-sourced products have no photo of their own — show
+// the official GI tag mark instead of a blank/emoji-only tile.
+const DEFAULT_IMAGE = '/DISPLAYGITAG.jpeg'
+
+// There's no reliable DB relationship between a gi_products row and the
+// shop products it corresponds to (products.gi_tag is largely unpopulated —
+// a known data gap in this project), so linking "shop this GI product" to
+// matching listings falls back to the same distinctive-keyword full-text
+// search the chatbot already uses for the identical problem (see
+// retrieval.ts's retrieveCandidateProducts). Deliberately NOT also scoped
+// by state — a state mismatch between the GI entry and a real product row
+// would silently hide true matches rather than just widen the result set.
+function giSearchKeyword(englishName: string): string {
+  const withoutParens = englishName.replace(/\([^)]*\)/g, '').trim()
+  return withoutParens.split(/\s+/)[0] || englishName
+}
 
 function CardVisual({ product }: { product: GIProduct }) {
   const { t, lang } = useTranslation('giProducts')
   const { t: tc } = useTranslation('common')
   const name = localizedGiField(product.name, product.name_hi, lang)
+  const accent = product.accent ?? DEFAULT_ACCENT
   const categoryLabels: Record<string, string> = {
     textile: t('categoryTextile'), handicraft: t('categoryHandicraft'), agricultural: tc('agricultural'), food: tc('foodAndNatural'),
   }
   return (
-    <div className="relative h-[200px] overflow-hidden rounded-t-[10px] max-sm:h-[120px]" style={{ background: `linear-gradient(135deg, ${product.accent}18, ${product.accent}30)` }}>
-      {product.image_url ? (
-        <Image src={product.image_url} alt={name} fill sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 280px"
-          style={{ objectFit: 'cover' }}
-          onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none' }} />
-      ) : (
-        <div className="flex h-full w-full items-center justify-center">
-          <span className="text-[3.5rem] drop-shadow-[0_2px_6px_rgba(0,0,0,0.2)]">{product.emoji}</span>
-        </div>
-      )}
+    <div className="relative h-[200px] overflow-hidden rounded-t-[10px] max-sm:h-[120px]" style={{ background: `linear-gradient(135deg, ${accent}18, ${accent}30)` }}>
+      <Image src={product.image_url || DEFAULT_IMAGE} alt={name} fill
+        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 280px"
+        style={{ objectFit: 'cover' }}
+        onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none' }} />
       <div className="absolute top-2.5 left-2.5 rounded font-sans text-[0.62rem] font-bold tracking-[0.1em] text-white uppercase" style={{ background: CATEGORY_COLORS[product.category], padding: '3px 8px' }}>
         {categoryLabels[product.category]}
       </div>
@@ -67,62 +88,136 @@ function ProductModal({ product, onClose }: { product: GIProduct; onClose: () =>
   const womenRole = localizedGiField(product.women_role, product.women_role_hi, lang)
   const history = localizedGiField(product.history, product.history_hi, lang)
   const materials = localizedGiField(product.materials, product.materials_hi, lang)
+  const accent = product.accent ?? DEFAULT_ACCENT
+  const emoji = product.emoji ?? DEFAULT_EMOJI
+  // Most of the 823 registry-sourced products have real name/state/gi_tag/
+  // year but no written narrative (that would mean inventing a claim, not
+  // reporting one) — so these sections only render when there's something
+  // real to show, rather than a heading over an empty paragraph.
+  const hasWomenSection = womenRole || product.women_percent != null
+  const hasMaterialsOrDistrict = materials || product.district
+  const hasAnyDetail = hasWomenSection || history || hasMaterialsOrDistrict
+  const dialogRef = useRef<HTMLDivElement>(null)
+  const closeBtnRef = useRef<HTMLButtonElement>(null)
+  const titleId = `gi-modal-title-${product.id}`
+
+  // Focus the close button on open, restore focus to whatever triggered
+  // the modal on close, trap Tab within the dialog while open, and close
+  // on Escape — none of this existed before (plain div with no dialog
+  // semantics at all), so keyboard/screen-reader users had no way in or
+  // out short of finding the ✕ by mouse.
+  useEffect(() => {
+    const previouslyFocused = document.activeElement as HTMLElement | null
+    closeBtnRef.current?.focus()
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { onClose(); return }
+      if (e.key !== 'Tab') return
+      const focusable = dialogRef.current?.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      )
+      if (!focusable || focusable.length === 0) return
+      const first = focusable[0]
+      const last = focusable[focusable.length - 1]
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault(); last.focus()
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault(); first.focus()
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+      previouslyFocused?.focus()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   return (
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(10,5,0,0.65)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-      <div onClick={e => e.stopPropagation()} style={{ background: '#FFFFFF', borderRadius: 16, maxWidth: 720, width: '100%', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 24px 80px rgba(0,0,0,0.3)', border: '1.5px solid #DDB840' }}>
+      <div ref={dialogRef} onClick={e => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby={titleId}
+        style={{ background: '#FFFFFF', borderRadius: 16, maxWidth: 720, width: '100%', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 24px 80px rgba(0,0,0,0.3)', border: '1.5px solid #DDB840' }}>
         {/* Header */}
-        <div style={{ height: 200, background: `linear-gradient(135deg, ${product.accent}25, ${product.accent}45)`, borderRadius: '14px 14px 0 0', display: 'flex', alignItems: 'flex-end', gap: '1.5rem', padding: '0 2rem 1.25rem', position: 'relative', overflow: 'hidden' }}>
-          {product.image_url && (
+        {product.image_url ? (
+          <div style={{ height: 200, background: `linear-gradient(135deg, ${accent}25, ${accent}45)`, borderRadius: '14px 14px 0 0', display: 'flex', alignItems: 'flex-end', gap: '1.5rem', padding: '0 2rem 1.25rem', position: 'relative', overflow: 'hidden' }}>
             <Image src={product.image_url} alt={name} fill sizes="720px"
               style={{ objectFit: 'cover', opacity: 0.35 }}
               onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none' }} />
-          )}
-          <span style={{ fontSize: '3rem', filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.4))', position: 'relative', zIndex: 1 }}>{product.emoji}</span>
-          <div style={{ position: 'relative', zIndex: 1 }}>
-            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#fff', opacity: 0.8, marginBottom: 4 }}>{product.state} · {product.year}</div>
-            <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.4rem, 3vw, 2rem)', fontWeight: 700, color: '#fff', margin: 0, textShadow: '0 1px 4px rgba(0,0,0,0.4)' }}>{name}</h2>
-            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.72rem', color: 'rgba(255,255,255,0.7)', marginTop: 4 }}>{product.gi_tag}</div>
-          </div>
-          <button onClick={onClose} style={{ position: 'absolute', top: 14, right: 14, zIndex: 2, background: 'rgba(255,255,255,0.85)', border: 'none', borderRadius: '50%', width: 34, height: 34, cursor: 'pointer', fontSize: '1.1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6B4820', fontWeight: 700 }}>✕</button>
-        </div>
-
-        <div style={{ padding: '2rem' }}>
-          {/* Women involvement */}
-          <div style={{ background: 'linear-gradient(135deg, #FFF5F0, #FFF8F2)', border: `1.5px solid ${product.accent}40`, borderLeft: `4px solid ${product.accent}`, borderRadius: 10, padding: '1.25rem 1.5rem', marginBottom: '1.5rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: '0.75rem' }}>
-              <span style={{ fontSize: '1.2rem' }}>👩‍🎨</span>
-              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: product.accent }}>{t('womenAndHeritage')}</span>
-              <span style={{ background: product.accent, color: '#fff', fontSize: '0.65rem', fontWeight: 700, padding: '2px 8px', borderRadius: 20, fontFamily: "'Inter', sans-serif" }}>{product.women_percent}% {t('women')}</span>
+            <span style={{ fontSize: '3rem', filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.4))', position: 'relative', zIndex: 1 }}>{emoji}</span>
+            <div style={{ position: 'relative', zIndex: 1 }}>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#fff', opacity: 0.8, marginBottom: 4 }}>{product.state} · {product.year}</div>
+              <h2 id={titleId} style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.4rem, 3vw, 2rem)', fontWeight: 700, color: '#fff', margin: 0, textShadow: '0 1px 4px rgba(0,0,0,0.4)' }}>{name}</h2>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.72rem', color: 'rgba(255,255,255,0.7)', marginTop: 4 }}>{product.gi_tag}</div>
             </div>
-            <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.05rem', lineHeight: 1.8, color: '#3A1C08', margin: 0 }}>{womenRole}</p>
+            <button ref={closeBtnRef} onClick={onClose} aria-label={t('closeAria')} style={{ position: 'absolute', top: 14, right: 14, zIndex: 2, background: 'rgba(255,255,255,0.85)', border: 'none', borderRadius: '50%', width: 34, height: 34, cursor: 'pointer', fontSize: '1.1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6B4820', fontWeight: 700 }}>✕</button>
           </div>
+        ) : (
+          // No real photo for this product — show the full default GI tag
+          // graphic on its own (never cropped or overlapped by text), with
+          // the title/state/year in a separate band below it instead of
+          // layered on top.
+          <div style={{ borderRadius: '14px 14px 0 0', overflow: 'hidden', position: 'relative' }}>
+            <div style={{ height: 200, background: '#F3EEE6', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+              <Image src={DEFAULT_IMAGE} alt={name} fill sizes="720px" style={{ objectFit: 'cover' }} />
+              <button ref={closeBtnRef} onClick={onClose} aria-label={t('closeAria')} style={{ position: 'absolute', top: 14, right: 14, zIndex: 2, background: 'rgba(255,255,255,0.85)', border: 'none', borderRadius: '50%', width: 34, height: 34, cursor: 'pointer', fontSize: '1.1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6B4820', fontWeight: 700 }}>✕</button>
+            </div>
+            <div style={{ background: `linear-gradient(135deg, ${accent}25, ${accent}45)`, padding: '1rem 2rem 1.25rem' }}>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#fff', opacity: 0.85, marginBottom: 4 }}>{product.state} · {product.year}</div>
+              <h2 id={titleId} style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.4rem, 3vw, 2rem)', fontWeight: 700, color: '#fff', margin: 0, textShadow: '0 1px 4px rgba(0,0,0,0.4)' }}>{name}</h2>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.72rem', color: 'rgba(255,255,255,0.8)', marginTop: 4 }}>{product.gi_tag}</div>
+            </div>
+          </div>
+        )}
+
+        <div style={{ padding: hasAnyDetail ? '2rem' : '1.25rem 2rem' }}>
+          {/* Women involvement */}
+          {hasWomenSection && (
+            <div style={{ background: 'linear-gradient(135deg, #FFF5F0, #FFF8F2)', border: `1.5px solid ${accent}40`, borderLeft: `4px solid ${accent}`, borderRadius: 10, padding: '1.25rem 1.5rem', marginBottom: '1.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: '0.75rem' }}>
+                <span style={{ fontSize: '1.2rem' }}>👩‍🎨</span>
+                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: accent }}>{t('womenAndHeritage')}</span>
+                {product.women_percent != null && (
+                  <span style={{ background: accent, color: '#fff', fontSize: '0.65rem', fontWeight: 700, padding: '2px 8px', borderRadius: 20, fontFamily: "'Inter', sans-serif" }}>{product.women_percent}% {t('women')}</span>
+                )}
+              </div>
+              {womenRole && <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.05rem', lineHeight: 1.8, color: '#3A1C08', margin: 0 }}>{womenRole}</p>}
+            </div>
+          )}
 
           {/* History */}
-          <div style={{ marginBottom: '1.5rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: '0.75rem' }}>
-              <span style={{ fontSize: '1rem' }}>📜</span>
-              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#6B4820' }}>{t('historyAndHeritage')}</span>
+          {history && (
+            <div style={{ marginBottom: '1.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: '0.75rem' }}>
+                <span style={{ fontSize: '1rem' }}>📜</span>
+                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#6B4820' }}>{t('historyAndHeritage')}</span>
+              </div>
+              <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.05rem', lineHeight: 1.85, color: '#3A1C08', margin: 0 }}>{history}</p>
             </div>
-            <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.05rem', lineHeight: 1.85, color: '#3A1C08', margin: 0 }}>{history}</p>
-          </div>
+          )}
 
           {/* Details */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-            <div style={{ background: '#FFF5E0', borderRadius: 8, padding: '1rem' }}>
-              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#A07840', marginBottom: 6 }}>{t('materials')}</div>
-              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.88rem', color: '#3A1C08', lineHeight: 1.6, margin: 0 }}>{materials}</p>
+          {hasMaterialsOrDistrict && (
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              {materials && (
+                <div style={{ background: '#FFF5E0', borderRadius: 8, padding: '1rem' }}>
+                  <div style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#A07840', marginBottom: 6 }}>{t('materials')}</div>
+                  <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.88rem', color: '#3A1C08', lineHeight: 1.6, margin: 0 }}>{materials}</p>
+                </div>
+              )}
+              {product.district && (
+                <div style={{ background: '#FFF5E0', borderRadius: 8, padding: '1rem' }}>
+                  <div style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#A07840', marginBottom: 6 }}>{t('districts')}</div>
+                  <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.88rem', color: '#3A1C08', lineHeight: 1.6, margin: 0 }}>{product.district}</p>
+                </div>
+              )}
             </div>
-            <div style={{ background: '#FFF5E0', borderRadius: 8, padding: '1rem' }}>
-              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#A07840', marginBottom: 6 }}>{t('districts')}</div>
-              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.88rem', color: '#3A1C08', lineHeight: 1.6, margin: 0 }}>{product.district}</p>
-            </div>
-          </div>
+          )}
 
           {/* Footer */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1px solid #EDD060' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem', marginTop: hasAnyDetail ? '1.5rem' : 0, paddingTop: hasAnyDetail ? '1.25rem' : 0, borderTop: hasAnyDetail ? '1px solid #EDD060' : 'none' }}>
             <div style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.8rem', color: '#A07840' }}>{product.gi_tag} · {t('certified')} {product.year}</div>
-            <Link href={`/shop?state=${encodeURIComponent(product.state)}`} style={{ background: '#E8380A', color: '#fff', fontFamily: "'Inter', sans-serif", fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', padding: '8px 18px', borderRadius: 6, textDecoration: 'none' }}>
-              {t('shopProductsPrefix')}{product.state}{t('shopProductsSuffix')} →
+            <Link href={`/shop?q=${encodeURIComponent(giSearchKeyword(product.name))}`} style={{ background: '#E8380A', color: '#fff', fontFamily: "'Inter', sans-serif", fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', padding: '8px 18px', borderRadius: 6, textDecoration: 'none' }}>
+              {t('shopProductsPrefix')}{name}{t('shopProductsSuffix')} →
             </Link>
           </div>
         </div>
@@ -137,18 +232,49 @@ export default function GIProductsClient({ products }: { products: GIProduct[] }
   const categoryLabels: Record<string, string> = {
     textile: t('categoryTextile'), handicraft: t('categoryHandicraft'), agricultural: tc('agricultural'), food: tc('foodAndNatural'),
   }
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+
   const [activeState, setActiveState] = useState('All States')
-  const [selectedProduct, setSelectedProduct] = useState<GIProduct | null>(null)
+  const [activeCategory, setActiveCategory] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
+  const [sortBy, setSortBy] = useState<'name' | 'year' | 'women'>('name')
+
+  // The selected product lives in the URL (?product=<id>), not local state,
+  // so the modal is shareable/deep-linkable and closes on browser back —
+  // previously it was untracked React state with no URL of its own.
+  const selectedProductId = searchParams.get('product')
+  const selectedProduct = products.find(p => p.id === selectedProductId) ?? null
+
+  const openProduct = (id: string) => {
+    const params = new URLSearchParams(searchParams.toString())
+    params.set('product', id)
+    router.push(`${pathname}?${params.toString()}`, { scroll: false })
+  }
+  const closeProduct = () => {
+    const params = new URLSearchParams(searchParams.toString())
+    params.delete('product')
+    const qs = params.toString()
+    router.push(qs ? `${pathname}?${qs}` : pathname, { scroll: false })
+  }
 
   const allStates = ['All States', ...Array.from(new Set(products.map(p => p.state))).sort()]
 
-  const filtered = products.filter(p => {
-    const matchState = activeState === 'All States' || p.state === activeState
+  const filtered = useMemo(() => {
     const q = searchQuery.toLowerCase()
-    const matchSearch = !q || p.name.toLowerCase().includes(q) || p.name_hi?.toLowerCase().includes(q) || p.state.toLowerCase().includes(q) || p.category.toLowerCase().includes(q)
-    return matchState && matchSearch
-  })
+    const result = products.filter(p => {
+      const matchState = activeState === 'All States' || p.state === activeState
+      const matchCategory = !activeCategory || p.category === activeCategory
+      const matchSearch = !q || p.name.toLowerCase().includes(q) || p.name_hi?.toLowerCase().includes(q) || p.state.toLowerCase().includes(q) || p.category.toLowerCase().includes(q)
+      return matchState && matchCategory && matchSearch
+    })
+    const sorted = [...result]
+    if (sortBy === 'name') sorted.sort((a, b) => a.name.localeCompare(b.name))
+    else if (sortBy === 'year') sorted.sort((a, b) => (parseInt(b.year) || 0) - (parseInt(a.year) || 0))
+    else if (sortBy === 'women') sorted.sort((a, b) => (b.women_percent ?? -1) - (a.women_percent ?? -1))
+    return sorted
+  }, [products, activeState, activeCategory, searchQuery, sortBy])
 
   const stateCount = (state: string) =>
     state === 'All States' ? products.length : products.filter(p => p.state === state).length
@@ -198,9 +324,15 @@ export default function GIProductsClient({ products }: { products: GIProduct[] }
               )
             })}
           </div>
-          <div style={{ padding: '0.6rem 0', borderTop: '1px solid #EDD060' }}>
+          <div style={{ padding: '0.6rem 0', borderTop: '1px solid #EDD060', display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'center' }}>
             <input type="text" placeholder={t('searchPlaceholder')} value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
-              style={{ width: '100%', maxWidth: 480, fontFamily: "'Inter', sans-serif", fontSize: '0.88rem', padding: '8px 14px', border: '1.5px solid #DDB840', borderRadius: 8, background: '#FFFFFF', color: '#1B2E4A', outline: 'none', boxSizing: 'border-box' }} />
+              style={{ flex: 1, minWidth: 200, maxWidth: 480, fontFamily: "'Inter', sans-serif", fontSize: '0.88rem', padding: '8px 14px', border: '1.5px solid #DDB840', borderRadius: 8, background: '#FFFFFF', color: '#1B2E4A', outline: 'none', boxSizing: 'border-box' }} />
+            <select value={sortBy} onChange={e => setSortBy(e.target.value as typeof sortBy)} aria-label={t('sortByAria')}
+              style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.85rem', fontWeight: 700, padding: '8px 12px', border: '1.5px solid #DDB840', borderRadius: 8, background: '#FFFFFF', color: '#1B2E4A', outline: 'none', cursor: 'pointer' }}>
+              <option value="name">{t('sortByName')}</option>
+              <option value="year">{t('sortByYear')}</option>
+              <option value="women">{t('sortByWomen')}</option>
+            </select>
           </div>
         </div>
       </div>
@@ -213,11 +345,16 @@ export default function GIProductsClient({ products }: { products: GIProduct[] }
             {activeState !== 'All States' && <> {t('from')} <strong style={{ color: '#E8380A' }}>{activeState}</strong></>}
           </p>
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-            {Object.entries(categoryLabels).map(([key, label]) => (
-              <span key={key} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontFamily: "'Inter', sans-serif", fontSize: '0.7rem', fontWeight: 700, padding: '4px 10px', borderRadius: 20, background: `${CATEGORY_COLORS[key]}15`, color: CATEGORY_COLORS[key], border: `1px solid ${CATEGORY_COLORS[key]}30` }}>
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: CATEGORY_COLORS[key], display: 'inline-block' }} />{label}
-              </span>
-            ))}
+            {Object.entries(categoryLabels).map(([key, label]) => {
+              const active = activeCategory === key
+              return (
+                <button key={key} onClick={() => setActiveCategory(active ? null : key)}
+                  aria-pressed={active}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontFamily: "'Inter', sans-serif", fontSize: '0.7rem', fontWeight: 700, padding: '4px 10px', borderRadius: 20, cursor: 'pointer', background: active ? CATEGORY_COLORS[key] : `${CATEGORY_COLORS[key]}15`, color: active ? '#fff' : CATEGORY_COLORS[key], border: `1px solid ${active ? CATEGORY_COLORS[key] : `${CATEGORY_COLORS[key]}30`}` }}>
+                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: active ? '#fff' : CATEGORY_COLORS[key], display: 'inline-block' }} />{label}
+                </button>
+              )
+            })}
           </div>
         </div>
 
@@ -225,35 +362,43 @@ export default function GIProductsClient({ products }: { products: GIProduct[] }
           <div style={{ textAlign: 'center', padding: '5rem 0' }}>
             <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔍</div>
             <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.4rem', color: '#6B4820' }}>{t('noProductsFoundTitle')}</p>
-            <button onClick={() => { setSearchQuery(''); setActiveState('All States') }} style={{ marginTop: '1rem', background: '#E8380A', color: '#fff', border: 'none', borderRadius: 6, padding: '8px 20px', cursor: 'pointer', fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>{t('clearFilters')}</button>
+            <button onClick={() => { setSearchQuery(''); setActiveState('All States'); setActiveCategory(null) }} style={{ marginTop: '1rem', background: '#E8380A', color: '#fff', border: 'none', borderRadius: 6, padding: '8px 20px', cursor: 'pointer', fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>{t('clearFilters')}</button>
           </div>
         ) : (
           <Reveal direction="none" className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-6 max-sm:grid-cols-2 max-sm:gap-3">
-            {filtered.map(product => (
-              <div key={product.id} onClick={() => setSelectedProduct(product)}
-                className="cursor-pointer overflow-hidden rounded-xl border border-[#DDB840] bg-white shadow-[0_2px_8px_rgba(0,0,0,0.04)] transition-all duration-[180ms] hover:-translate-y-1 hover:shadow-[0_12px_32px_rgba(0,0,0,0.12)]"
-              >
-                <CardVisual product={product} />
-                <div className="p-5 max-sm:p-[0.85rem]">
-                  <div className="mb-[0.35rem] font-sans text-[0.68rem] font-bold tracking-[0.12em] text-[#A07840] uppercase">{product.state}</div>
-                  <h3 className="mb-2 font-serif text-[1.2rem] font-bold text-navy max-sm:mb-1 max-sm:text-[0.92rem]">{localizedGiField(product.name, product.name_hi, lang)}</h3>
-                  <p className="mb-4 line-clamp-2 font-sans text-[0.82rem] leading-[1.6] text-text-muted max-sm:mb-[0.6rem] max-sm:text-[0.72rem]">{localizedGiField(product.tagline, product.tagline_hi, lang)}</p>
-                  <div className="mb-4 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1" style={{ background: `${product.accent}12`, border: `1px solid ${product.accent}35` }}>
-                    <span className="text-[0.75rem]">👩‍🎨</span>
-                    <span className="font-sans text-[0.7rem] font-bold" style={{ color: product.accent }}>{product.women_percent}{t('womenArtisansSuffix')}</span>
-                  </div>
-                  <div className="flex items-center justify-between border-t border-[#EDD060] pt-3">
-                    <span className="font-sans text-[0.68rem] font-bold text-gold">{product.gi_tag}</span>
-                    <span className="font-sans text-[0.72rem] font-bold tracking-[0.05em] text-saffron">{t('learnMore')}</span>
+            {filtered.map(product => {
+              const tagline = localizedGiField(product.tagline, product.tagline_hi, lang)
+              const accent = product.accent ?? DEFAULT_ACCENT
+              return (
+                <div key={product.id} onClick={() => openProduct(product.id)}
+                  role="button" tabIndex={0}
+                  onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openProduct(product.id) } }}
+                  className="cursor-pointer overflow-hidden rounded-xl border border-[#DDB840] bg-white shadow-[0_2px_8px_rgba(0,0,0,0.04)] transition-all duration-[180ms] hover:-translate-y-1 hover:shadow-[0_12px_32px_rgba(0,0,0,0.12)]"
+                >
+                  <CardVisual product={product} />
+                  <div className="p-5 max-sm:p-[0.85rem]">
+                    <div className="mb-[0.35rem] font-sans text-[0.68rem] font-bold tracking-[0.12em] text-[#A07840] uppercase">{product.state}</div>
+                    <h3 className="mb-2 font-serif text-[1.2rem] font-bold text-navy max-sm:mb-1 max-sm:text-[0.92rem]">{localizedGiField(product.name, product.name_hi, lang)}</h3>
+                    {tagline && <p className="mb-4 line-clamp-2 font-sans text-[0.82rem] leading-[1.6] text-text-muted max-sm:mb-[0.6rem] max-sm:text-[0.72rem]">{tagline}</p>}
+                    {product.women_percent != null && (
+                      <div className="mb-4 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1" style={{ background: `${accent}12`, border: `1px solid ${accent}35` }}>
+                        <span className="text-[0.75rem]">👩‍🎨</span>
+                        <span className="font-sans text-[0.7rem] font-bold" style={{ color: accent }}>{product.women_percent}{t('womenArtisansSuffix')}</span>
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between border-t border-[#EDD060] pt-3">
+                      <span className="font-sans text-[0.68rem] font-bold text-gold">{product.gi_tag}</span>
+                      <span className="font-sans text-[0.72rem] font-bold tracking-[0.05em] text-saffron">{t('learnMore')}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </Reveal>
         )}
       </div>
 
-      {selectedProduct && <ProductModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />}
+      {selectedProduct && <ProductModal product={selectedProduct} onClose={closeProduct} />}
 
       <style>{`
         input::placeholder { color: #A07840; }

@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase-server'
 import GIProductsClient from './GIProductsClient'
 import type { GIProduct } from './GIProductsClient'
@@ -12,5 +13,12 @@ export default async function GIProductsPage() {
     .order('state', { ascending: true })
     .order('name', { ascending: true })
 
-  return <GIProductsClient products={(data ?? []) as GIProduct[]} />
+  // GIProductsClient reads the ?product= URL param (via useSearchParams) to
+  // support a shareable/deep-linkable modal — that hook requires a Suspense
+  // boundary in the App Router.
+  return (
+    <Suspense fallback={null}>
+      <GIProductsClient products={(data ?? []) as GIProduct[]} />
+    </Suspense>
+  )
 }
