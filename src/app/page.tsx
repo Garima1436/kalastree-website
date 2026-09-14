@@ -205,16 +205,16 @@ export default async function HomePage() {
       )}
 
       {/* CTA — Join as Artisan */}
-      <section style={{ padding: '5rem 5%', background: '#C8F5D8' }}>
+      <section style={{ padding: '2.25rem 5%', background: '#C8F5D8' }}>
         <Reveal style={{ maxWidth: 720, margin: '0 auto', textAlign: 'center' }}>
-          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🧵</div>
-          <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.8rem, 3vw, 2.4rem)', fontWeight: 700, color: '#1A7A32', marginBottom: '1rem' }}>
+          <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🧵</div>
+          <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.5rem, 2.5vw, 2rem)', fontWeight: 700, color: '#1A7A32', marginBottom: '0.5rem' }}>
             {t('ctaHeading')}
           </h2>
-          <p style={{ fontSize: '1rem', lineHeight: 1.8, color: '#6B4820', marginBottom: '2rem' }}>
+          <p style={{ fontSize: '0.92rem', lineHeight: 1.6, color: '#6B4820', marginBottom: '1.25rem' }}>
             {t('ctaBody')}
           </p>
-          <Link href="/join" style={{ background: '#1A7A32', color: '#fff', padding: '14px 32px', borderRadius: 5, fontWeight: 700, textDecoration: 'none', fontSize: '1rem', display: 'inline-block' }}>
+          <Link href="/join" style={{ background: '#1A7A32', color: '#fff', padding: '11px 28px', borderRadius: 5, fontWeight: 700, textDecoration: 'none', fontSize: '0.92rem', display: 'inline-block' }}>
             {t('ctaButton')} →
           </Link>
         </Reveal>
