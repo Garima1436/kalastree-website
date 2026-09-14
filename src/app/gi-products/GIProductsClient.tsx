@@ -87,10 +87,10 @@ function CardVisual({ product }: { product: GIProduct }) {
         sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 280px"
         style={{ objectFit: 'cover' }}
         onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none' }} />
-      <div className="absolute top-2.5 left-2.5 rounded font-sans text-[0.62rem] font-bold tracking-[0.1em] text-white uppercase" style={{ background: CATEGORY_COLORS[product.category], padding: '3px 8px' }}>
+      <div className="absolute top-2.5 left-2.5 max-w-[58%] truncate rounded font-sans text-[0.62rem] font-bold tracking-[0.1em] text-white uppercase max-sm:max-w-[50%] max-sm:text-[0.52rem] max-sm:tracking-[0.05em]" style={{ background: CATEGORY_COLORS[product.category], padding: '3px 8px' }}>
         {categoryLabels[product.category]}
       </div>
-      <div className="absolute top-2.5 right-2.5 rounded bg-gold font-sans text-[0.6rem] font-bold text-white" style={{ padding: '3px 8px' }}>
+      <div className="absolute top-2.5 right-2.5 max-w-[38%] truncate rounded bg-gold font-sans text-[0.6rem] font-bold text-white max-sm:max-w-[34%] max-sm:text-[0.5rem]" style={{ padding: '3px 8px' }}>
         {t('giCertified')}
       </div>
     </div>
@@ -241,6 +241,161 @@ function ProductModal({ product, onClose }: { product: GIProduct; onClose: () =>
   )
 }
 
+type SortKey = 'name' | 'year' | 'women'
+
+function FilterOptionRow({ label, count, active, onClick }: { label: string; count?: number; active: boolean; onClick: () => void }) {
+  return (
+    <button onClick={onClick} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', textAlign: 'left', padding: '11px 20px', background: active ? '#FFF5E0' : 'none', border: 'none', borderBottom: '1px solid #F3EDD8', fontFamily: "'Inter', sans-serif", fontWeight: active ? 700 : 500, fontSize: '0.88rem', color: active ? '#E8380A' : '#1B2E4A', cursor: 'pointer' }}>
+      <span>{label}</span>
+      {count != null && (
+        <span style={{ background: active ? '#E8380A' : '#EDD060', color: active ? '#fff' : '#9B6820', borderRadius: 10, padding: '1px 8px', fontSize: '0.7rem', fontWeight: 700 }}>
+          {count}
+        </span>
+      )}
+    </button>
+  )
+}
+
+// Same slide-in filter-drawer pattern as the shop page's MobileFilterSheet
+// (button bar + left drawer + Apply/Remove-all footer), adapted to this
+// page's simpler filter set (state, flat category, sort — no
+// price/subcategory) and wired to the existing local-state filters rather
+// than URL params, since this page's filters were never URL-synced.
+function GIFilterSheet({
+  allStates, stateCounts, activeState, setActiveState,
+  activeCategory, setActiveCategory, categoryLabels,
+  sortBy, setSortBy, resultCount,
+  searchQuery, setSearchQuery,
+}: {
+  allStates: string[]
+  stateCounts: Record<string, number>
+  activeState: string
+  setActiveState: (s: string) => void
+  activeCategory: string | null
+  setActiveCategory: (c: string | null) => void
+  categoryLabels: Record<string, string>
+  sortBy: SortKey
+  setSortBy: (s: SortKey) => void
+  resultCount: string
+  searchQuery: string
+  setSearchQuery: (q: string) => void
+}) {
+  const { t } = useTranslation('giProducts')
+  const [open, setOpen] = useState(false)
+  const [stateOpen, setStateOpen] = useState(false)
+  const [pendingState, setPendingState] = useState(activeState)
+  const [pendingCategory, setPendingCategory] = useState(activeCategory)
+  const [pendingSort, setPendingSort] = useState<SortKey>(sortBy)
+
+  const openSheet = () => {
+    setPendingState(activeState)
+    setPendingCategory(activeCategory)
+    setPendingSort(sortBy)
+    setStateOpen(false)
+    setOpen(true)
+  }
+  const apply = () => {
+    setActiveState(pendingState)
+    setActiveCategory(pendingCategory)
+    setSortBy(pendingSort)
+    setOpen(false)
+  }
+  const removeAll = () => {
+    setActiveState('All States')
+    setActiveCategory(null)
+    setSortBy('name')
+    setOpen(false)
+  }
+
+  const sortLabels: Record<SortKey, string> = { name: t('sortByName'), year: t('sortByYear'), women: t('sortByWomen') }
+
+  return (
+    <>
+      <div className="sticky top-16 z-50" style={{ background: '#fff', borderBottom: '1.5px solid #DDB840' }}>
+        <div style={{ maxWidth: 1300, margin: '0 auto', padding: '0.7rem 4%', display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+          <input type="text" placeholder={t('searchPlaceholder')} value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
+            className="min-w-[180px] max-sm:min-w-[100px]"
+            style={{ flex: 1, maxWidth: 480, fontFamily: "'Inter', sans-serif", fontSize: '0.88rem', padding: '9px 14px', border: '1.5px solid #DDB840', borderRadius: 8, background: '#FFFFFF', color: '#1B2E4A', outline: 'none', boxSizing: 'border-box' }} />
+          <button onClick={openSheet} style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: 6, background: '#fff', border: '1.5px solid #DDB840', borderRadius: 8, padding: '9px 14px', fontFamily: "'Inter', sans-serif", fontWeight: 700, fontSize: '0.85rem', color: '#1B2E4A', cursor: 'pointer' }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 7h16M7 12h10M10 17h4" /></svg>
+            {t('filterAndSort')}
+          </button>
+          {/* The grid section right below already shows "Showing X of Y" —
+              hide this on narrow screens rather than let it wrap the
+              search+button row to a second line. */}
+          <span className="max-sm:hidden" style={{ fontSize: '0.8rem', color: '#6B4820', fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap' }}>{resultCount}</span>
+        </div>
+      </div>
+
+      {open && (
+        <div onClick={() => setOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 500, background: 'rgba(26,10,0,0.45)' }}>
+          <div onClick={e => e.stopPropagation()} style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '85%', maxWidth: 340, background: '#FFFFFF', boxShadow: '8px 0 32px rgba(26,10,0,0.2)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+            <div style={{ display: 'flex', alignItems: 'center', padding: '1rem 1.25rem', borderBottom: '1px solid #E5DCC0' }}>
+              <div style={{ flex: 1, fontFamily: "'Inter', sans-serif", fontWeight: 700, fontSize: '1.05rem', color: '#1B2E4A' }}>{t('filterAndSort')}</div>
+              <button onClick={() => setOpen(false)} aria-label={t('closeAria')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.3rem', color: '#1B2E4A', lineHeight: 1 }}>×</button>
+            </div>
+
+            <div style={{ flex: 1, overflowY: 'auto' }}>
+              <div style={{ borderBottom: '1px solid #EDE6D0' }}>
+                <button onClick={() => setStateOpen(v => !v)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', padding: '15px 20px', background: 'none', border: 'none', fontFamily: "'Inter', sans-serif", fontWeight: 700, fontSize: '0.9rem', color: '#1B2E4A', cursor: 'pointer' }}>
+                  <span>{t('filterByState')}</span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#A07840', fontSize: '0.8rem', fontWeight: 400 }}>
+                    {pendingState === 'All States' ? t('allStatesLabel') : pendingState}
+                    <span style={{ color: '#1B2E4A', fontSize: '0.6rem' }}>{stateOpen ? '▲' : '▼'}</span>
+                  </span>
+                </button>
+                {stateOpen && (
+                  <div style={{ maxHeight: 220, overflowY: 'auto', background: '#FFFDF5' }}>
+                    {allStates.map(state => (
+                      <FilterOptionRow key={state} active={pendingState === state}
+                        label={state === 'All States' ? t('allStatesLabel') : state}
+                        count={stateCounts[state] ?? 0}
+                        onClick={() => { setPendingState(state); setStateOpen(false) }} />
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div style={{ padding: '14px 20px', borderBottom: '1px solid #EDE6D0' }}>
+                <div style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, fontSize: '0.9rem', color: '#1B2E4A', marginBottom: 10 }}>{t('categoryLabel')}</div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                  <button onClick={() => setPendingCategory(null)} style={{ padding: '6px 14px', borderRadius: 20, border: `1px solid ${!pendingCategory ? '#E8380A' : '#DDB840'}`, background: !pendingCategory ? '#E8380A' : '#fff', color: !pendingCategory ? '#fff' : '#6B4820', fontFamily: "'Inter', sans-serif", fontWeight: 700, fontSize: '0.78rem', cursor: 'pointer' }}>
+                    {t('allCategoriesLabel')}
+                  </button>
+                  {Object.entries(categoryLabels).map(([key, label]) => {
+                    const active = pendingCategory === key
+                    return (
+                      <button key={key} onClick={() => setPendingCategory(key)} style={{ padding: '6px 14px', borderRadius: 20, border: `1px solid ${active ? CATEGORY_COLORS[key] : '#DDB840'}`, background: active ? CATEGORY_COLORS[key] : '#fff', color: active ? '#fff' : '#6B4820', fontFamily: "'Inter', sans-serif", fontWeight: 700, fontSize: '0.78rem', cursor: 'pointer' }}>
+                        {label}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px' }}>
+                <span style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, fontSize: '0.9rem', color: '#1B2E4A' }}>{t('sortByAria')}</span>
+                <select value={pendingSort} onChange={e => setPendingSort(e.target.value as SortKey)} style={{ border: '1.5px solid #DDB840', borderRadius: 6, padding: '6px 10px', background: '#fff', color: '#6B4820', fontSize: '0.85rem', fontFamily: "'Inter', sans-serif" }}>
+                  {(Object.keys(sortLabels) as SortKey[]).map(key => <option key={key} value={key}>{sortLabels[key]}</option>)}
+                </select>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem 1.25rem', borderTop: '1px solid #E5DCC0', gap: 12 }}>
+              <button onClick={removeAll} style={{ background: 'none', border: 'none', textDecoration: 'underline', fontFamily: "'Inter', sans-serif", fontWeight: 600, fontSize: '0.88rem', color: '#1B2E4A', cursor: 'pointer' }}>
+                {t('removeAllFilters')}
+              </button>
+              <button onClick={apply} style={{ flex: 1, maxWidth: 200, background: '#E8380A', color: '#fff', border: 'none', borderRadius: 6, padding: '11px 0', fontFamily: "'Inter', sans-serif", fontWeight: 700, fontSize: '0.9rem', cursor: 'pointer' }}>
+                {t('applyFilters')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  )
+}
+
 export default function GIProductsClient({ products }: { products: GIProduct[] }) {
   const { t, lang } = useTranslation('giProducts')
   const { t: tc } = useTranslation('common')
@@ -275,6 +430,11 @@ export default function GIProductsClient({ products }: { products: GIProduct[] }
   }
 
   const allStates = ['All States', ...Array.from(new Set(products.map(p => p.state))).sort()]
+  const stateCounts = useMemo(() => {
+    const counts: Record<string, number> = { 'All States': products.length }
+    for (const p of products) counts[p.state] = (counts[p.state] ?? 0) + 1
+    return counts
+  }, [products])
 
   const filtered = useMemo(() => {
     const q = searchQuery.toLowerCase()
@@ -290,9 +450,6 @@ export default function GIProductsClient({ products }: { products: GIProduct[] }
     else if (sortBy === 'women') sorted.sort((a, b) => (b.women_percent ?? -1) - (a.women_percent ?? -1))
     return sorted
   }, [products, activeState, activeCategory, searchQuery, sortBy])
-
-  const stateCount = (state: string) =>
-    state === 'All States' ? products.length : products.filter(p => p.state === state).length
 
   // Numbered pagination — the page number lives in the URL (?page=<n>) like
   // the product modal, so a specific page is shareable/bookmarkable and
@@ -326,8 +483,8 @@ export default function GIProductsClient({ products }: { products: GIProduct[] }
   return (
     <div style={{ background: 'var(--parchment)', minHeight: '100vh' }}>
       {/* Hero */}
-      <div style={{ background: 'linear-gradient(160deg, #1B2E4A 0%, #0D1E33 100%)', padding: '4rem 5% 5rem', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', right: '5%', top: '50%', transform: 'translateY(-50%)', opacity: 0.06, pointerEvents: 'none' }}>
+      <div className="pt-8 px-[5%] pb-10 max-sm:pt-6 max-sm:pb-7" style={{ background: 'linear-gradient(160deg, #1B2E4A 0%, #0D1E33 100%)', position: 'relative', overflow: 'hidden' }}>
+        <div className="max-sm:hidden" style={{ position: 'absolute', right: '5%', top: '50%', transform: 'translateY(-50%)', opacity: 0.06, pointerEvents: 'none' }}>
           <svg width="420" height="420" viewBox="0 0 420 420" fill="none">
             <circle cx="210" cy="210" r="200" stroke="#D4A000" strokeWidth="1" />
             <circle cx="210" cy="210" r="160" stroke="#D4A000" strokeWidth="1" />
@@ -339,50 +496,32 @@ export default function GIProductsClient({ products }: { products: GIProduct[] }
           </svg>
         </div>
         <div style={{ maxWidth: 900, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.25em', textTransform: 'uppercase', color: '#D4A000', marginBottom: '0.75rem' }}>
+          <p className="mb-3 max-sm:mb-2" style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.25em', textTransform: 'uppercase', color: '#D4A000' }}>
             <Link href="/" style={{ color: '#D4A000', textDecoration: 'none' }}>{tc('home')}</Link>
             <span style={{ margin: '0 0.5rem', opacity: 0.6 }}>/</span>{tc('giProducts')}
           </p>
-          <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(2.4rem, 5vw, 3.8rem)', fontWeight: 700, color: '#fff', lineHeight: 1.15, marginBottom: '1rem' }}>
+          <h1 className="mb-2 text-[clamp(2rem,4vw,3rem)] max-sm:mb-2 max-sm:text-[1.7rem]" style={{ fontFamily: "'EB Garamond', serif", fontWeight: 700, color: '#fff', lineHeight: 1.15 }}>
             {t('heroTitlePrefix')}<span style={{ color: '#D4A000', fontStyle: 'italic' }}>{t('heroTitleAccent')}</span>
           </h1>
-          <p style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1rem, 2vw, 1.25rem)', color: 'rgba(255,255,255,0.75)', lineHeight: 1.85, maxWidth: 640, marginBottom: '2rem' }}>
+          <p className="mb-0 max-sm:hidden" style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(0.92rem, 1.5vw, 1.05rem)', color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, maxWidth: 640 }}>
             {t('heroDescription')}
           </p>
         </div>
       </div>
 
-      {/* Controls */}
-      <div style={{ background: '#fff', borderBottom: '1.5px solid #DDB840', position: 'sticky', top: 64, zIndex: 50 }}>
-        <div style={{ maxWidth: 1300, margin: '0 auto', padding: '0 4%' }}>
-          <div style={{ overflowX: 'auto', display: 'flex', gap: '0.15rem', padding: '0.75rem 0', scrollbarWidth: 'none' }}>
-            {allStates.map(state => {
-              const active = state === activeState
-              return (
-                <button key={state} onClick={() => setActiveState(state)} style={{ flexShrink: 0, fontFamily: "'Inter', sans-serif", fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.05em', padding: '7px 14px', borderRadius: 6, border: active ? '1.5px solid #E8380A' : '1.5px solid transparent', background: active ? '#E8380A' : 'transparent', color: active ? '#fff' : '#6B4820', cursor: 'pointer', transition: 'all 0.15s', whiteSpace: 'nowrap' }}>
-                  {state === 'All States' ? t('allStatesLabel') : state}
-                  <span style={{ marginLeft: 6, background: active ? 'rgba(255,255,255,0.25)' : '#EDD060', color: active ? '#fff' : '#9B6820', borderRadius: 10, padding: '1px 7px', fontSize: '0.65rem', fontWeight: 700 }}>
-                    {stateCount(state)}
-                  </span>
-                </button>
-              )
-            })}
-          </div>
-          <div style={{ padding: '0.6rem 0', borderTop: '1px solid #EDD060', display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'center' }}>
-            <input type="text" placeholder={t('searchPlaceholder')} value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
-              style={{ flex: 1, minWidth: 200, maxWidth: 480, fontFamily: "'Inter', sans-serif", fontSize: '0.88rem', padding: '8px 14px', border: '1.5px solid #DDB840', borderRadius: 8, background: '#FFFFFF', color: '#1B2E4A', outline: 'none', boxSizing: 'border-box' }} />
-            <select value={sortBy} onChange={e => setSortBy(e.target.value as typeof sortBy)} aria-label={t('sortByAria')}
-              style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.85rem', fontWeight: 700, padding: '8px 12px', border: '1.5px solid #DDB840', borderRadius: 8, background: '#FFFFFF', color: '#1B2E4A', outline: 'none', cursor: 'pointer' }}>
-              <option value="name">{t('sortByName')}</option>
-              <option value="year">{t('sortByYear')}</option>
-              <option value="women">{t('sortByWomen')}</option>
-            </select>
-          </div>
-        </div>
-      </div>
+      {/* Controls — a single unified search + Filter&Sort bar across every
+          screen size (was previously a full desktop row plus a separate
+          mobile-only compact bar; now one component handles both). */}
+      <GIFilterSheet
+        allStates={allStates} stateCounts={stateCounts} activeState={activeState} setActiveState={setActiveState}
+        activeCategory={activeCategory} setActiveCategory={setActiveCategory} categoryLabels={categoryLabels}
+        sortBy={sortBy} setSortBy={setSortBy}
+        resultCount={`${filtered.length} ${t(filtered.length !== 1 ? 'giCertifiedProducts' : 'giCertifiedProduct')}`}
+        searchQuery={searchQuery} setSearchQuery={setSearchQuery}
+      />
 
       {/* Grid */}
-      <div ref={gridRef} style={{ maxWidth: 1300, margin: '0 auto', padding: '2.5rem 4%', scrollMarginTop: 140 }}>
+      <div ref={gridRef} className="pt-10 pb-10 px-[4%] max-sm:pt-4 max-sm:pb-6" style={{ maxWidth: 1300, margin: '0 auto', scrollMarginTop: 140 }}>
         <div style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
           <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.85rem', color: '#9B6820', margin: 0 }}>
             {filtered.length > PAGE_SIZE ? (
