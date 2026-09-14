@@ -100,3 +100,24 @@ export const WOMEN_ONLY_PLATFORM_EVIDENCE: Evidence = {
   relevance_score: 1,
   verification_status: 'verified',
 }
+
+// order_related ("Where's my order?", "Can I cancel my order?") previously
+// had NO evidence wiring at all — not in PRODUCT_INTENTS, not in
+// NARRATIVE_INTENTS, no deterministic lookup like artisan_information has —
+// so it always hit the generic insufficient-evidence refusal. This pipeline
+// has no signed-in-user/order-ID context to look up a REAL order's status
+// (that would require auth plumbing this chat endpoint doesn't have), so
+// the honest fix is pointing to the real, existing self-service page
+// rather than fabricating or guessing at order data.
+export const ORDER_RELATED_EVIDENCE: Evidence = {
+  source_id: 'static:order-related',
+  source_type: 'static',
+  source_title: 'Checking Your Order Status',
+  source_reference: 'src/app/account/orders/page.tsx (My Orders page)',
+  retrieved_text:
+    'This chat assistant does not have access to individual order records. To check an order\'s status, cancel an ' +
+    'eligible order, or confirm delivery, sign in to your KalaStree account and go to My Orders ' +
+    '(kalastree.com/account/orders). For any other order issue, contact KalaStree directly at garima@kalastree.com.',
+  relevance_score: 1,
+  verification_status: 'verified',
+}

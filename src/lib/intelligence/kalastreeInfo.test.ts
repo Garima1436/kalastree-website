@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { isFounderName, KALASTREE_EVIDENCE, GI_DEFINITION_EVIDENCE, FOUNDER_NAME } from './kalastreeInfo'
+import { isFounderName, KALASTREE_EVIDENCE, GI_DEFINITION_EVIDENCE, ORDER_RELATED_EVIDENCE, FOUNDER_NAME } from './kalastreeInfo'
 
 describe('isFounderName', () => {
   it('matches the founder name case-insensitively', () => {
@@ -45,5 +45,18 @@ describe('GI_DEFINITION_EVIDENCE', () => {
   it('actually defines what a GI is', () => {
     expect(GI_DEFINITION_EVIDENCE.retrieved_text).toMatch(/geographical origin/i)
     expect(GI_DEFINITION_EVIDENCE.retrieved_text).toMatch(/DPIIT/)
+  })
+})
+
+describe('ORDER_RELATED_EVIDENCE', () => {
+  it('is marked verified static evidence', () => {
+    expect(ORDER_RELATED_EVIDENCE.source_type).toBe('static')
+    expect(ORDER_RELATED_EVIDENCE.verification_status).toBe('verified')
+  })
+
+  it('points to the real My Orders page rather than fabricating order data', () => {
+    expect(ORDER_RELATED_EVIDENCE.retrieved_text).toMatch(/account\/orders/)
+    // Must not claim to know a specific order's status.
+    expect(ORDER_RELATED_EVIDENCE.retrieved_text).not.toMatch(/shipped|delivered|processing|out for delivery/i)
   })
 })

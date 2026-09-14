@@ -15,7 +15,7 @@ import { filterEligible } from './eligibility'
 import { rankProducts } from './ranking'
 import { buildEvidence } from './evidence'
 import { generateResponse } from './responseGenerator'
-import { KALASTREE_EVIDENCE, WOMEN_ONLY_PLATFORM_EVIDENCE, GI_DEFINITION_EVIDENCE, isFounderName } from './kalastreeInfo'
+import { KALASTREE_EVIDENCE, WOMEN_ONLY_PLATFORM_EVIDENCE, GI_DEFINITION_EVIDENCE, ORDER_RELATED_EVIDENCE, isFounderName } from './kalastreeInfo'
 import { PRODUCT_INTENTS } from './types'
 import type { DebugInfo, Evidence, StructuredQuery } from './types'
 
@@ -104,6 +104,12 @@ export async function runPipeline(
   // tagged?") already gets a real verification result and doesn't need this.
   if (structuredQuery.intents.includes('gi_information') && !verification) {
     evidence.unshift(GI_DEFINITION_EVIDENCE)
+  }
+
+  // order_related had zero evidence wiring at all (see ORDER_RELATED_EVIDENCE
+  // for why a static pointer, not a real lookup, is the honest fix here).
+  if (structuredQuery.intents.includes('order_related')) {
+    evidence.unshift(ORDER_RELATED_EVIDENCE)
   }
 
   // A request for a male artisan/product is answerable with a fixed,

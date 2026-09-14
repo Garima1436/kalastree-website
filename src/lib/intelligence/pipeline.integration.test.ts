@@ -30,6 +30,19 @@ describe('GI queries', () => {
     expect(result.answer).not.toContain('does not contain enough information')
     expect(result.answer.toLowerCase()).toMatch(/geographical/i)
   }, TIMEOUT)
+
+  // Regression: "tag number"/"registration number" phrasing for a named
+  // craft was reproducibly failing to extract entities.craft at all (unlike
+  // plain "Is X GI certified?", which worked) — verifyGI then had nothing
+  // to check and the answer fell back to the generic refusal despite the
+  // fact being in the database. Fixed via an explicit query-understanding
+  // prompt rule; this locks in that the fact is actually surfaced now.
+  it('answers a GI tag number question for a named craft', async () => {
+    const result = await runPipeline('What GI tag number does Bhagalpur Silk have?', [], null, false)
+    expect(result.structuredQuery.entities.craft).toBeTruthy()
+    expect(result.answer).not.toContain('does not contain enough information')
+    expect(result.answer).toMatch(/174/)
+  }, TIMEOUT)
 })
 
 describe('product queries', () => {
@@ -105,5 +118,17 @@ describe('hallucination tests', () => {
   it('does not claim GI verification for a state with no matching registered craft in context', async () => {
     const result = await runPipeline('Is there a GI-certified "Moonlight Batik" craft from Sikkim?', [], null, false)
     expect(result.answer).not.toMatch(/is gi certified|is gi-certified|yes.*gi/i)
+  }, TIMEOUT)
+})
+
+describe('order queries', () => {
+  // Regression: order_related had no evidence wiring at all — "Where is my
+  // order?" always hit the generic insufficient-evidence refusal. This
+  // pipeline has no signed-in-user context to look up a real order, so the
+  // fix points to the real self-service page instead of fabricating status.
+  it('points to the My Orders page instead of the generic refusal or a fabricated status', async () => {
+    const result = await runPipeline('Where is my order?', [], null, false)
+    expect(result.answer).not.toContain('does not contain enough information')
+    expect(result.answer.toLowerCase()).toMatch(/account\/orders|my orders/)
   }, TIMEOUT)
 })
