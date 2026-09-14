@@ -90,9 +90,6 @@ function CardVisual({ product }: { product: GIProduct }) {
       <div className="absolute top-2.5 left-2.5 max-w-[58%] truncate rounded font-sans text-[0.62rem] font-bold tracking-[0.1em] text-white uppercase max-sm:max-w-[50%] max-sm:text-[0.52rem] max-sm:tracking-[0.05em]" style={{ background: CATEGORY_COLORS[product.category], padding: '3px 8px' }}>
         {categoryLabels[product.category]}
       </div>
-      <div className="absolute top-2.5 right-2.5 max-w-[38%] truncate rounded bg-gold font-sans text-[0.6rem] font-bold text-white max-sm:max-w-[34%] max-sm:text-[0.5rem]" style={{ padding: '3px 8px' }}>
-        {t('giCertified')}
-      </div>
     </div>
   )
 }
