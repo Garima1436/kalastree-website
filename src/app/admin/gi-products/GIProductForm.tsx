@@ -150,10 +150,21 @@ export default function GIProductForm({ initialData, mode = 'new' }: Props) {
             </div>
             <div>
               <label style={labelStyle}>{t('stateLabel')}</label>
-              <select style={inputStyle} value={form.state} onChange={e => set('state', e.target.value)}>
-                <option value="">{t('selectStatePlaceholder')}</option>
-                {INDIAN_STATES.map(s => <option key={s} value={s}>{s}</option>)}
-              </select>
+              {/* A plain dropdown only offers India's 28 states/UTs, but the
+                  registry-imported rows include values it can't represent —
+                  "Andaman and Nicobar Islands", "Puducherry", and
+                  multi-region GI tags like "Kerala, Karnataka & Tamilnadu"
+                  — which made the field silently show blank on edit even
+                  though the database had a real value. A text input with a
+                  datalist keeps the autocomplete convenience for the common
+                  states while always displaying whatever is actually
+                  stored. */}
+              <input style={inputStyle} list="state-options" value={form.state}
+                onChange={e => set('state', e.target.value)}
+                placeholder={t('selectStatePlaceholder')} />
+              <datalist id="state-options">
+                {INDIAN_STATES.map(s => <option key={s} value={s} />)}
+              </datalist>
             </div>
           </div>
 
