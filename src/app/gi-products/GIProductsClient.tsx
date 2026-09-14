@@ -253,21 +253,6 @@ export default function GIProductsClient({ products }: { products: GIProduct[] }
         )}
       </div>
 
-      {/* Knowledge Banner */}
-      <div style={{ background: '#1B2E4A', padding: '4rem 5%', marginTop: '2rem' }}>
-        <Reveal style={{ maxWidth: 1000, margin: '0 auto', textAlign: 'center' }}>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#D4A000', marginBottom: '1rem' }}>{t('aiPoweredKnowledge')}</p>
-          <h2 style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.8rem, 3.5vw, 2.6rem)', fontWeight: 700, color: '#fff', marginBottom: '1rem' }}>{t('askChatbotTitle')}</h2>
-          <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.1rem', color: 'rgba(255,255,255,0.7)', lineHeight: 1.8, maxWidth: 600, margin: '0 auto 2rem' }}>
-            {t('askChatbotDescription')}
-          </p>
-          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link href="/chatbot" style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.85rem', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', background: '#E8380A', color: '#fff', padding: '12px 28px', borderRadius: 6, textDecoration: 'none' }}>{t('chatWithAi')}</Link>
-            <Link href="/shop" style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.85rem', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', background: 'transparent', color: '#D4A000', border: '1.5px solid #D4A000', padding: '12px 28px', borderRadius: 6, textDecoration: 'none' }}>{t('shopGiProducts')}</Link>
-          </div>
-        </Reveal>
-      </div>
-
       {selectedProduct && <ProductModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />}
 
       <style>{`
