@@ -1,6 +1,35 @@
 import { describe, it, expect } from 'vitest'
-import { matchesGIRegistry } from './relationships'
+import { matchesGIRegistry, matchesPersonName } from './relationships'
 import { makeGIProduct, makeProduct } from './testFixtures'
+
+describe('matchesPersonName', () => {
+  it('matches the exact full name, case-insensitively', () => {
+    expect(matchesPersonName('manish rawat', 'Manish Rawat')).toBe(true)
+    expect(matchesPersonName('MANISH RAWAT', 'Manish Rawat')).toBe(true)
+  })
+
+  it('matches a bare first or last name as a whole word', () => {
+    expect(matchesPersonName('Manish', 'Manish Rawat')).toBe(true)
+    expect(matchesPersonName('Rawat', 'Manish Rawat')).toBe(true)
+  })
+
+  it('does not match via substring containment', () => {
+    // Reproduced live: "manish" is a literal character-substring of
+    // "manisha" (Manish+a) — an ILIKE '%manish%' style check matched an
+    // unrelated artisan named Manisha and buried the real answer.
+    expect(matchesPersonName('manish', 'Manisha Dhurve')).toBe(false)
+    expect(matchesPersonName('man', 'Manish Rawat')).toBe(false)
+  })
+
+  it('does not match an unrelated name', () => {
+    expect(matchesPersonName('Sunita Jha', 'Manish Rawat')).toBe(false)
+  })
+
+  it('returns false for an empty needle', () => {
+    expect(matchesPersonName('', 'Manish Rawat')).toBe(false)
+    expect(matchesPersonName('   ', 'Manish Rawat')).toBe(false)
+  })
+})
 
 describe('matchesGIRegistry', () => {
   const madhubani = makeGIProduct({ id: 'gi-madhubani', name: 'Madhubani Painting', gi_tag: 'GI Tag No. 213', state: 'Bihar' })

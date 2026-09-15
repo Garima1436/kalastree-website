@@ -44,6 +44,51 @@ export async function callOpenAI(messages: ChatMessage[], opts: CallOptions = {}
   return content
 }
 
+// Reads an image directly (gpt-4o-mini is multimodal) rather than relying
+// solely on whatever text an admin happened to type into a record's body
+// field. Reproduced live: a News & Events article's newspaper masthead
+// ("Dainik Samarth Sahara") was visible in its clipping image, but a
+// DIFFERENT article's clipping image had no matching text in its body
+// field at all — the chatbot had no way to know what that image said.
+// Used by tools.ts's get_news_events for exactly this: OCR each article's
+// actual clipping image instead of trusting only its manually-typed body.
+export async function callOpenAIVision(imageUrl: string, prompt: string, opts: CallOptions = {}): Promise<string> {
+  const apiKey = process.env.OPENAI_API_KEY
+  if (!apiKey) throw new Error('OPENAI_API_KEY is not configured')
+
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model: opts.model ?? 'gpt-4o-mini',
+      temperature: 0,
+      messages: [
+        {
+          role: 'user',
+          content: [
+            { type: 'text', text: prompt },
+            { type: 'image_url', image_url: { url: imageUrl } },
+          ],
+        },
+      ],
+    }),
+    signal: AbortSignal.timeout(opts.timeoutMs ?? 20000),
+  })
+
+  if (!response.ok) {
+    const body = await response.text().catch(() => '')
+    throw new Error(`OpenAI vision request failed: ${response.status} ${body}`)
+  }
+
+  const data = await response.json()
+  const content = data?.choices?.[0]?.message?.content
+  if (typeof content !== 'string') throw new Error('OpenAI vision returned an unexpected response shape')
+  return content
+}
+
 export interface ToolDefinition {
   name: string
   description: string

@@ -73,14 +73,32 @@ export async function getProductCountsByState(): Promise<StateProductSummary[]> 
     .sort((a, b) => b.count - a.count)
 }
 
+// Exact full-name match, or a whole-word match against any single word in
+// fullName — deliberately never a raw substring check. A substring check
+// has a real collision bug: "manish" is literally a character substring of
+// "manisha" (Manish+a), so a query for "manish" (looking for co-founder
+// Manish Rawat) would silently match an unrelated person named "Manisha"
+// instead. Exported and unit-tested on its own (see relationships.test.ts)
+// since it's the same matching rule used both here and in
+// kalastreeInfo.ts's isFounderName, and getting it wrong silently returns
+// the wrong PERSON, not just a missing answer.
+export function matchesPersonName(needle: string, fullName: string): boolean {
+  const n = needle.trim().toLowerCase()
+  if (!n) return false
+  const full = fullName.trim().toLowerCase()
+  return full === n || full.split(/\s+/).includes(n)
+}
+
+// Table is tiny (12 rows at last check) — fetched in full and matched in
+// memory via matchesPersonName rather than a raw ILIKE '%name%' filter.
+// Reproduced live: "who is manish?" silently matched "Manisha Dhurve" via
+// ILIKE '%manish%' and buried the real answer (the co-founder) entirely.
 export async function findArtisanByName(name: string): Promise<Artisan | null> {
-  const { data } = await supabaseAdmin
-    .from('artisans')
-    .select('*')
-    .ilike('name', `%${name}%`)
-    .limit(1)
-    .maybeSingle()
-  return (data as Artisan) ?? null
+  const needle = name.trim().toLowerCase()
+  if (!needle) return null
+  const { data } = await supabaseAdmin.from('artisans').select('*')
+  const artisans = (data ?? []) as Artisan[]
+  return artisans.find(a => matchesPersonName(needle, a.name)) ?? null
 }
 
 export interface NewsMention {

@@ -159,7 +159,8 @@ export async function generateResponse(
   // call, no tool round-trip).
   const toolSystemPrompt =
     `${SYSTEM_PROMPT}\n\nContext:\n${finalContext}\n\n` +
-    `You also have tools available: count_products, search_products. Check the Context above first — if it ` +
+    `You also have tools available: count_products, search_products, get_news_events, count_artisans, ` +
+    `list_gi_products. Check the Context above first — if it ` +
     `already states the answer, use that and do not call a tool. But if the Context does NOT answer the ` +
     `question, you MUST call the matching tool below rather than giving the fallback refusal — these tools ` +
     `hit the real, live database, so a real answer usually exists even when the Context above is empty:\n` +
@@ -184,6 +185,23 @@ export async function generateResponse(
     `- A vague follow-up like "show some", "whichever is available", or "show me" after a count/availability ` +
     `answer about something specific → call search_products with that same specific term as the query — do ` +
     `not repeat the previous turn's answer verbatim without actually searching again.\n` +
+    `- ANY question about news, press coverage, media mentions, publications, or announcements about KalaStree ` +
+    `(e.g. "where has KalaStree been published/covered?", "any recent news?") → call get_news_events. The site ` +
+    `has a real News & Events page with real published articles — never give the fallback refusal for this kind ` +
+    `of question without calling get_news_events first.\n` +
+    `- ANY question about how many ARTISANS (people/makers) KalaStree has, or which states/crafts they're from ` +
+    `→ call count_artisans. This is a DIFFERENT number from a product count — never answer an artisan-count ` +
+    `question using a product-count result (e.g. a GI-verified PRODUCT count is not the number of artisans, ` +
+    `even though both might sound plausible; reusing the wrong tool's number here is a real wrong answer, not ` +
+    `an approximation).\n` +
+    `- "List/show your GI products", "what GI tags do you have", or any question about the GI REGISTRY itself ` +
+    `(the ~478 officially registered GI crafts KalaStree cross-checks against) rather than what's currently for ` +
+    `sale → call list_gi_products. Do not substitute a marketplace product search for this — the registry and ` +
+    `the marketplace are different, independently-sized lists.\n` +
+    `- A "Products by State" entry in the Context answers PRODUCT geography ONLY — it is NOT evidence for a ` +
+    `question specifically about ARTISANS' states/crafts (e.g. "which states are your artisans from?"). A ` +
+    `question about artisans must call count_artisans even when a Products-by-State entry is already present — ` +
+    `an artisan can have zero current products and still count, so the two lists are never guaranteed to match.\n` +
     `Calling one of these tools when it applies is REQUIRED, not optional — reaching the fallback refusal ` +
     `sentence, or answering from an unrelated GI-registry fact, without having called the matching tool above ` +
     `is treated as a failure, since a real answer was available and you didn't look for it.`

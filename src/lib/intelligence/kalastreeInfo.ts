@@ -11,6 +11,7 @@
 // be more infrastructure than the problem needs.
 import type { Evidence } from './types'
 import aboutDict from '../i18n/dictionaries/about'
+import { matchesPersonName } from './relationships'
 
 export const FOUNDER_NAME = 'Garima Awasthi'
 
@@ -60,10 +61,19 @@ export const KALASTREE_EVIDENCE: Evidence[] = [
   },
 ]
 
+// Exact full-name match, or a whole-word match against either name (so a
+// bare first name like "Manish" or "Garima" still resolves) — but never a
+// raw substring, which would risk the same collision class fixed in
+// findArtisanByName (relationships.ts): a short name being contained
+// inside an unrelated longer word. Reproduced live: "who is manish?" fell
+// through to an unrelated artisan match instead of ever reaching the
+// co-founder, because this check only accepted the exact full name
+// "Manish Rawat" and nothing shorter.
 export function isFounderName(name: string | null): boolean {
   if (!name) return false
-  const normalized = name.trim().toLowerCase()
-  return normalized === FOUNDER_NAME.toLowerCase() || normalized === CO_FOUNDER_NAME.toLowerCase()
+  const needle = name.trim().toLowerCase()
+  if (!needle) return false
+  return [FOUNDER_NAME, CO_FOUNDER_NAME].some(full => matchesPersonName(needle, full))
 }
 
 // A generic "what is a GI?" has no product/craft/state entity for

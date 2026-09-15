@@ -19,10 +19,22 @@ describe('isFounderName', () => {
     expect(isFounderName('  Manish Rawat  ')).toBe(true)
   })
 
-  it('does not match an unrelated or partial name', () => {
-    expect(isFounderName('Garima')).toBe(false)
-    expect(isFounderName('Manish')).toBe(false)
+  it('matches a bare first name (whole word), not just the full name', () => {
+    // Reproduced live: "who is manish?" fell through to an unrelated
+    // artisan instead of ever reaching the co-founder, because this used
+    // to require the exact full name. A bare first name must resolve.
+    expect(isFounderName('Garima')).toBe(true)
+    expect(isFounderName('garima')).toBe(true)
+    expect(isFounderName('Manish')).toBe(true)
+    expect(isFounderName('Rawat')).toBe(true)
+  })
+
+  it('does not match an unrelated name, even one sharing a substring', () => {
     expect(isFounderName('Sunita Jha')).toBe(false)
+    // "manish" is a literal character-substring of "manisha" — must NOT
+    // match via substring, only via a genuine whole-word match.
+    expect(isFounderName('Manisha')).toBe(false)
+    expect(isFounderName('Manisha Dhurve')).toBe(false)
   })
 
   it('returns false for null', () => {
