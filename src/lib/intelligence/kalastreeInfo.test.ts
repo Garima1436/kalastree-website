@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { isFounderName, KALASTREE_EVIDENCE, GI_DEFINITION_EVIDENCE, ORDER_RELATED_EVIDENCE, FOUNDER_NAME } from './kalastreeInfo'
+import { isFounderName, KALASTREE_EVIDENCE, GI_DEFINITION_EVIDENCE, ORDER_RELATED_EVIDENCE, FOUNDER_NAME, CO_FOUNDER_NAME } from './kalastreeInfo'
 
 describe('isFounderName', () => {
   it('matches the founder name case-insensitively', () => {
@@ -8,12 +8,20 @@ describe('isFounderName', () => {
     expect(isFounderName('GARIMA AWASTHI')).toBe(true)
   })
 
+  it('matches the co-founder name case-insensitively', () => {
+    expect(isFounderName('manish rawat')).toBe(true)
+    expect(isFounderName('Manish Rawat')).toBe(true)
+    expect(isFounderName('MANISH RAWAT')).toBe(true)
+  })
+
   it('tolerates surrounding whitespace', () => {
     expect(isFounderName('  Garima Awasthi  ')).toBe(true)
+    expect(isFounderName('  Manish Rawat  ')).toBe(true)
   })
 
   it('does not match an unrelated or partial name', () => {
     expect(isFounderName('Garima')).toBe(false)
+    expect(isFounderName('Manish')).toBe(false)
     expect(isFounderName('Sunita Jha')).toBe(false)
   })
 
@@ -33,6 +41,10 @@ describe('KALASTREE_EVIDENCE', () => {
 
   it('includes the founder name in at least one entry', () => {
     expect(KALASTREE_EVIDENCE.some(e => e.retrieved_text.includes(FOUNDER_NAME))).toBe(true)
+  })
+
+  it('includes the co-founder name in at least one entry', () => {
+    expect(KALASTREE_EVIDENCE.some(e => e.retrieved_text.includes(CO_FOUNDER_NAME))).toBe(true)
   })
 })
 

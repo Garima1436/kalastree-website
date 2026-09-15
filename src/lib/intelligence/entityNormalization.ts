@@ -14,6 +14,14 @@ const KNOWN_SYNONYMS: Record<string, string> = {
   'mithila painting': 'madhubani painting',
   'mithila art': 'madhubani painting',
   'madhubani art': 'madhubani painting',
+  // "Pondicherry" is the pre-2006 name still in common use; "Puducherry" is
+  // the current official name (and what INDIAN_STATES/gi_products use) —
+  // reproduced live: "show products from Pondicherry" was told Pondicherry
+  // "is not officially recognized as a GI" region, because the two names
+  // differ by enough characters (edit distance ~4) that fuzzyMatch's
+  // levenshtein fallback (threshold 1 for a 10-char word) never bridges
+  // them without an explicit synonym entry.
+  'pondicherry': 'puducherry',
 }
 
 interface KnowledgeCache {
@@ -107,4 +115,24 @@ export async function normalizeCraft(input: string | null): Promise<string | nul
 export function normalizeState(input: string | null): string | null {
   if (!input) return null
   return fuzzyMatch(input, INDIAN_STATES) ?? input
+}
+
+// Reproduced live: "total how many product available from andhrapradesh?"
+// — the LLM's own entity extraction returned state: null, so normalizeState
+// above never even ran (it short-circuits on a null input). This isn't a
+// fuzzy-matching gap — fuzzyMatch's Levenshtein fallback already bridges
+// "andhrapradesh" to "Andhra Pradesh" just fine once GIVEN a state string —
+// the LLM simply failed to recognize the no-space form as a state entity
+// worth extracting at all. Scans the raw question text directly, with
+// spaces stripped from both sides, as a deterministic fallback for when the
+// LLM's own extraction comes back empty. Length-gated at 5+ letters so it
+// can't fire on a short state name (e.g. "Goa") matching inside an
+// unrelated longer word.
+export function scanForStateName(question: string): string | null {
+  const despacedQuestion = question.toLowerCase().replace(/[^a-z]/g, '')
+  for (const state of INDIAN_STATES) {
+    const despacedState = state.toLowerCase().replace(/[^a-z]/g, '')
+    if (despacedState.length >= 5 && despacedQuestion.includes(despacedState)) return state
+  }
+  return null
 }

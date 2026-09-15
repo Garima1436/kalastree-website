@@ -1,11 +1,25 @@
 'use client'
 
+import { useEffect, useState } from 'react'
+
 const DEFAULT_MESSAGE = 'Hi KalaStree team, I have a query about your GI-verified products/artisans.'
 
 // Stacked directly above ChatWidget's floating action button (56px, at
 // bottom:24/right:24 — see ChatWidget.tsx) with a 12px gap between them.
 export default function WhatsAppButton({ number, message }: { number: string | null; message?: string | null }) {
-  if (!number) return null
+  // The chat panel opens right over this spot (bottom:88, up to 520px tall)
+  // but is DOM-rendered before this component, so at the same z-index this
+  // button was still winning the stacking tie and floating on top of it —
+  // see ChatWidget.tsx's dispatch of this same event for why a window event
+  // is used instead of shared parent state.
+  const [chatOpen, setChatOpen] = useState(false)
+  useEffect(() => {
+    const onChange = (e: Event) => setChatOpen((e as CustomEvent<boolean>).detail)
+    window.addEventListener('kalastree:chat-open-change', onChange)
+    return () => window.removeEventListener('kalastree:chat-open-change', onChange)
+  }, [])
+
+  if (!number || chatOpen) return null
 
   const digitsOnly = number.replace(/[^\d]/g, '')
   const text = message?.trim() || DEFAULT_MESSAGE

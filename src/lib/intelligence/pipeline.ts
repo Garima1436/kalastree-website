@@ -6,7 +6,7 @@
 // intents that need them (spec example 3: "do not recommend products
 // unless appropriate").
 import { supabaseAdmin } from '@/lib/supabase-admin'
-import { understandQuery, isAllStatesRequest } from './queryUnderstanding'
+import { understandQuery, isAllStatesRequest, isTotalProductsRequest, isShowMoreRequest } from './queryUnderstanding'
 import { buildConstraints } from './constraints'
 import { verifyGI } from './verification'
 import { getAllGIProducts, findArtisanByName, getProductCountsByState } from './relationships'
@@ -82,7 +82,28 @@ export async function runPipeline(
   const t3 = Date.now()
 
   const eligible = needsProducts ? filterEligible(candidates, constraints, giProducts) : []
-  const ranked = needsProducts ? rankProducts(eligible, structuredQuery.entities, constraints.length) : []
+  let ranked = needsProducts ? rankProducts(eligible, structuredQuery.entities, constraints.length) : []
+
+  // "Show more" only means something relative to what the user was just
+  // shown — reproduced live: asking this after a truncated list (correctly
+  // disclosed as "5 of 13") returned the SAME 5 products again, since
+  // ranking is deterministic and nothing tracked what had already been
+  // seen. previousEvidence is the client-held record of last turn's
+  // evidence (see the source_inquiry usage below for the existing
+  // precedent for reading it) — pull the product ids out of it and drop
+  // them from this turn's ranked list before anything slices it, so
+  // evidence/response-generation/the returned product cards all
+  // consistently surface the NEXT batch instead of repeating the first one.
+  if (isShowMoreRequest(question) && previousEvidence?.length) {
+    const alreadyShownIds = new Set(
+      previousEvidence
+        .map(e => e.source_id.match(/^products:(.+)$/)?.[1])
+        .filter((id): id is string => !!id)
+    )
+    if (alreadyShownIds.size) {
+      ranked = ranked.filter(r => !alreadyShownIds.has(r.product.id))
+    }
+  }
 
   let evidence = buildEvidence(verification, ranked, narrative)
 
@@ -133,7 +154,7 @@ export async function runPipeline(
   // with product availability — was independently classified the same way
   // and got answered with the products-by-state breakdown instead of a
   // correct refusal).
-  if (isAllStatesRequest(question) && structuredQuery.intents.includes('state_information')) {
+  if ((isAllStatesRequest(question) || isTotalProductsRequest(question)) && structuredQuery.intents.includes('state_information')) {
     const byState = await getProductCountsByState()
     evidence.unshift({
       source_id: 'products:state_breakdown',

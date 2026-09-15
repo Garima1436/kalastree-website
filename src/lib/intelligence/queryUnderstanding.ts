@@ -6,8 +6,9 @@
 // stages downstream. If extraction fails or returns malformed JSON, we fall
 // back to an empty structured query rather than guessing.
 import { callOpenAI } from './openai'
-import { normalizeCraft, normalizeState } from './entityNormalization'
+import { normalizeCraft, normalizeState, scanForStateName } from './entityNormalization'
 import type { StructuredQuery, ExtractedEntities, Intent } from './types'
+import { PRODUCT_INTENTS } from './types'
 
 interface HistoryMessage {
   role: 'user' | 'ai'
@@ -95,6 +96,21 @@ const TRADITIONAL_KEYWORDS = /traditional|heritage|authentic|age-old|time-honou?
 // pattern groundInCurrentMessage already uses for handmade/traditional.
 const MALE_GENDER_KEYWORDS = /\bmen\b|\bmale\b|पुरुष|आदमी|मर्द/i
 
+// An explicit "show ALL products" (from the same state/craft already being
+// discussed) is a request to drop prior narrowing filters, not just another
+// refinement — but isTopicShift() only clears SHAPE_FIELDS when the anchor
+// (state/craft/product_type) itself changes value, and re-stating the SAME
+// state is not a change. Reproduced live: "leather related products from
+// Madhya Pradesh" (material: leather) followed by "Show all products from
+// madhya pradesh" kept material: "leather" stuck (state unchanged, so no
+// topic shift, and this turn's extraction has material: null, which
+// mergeEntities' null-doesn't-overwrite policy leaves untouched) — "all
+// products" silently kept returning only the 5 leather items instead of
+// every Madhya Pradesh product, and a later "how many products from
+// Madhya Pradesh" inherited the same stale filter and undercounted.
+const GENERIC_ALL_KEYWORDS =
+  /\ball (products?|items?|types?)\b|\bany product\b|\beverything\b|सभी (उत्पाद|प्रोडक्ट्स?)|सारे (उत्पाद|प्रोडक्ट्स?)/i
+
 // Explicit cross-state aggregate requests ("which states have products",
 // "list products from every state") are a genuinely different scope than a
 // single-state search and must not inherit a stale `state` from history —
@@ -104,8 +120,15 @@ const MALE_GENDER_KEYWORDS = /\bmen\b|\bmale\b|पुरुष|आदमी|म�
 // same conversation had already shown real Bihar/Madhya Pradesh products.
 // This is a deterministic backstop (LLM intent/entity classification is not
 // reliable enough alone — established elsewhere in this file/project).
+// Regression: reproduced live — "how many products per state" was refused
+// (the generic insufficient-information fallback) even though the exact
+// same information was answered correctly seconds earlier by "which states
+// have products?". \bhow many states\b only matches when "states" directly
+// follows "how many" — "how many products per state" puts "products"
+// between them, so the original pattern silently missed this ordinary
+// rephrasing of the identical question.
 const ALL_STATES_KEYWORDS =
-  /\ball states\b|\bevery state\b|\beach state\b|\bwhich states\b|\bhow many states\b|सभी राज्य|सारे (राज्य|स्टेट)|हर (राज्य|स्टेट)|कौन.?से (राज्य|स्टेट)/i
+  /\ball states\b|\bevery state\b|\beach state\b|\bwhich states\b|\bhow many states\b|\bproducts per state\b|\bper state\b|सभी राज्य|सारे (राज्य|स्टेट)|हर (राज्य|स्टेट)|कौन.?से (राज्य|स्टेट)/i
 
 // "Which states" is generic enough to also match unrelated questions this
 // feature has no data for — e.g. "what states does Kalastree ship to"
@@ -116,6 +139,40 @@ const SHIPPING_EXCLUSION = /\bship(ping|s)?\b|\bdeliver/i
 
 export function isAllStatesRequest(question: string): boolean {
   return ALL_STATES_KEYWORDS.test(question) && !SHIPPING_EXCLUSION.test(question)
+}
+
+// Regression: reproduced live — "total how many products are there?" was
+// refused (general_question, no evidence) even though the exact data
+// needed (a per-state breakdown that sums to the grand total) was already
+// being fetched correctly for "which states have products?". Reuses that
+// same evidence rather than a new query — see pipeline.ts.
+//
+// Also matches "products from/in/across India" — reproduced live: after an
+// earlier turn set state to a real Indian state/UT, "show all products
+// from India" kept that stale state (GENERIC_ALL_KEYWORDS in mergeEntities
+// deliberately does NOT clear `state` — "show all products from Madhya
+// Pradesh" needs to KEEP the state while clearing material/craft — but
+// "from India" isn't naming any specific state, it means nationwide, the
+// same scope as "total products", just phrased with a country name).
+const TOTAL_PRODUCTS_KEYWORDS =
+  /\btotal\b[^?]*\bproducts?\b|\bproducts?\b[^?]*\btotal\b|\bhow many products (are there|do you have|do we have|in total)\b|\bnumber of products\b|\bproducts? (from|in|across|throughout) india\b|कुल (कितने|उत्पाद)|कितने उत्पाद (हैं|है)/i
+
+export function isTotalProductsRequest(question: string): boolean {
+  return TOTAL_PRODUCTS_KEYWORDS.test(question) && !SHIPPING_EXCLUSION.test(question)
+}
+
+// A follow-up like "show more" / "what else" only makes sense as "more
+// beyond what I was just shown" — reproduced live: asking this after a
+// truncated product list (correctly disclosed as "5 of 13") returned the
+// SAME 5 products again verbatim, since ranking is deterministic and
+// nothing tracked which ones the user had already seen. See pipeline.ts,
+// which uses this to exclude previously-shown product ids from `ranked`
+// before re-slicing, so this actually surfaces the next batch.
+const SHOW_MORE_KEYWORDS =
+  /^\s*(show )?more\s*$|\bshow me more\b|\bmore products\b|\bsee more\b|\bany more\b|\bwhat else\b|\bshow the rest\b|\bremaining products\b|\bnext (\d+|five|5)?\s*products?\b|और (दिखाओ|उत्पाद)|कुछ और/i
+
+export function isShowMoreRequest(question: string): boolean {
+  return SHOW_MORE_KEYWORDS.test(question)
 }
 
 // A bare "What is GI?" has no craft/product/state entity to anchor it, and
@@ -213,11 +270,11 @@ function hasAnyAnchor(e: ExtractedEntities): boolean {
 // craft/state are compared like-for-like against `previous`, which was
 // normalized in the turn it was extracted.
 // Exported for direct unit testing (see queryUnderstanding.test.ts).
-export function mergeEntities(previous: ExtractedEntities | null, extracted: ExtractedEntities): ExtractedEntities {
+export function mergeEntities(previous: ExtractedEntities | null, extracted: ExtractedEntities, question = ''): ExtractedEntities {
   if (!previous) return extracted
 
   let base = previous
-  if (isTopicShift(previous, extracted)) {
+  if (isTopicShift(previous, extracted) || GENERIC_ALL_KEYWORDS.test(question)) {
     base = { ...base, ...Object.fromEntries(SHAPE_FIELDS.map(f => [f, null])) }
   }
   if (!hasAnyAnchor(previous) && hasAnyAnchor(extracted)) {
@@ -267,7 +324,14 @@ export async function understandQuery(
   entities.craft = await normalizeCraft(entities.craft)
   entities.state = normalizeState(entities.state)
 
-  const merged = mergeEntities(previousQuery?.entities ?? null, entities)
+  // Deterministic backstop for when the LLM's own extraction misses a state
+  // entirely — see scanForStateName's doc comment. Only fills a genuine gap
+  // (entities.state was null); never overrides whatever the LLM did extract.
+  if (!entities.state) {
+    entities.state = scanForStateName(question)
+  }
+
+  const merged = mergeEntities(previousQuery?.entities ?? null, entities, question)
 
   // entities.artisan (the FRESH extraction, pre-merge) decides whether the
   // merged artisan should persist: if this turn isn't itself asking about
@@ -294,6 +358,47 @@ export async function understandQuery(
     merged.state = null
     merged.region = null
     if (!intents.includes('state_information')) intents = [...intents, 'state_information']
+  } else if (isTotalProductsRequest(question) && !entities.state) {
+    // "Total how many products are there?" — a grand total across the
+    // whole catalogue, not scoped to any one state. Checked BEFORE the
+    // single-state backstop below, not after — reproduced live: asking
+    // this right after a few Andaman-scoped turns left merged.state stuck
+    // at "Andaman and Nicobar" from history, which made the single-state
+    // branch's condition (merged.state is truthy) match FIRST and win,
+    // silently narrowing "total" to Andaman's own count (0) instead of
+    // ever reaching this branch to clear it. Clear any stale state (same
+    // reasoning as isAllStatesRequest above) and route to state_information
+    // so pipeline.ts's per-state breakdown evidence — which already sums to
+    // the grand total — fires.
+    //
+    // `&& !entities.state` matters just as much as the reordering above —
+    // reproduced live: "total how many product available from
+    // andhrapradesh?" matches TOTAL_PRODUCTS_KEYWORDS ("total"..."product")
+    // same as a genuine nationwide question would, but THIS turn's own
+    // extraction (entities, pre-merge) found a real state — "total" here is
+    // just emphasis on a single-state count, not a request to ignore the
+    // state. Without this guard the branch cleared a state the user
+    // explicitly named, and retrieval then ran with no state filter at all,
+    // silently returning unrelated top-ranked products from a totally
+    // different state as if they were relevant results.
+    merged.state = null
+    merged.region = null
+    if (!intents.includes('state_information')) intents = [...intents, 'state_information']
+  } else if (merged.state && intents.includes('state_information') && !intents.some(i => PRODUCT_INTENTS.includes(i))) {
+    // A single-named-state question ("how many products from Rajasthan",
+    // "products from Rajasthan") must stay product_discovery per the system
+    // prompt rule above — but reproduced live: the LLM doesn't reliably
+    // follow that for "how many" phrasing, classifying it as
+    // state_information alone instead. state_information isn't in
+    // PRODUCT_INTENTS (see pipeline.ts), so retrieval never runs at all —
+    // not because there are no products, but because it never looked —
+    // and the response generator, correctly refusing to guess a count with
+    // no product evidence, falls back to the generic insufficient-
+    // information refusal even though the exact same conversation had just
+    // shown the real products moments earlier. Add product_discovery
+    // alongside whatever the LLM picked, rather than replacing it, so any
+    // other real intent it detected still gets its evidence too.
+    intents = [...intents, 'product_discovery']
   }
 
   if (isGIDefinitionRequest(question) && !intents.includes('gi_information')) {

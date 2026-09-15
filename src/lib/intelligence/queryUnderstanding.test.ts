@@ -151,6 +151,29 @@ describe('mergeEntities', () => {
     expect(merged.craft).toBe('Madhubani Painting')
     expect(merged.state).toBe('Bihar')
   })
+
+  // Regression: reproduced live — "leather related products from Madhya
+  // Pradesh" (material: leather) followed by "Show all products from madhya
+  // pradesh" kept material: "leather" stuck, because the state is merely
+  // repeated (not a topic shift) and this turn's fresh extraction has
+  // material: null, which the null-doesn't-overwrite merge policy leaves
+  // untouched. "All products" silently kept returning only the 5 leather
+  // items, and a later "how many products from Madhya Pradesh" inherited
+  // the same stale filter and undercounted the true total.
+  it('clears shape fields on an explicit "all products" request even when the anchor is merely repeated', () => {
+    const previous = { ...EMPTY_ENTITIES, state: 'Madhya Pradesh', material: 'leather' }
+    const extracted = { ...EMPTY_ENTITIES, state: 'Madhya Pradesh' }
+    const merged = mergeEntities(previous, extracted, 'Show all products from madhya pradesh')
+    expect(merged.state).toBe('Madhya Pradesh')
+    expect(merged.material).toBeNull()
+  })
+
+  it('does NOT clear shape fields on an ordinary repeat without an explicit "all products" signal', () => {
+    const previous = { ...EMPTY_ENTITIES, state: 'Madhya Pradesh', material: 'leather' }
+    const extracted = { ...EMPTY_ENTITIES, state: 'Madhya Pradesh' }
+    const merged = mergeEntities(previous, extracted, 'more')
+    expect(merged.material).toBe('leather')
+  })
 })
 
 describe('isAllStatesRequest', () => {

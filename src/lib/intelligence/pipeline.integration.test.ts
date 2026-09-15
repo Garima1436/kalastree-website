@@ -132,3 +132,26 @@ describe('order queries', () => {
     expect(result.answer.toLowerCase()).toMatch(/account\/orders|my orders/)
   }, TIMEOUT)
 })
+
+describe('single-state product-count queries', () => {
+  // Regression: reproduced live — "show products of rajasthan" worked fine
+  // (product_discovery), but a follow-up "how many products from
+  // rajasthan" in the SAME conversation was classified state_information
+  // alone. state_information isn't in PRODUCT_INTENTS, so retrieval never
+  // ran at all (not because there were no products — three real ones had
+  // just been shown) and the response generator fell back to the generic
+  // insufficient-information refusal instead of answering with the real
+  // count. Fixed with a deterministic backstop in queryUnderstanding.ts.
+  it('answers a "how many products from <state>" follow-up with the real count, not the generic refusal', async () => {
+    const turn1 = await runPipeline('show products of rajasthan', [], null, false)
+    expect(turn1.products.length).toBeGreaterThan(0)
+
+    const history = [
+      { role: 'user' as const, text: 'show products of rajasthan' },
+      { role: 'ai' as const, text: turn1.answer },
+    ]
+    const turn2 = await runPipeline('how many products from rajasthan', history, turn1.structuredQuery, false)
+    expect(turn2.answer).not.toContain('does not contain enough information')
+    expect(turn2.products.length).toBe(turn1.products.length)
+  }, TIMEOUT * 2)
+})

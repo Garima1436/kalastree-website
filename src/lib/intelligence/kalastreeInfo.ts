@@ -13,6 +13,12 @@ import type { Evidence } from './types'
 
 export const FOUNDER_NAME = 'Garima Awasthi'
 
+// Confirmed directly by the KalaStree team (not present in the public About
+// page copy, unlike everything else in this file) — kept here anyway since
+// it's real, user-confirmed leadership info the chatbot should be able to
+// state, but flagged as its own source so it's not mistaken for site copy.
+export const CO_FOUNDER_NAME = 'Manish Rawat'
+
 export const KALASTREE_EVIDENCE: Evidence[] = [
   {
     source_id: 'static:kalastree-company',
@@ -42,11 +48,21 @@ export const KALASTREE_EVIDENCE: Evidence[] = [
     relevance_score: 1,
     verification_status: 'verified',
   },
+  {
+    source_id: 'static:kalastree-cofounder',
+    source_type: 'static',
+    source_title: 'KalaStree Co-founder',
+    source_reference: 'KalaStree team (confirmed, not yet on the public About page)',
+    retrieved_text: `${CO_FOUNDER_NAME} is the co-founder of KalaStree, alongside founder ${FOUNDER_NAME}.`,
+    relevance_score: 1,
+    verification_status: 'verified',
+  },
 ]
 
 export function isFounderName(name: string | null): boolean {
   if (!name) return false
-  return name.trim().toLowerCase() === FOUNDER_NAME.toLowerCase()
+  const normalized = name.trim().toLowerCase()
+  return normalized === FOUNDER_NAME.toLowerCase() || normalized === CO_FOUNDER_NAME.toLowerCase()
 }
 
 // A generic "what is a GI?" has no product/craft/state entity for

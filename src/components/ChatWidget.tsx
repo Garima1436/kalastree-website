@@ -104,6 +104,15 @@ export default function ChatWidget() {
     if (open) setTimeout(() => inputRef.current?.focus(), 100)
   }, [open])
 
+  // WhatsAppButton sits directly under this widget's floating button and
+  // chat panel (see WhatsAppButton.tsx) — RootLayout is a server component,
+  // so there's no shared parent state to lift this into without a bigger
+  // restructure. A window event is the smallest way for the two independent
+  // client components to stay in sync.
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent('kalastree:chat-open-change', { detail: open }))
+  }, [open])
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, loading])
