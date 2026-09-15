@@ -274,8 +274,8 @@ export default function ChatWidget() {
         }}>
           {/* Header */}
           <div style={{ background: '#1B2E4A', padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
-            <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'linear-gradient(135deg, #E8380A, #D4A000)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', flexShrink: 0 }}>
-              🌾
+            <div style={{ position: 'relative', width: 36, height: 36, borderRadius: '50%', overflow: 'hidden', flexShrink: 0, background: '#FFE8A8' }}>
+              <Image src="/Kalasakhi.png" alt="KalaSakhi" fill sizes="36px" style={{ objectFit: 'cover' }} />
             </div>
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#fff', fontFamily: "'Inter', sans-serif" }}>KalaSakhi</div>
@@ -458,23 +458,24 @@ export default function ChatWidget() {
 
       {/* Floating button */}
       <button
-        className="chat-fab"
+        className={open ? 'chat-fab' : 'chat-fab chat-fab-attention'}
         onClick={() => setOpen(v => !v)}
         aria-label={t('openChatbotAria')}
         style={{
           position: 'fixed', bottom: 24, right: 24, zIndex: 1000,
           width: 56, height: 56, borderRadius: '50%', border: 'none',
-          background: open ? '#1B2E4A' : 'linear-gradient(135deg, #E8380A 0%, #D4A000 100%)',
+          background: open ? '#1B2E4A' : '#FFE8A8',
           color: '#fff', cursor: 'pointer', fontSize: '1.4rem',
           boxShadow: '0 4px 20px rgba(232,56,10,0.4)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
+          overflow: 'hidden',
           transition: 'background 0.2s, transform 0.2s',
           transform: open ? 'rotate(0deg)' : 'scale(1)',
         }}
         onMouseEnter={e => { if (!open) (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1.1)' }}
         onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1)' }}
       >
-        {open ? '✕' : '🤖'}
+        {open ? '✕' : <Image src="/Kalasakhi.png" alt="Open chat" fill sizes="56px" style={{ objectFit: 'cover' }} />}
       </button>
 
       <style>{`
@@ -482,6 +483,15 @@ export default function ChatWidget() {
         @keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
         @keyframes micPulse { 0%,100%{box-shadow:0 0 0 0 rgba(232,56,10,0.45)} 50%{box-shadow:0 0 0 8px rgba(232,56,10,0)} }
         .mic-recording { animation: micPulse 1.4s ease-in-out infinite; }
+        @keyframes fabRing { 0%{box-shadow:0 0 0 0 rgba(232,56,10,0.55)} 70%{box-shadow:0 0 0 16px rgba(232,56,10,0)} 100%{box-shadow:0 0 0 0 rgba(232,56,10,0)} }
+        @keyframes fabNudge { 0%,80%,100%{transform:scale(1)} 88%{transform:scale(1.12)} 94%{transform:scale(0.96)} }
+        .chat-fab-attention { animation: fabNudge 5s ease-in-out infinite; }
+        .chat-fab-attention::after {
+          content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; border-radius: 50%;
+          animation: fabRing 2.4s ease-out infinite; pointer-events: none;
+        }
+        .chat-fab-attention:hover { animation: none; }
+        .chat-fab-attention:hover::after { animation: none; }
         @media(max-width:480px){
           .chat-panel { width:92vw !important; right:4vw !important; bottom:76px !important; height:70vh !important; }
           .chat-fab { bottom:12px !important; right:12px !important; width:48px !important; height:48px !important; }
