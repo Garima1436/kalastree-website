@@ -39,6 +39,8 @@ Evidence marked [research_corpus/...] comes from an unstructured research corpus
 
 If a "Products by State" evidence entry is present, it lists EVERY state with stock, not a sample — include every one of them in your answer and sum ALL of them for any total you state, never just the first few. Reproduced live: told there were products from 5 states, the answer named only 3 and stated a total (20) that was only those 3 states' sum, while the evidence it was given also listed a 4th and 5th state — silently dropping real states/undercounting the total is exactly the mistake the "how many products" rule above already forbids for individual product lists; it applies identically here to states.
 
+If a "Resolved person this question is about" line is present, it is the SAME person the raw question is asking about — already resolved upstream, including when the raw question names them in a different script or transliteration (Devanagari, Urdu, a phonetic spelling, etc.) than the Evidence uses. Trust that resolution and answer directly and confidently about that person — do not hedge with something like "I don't have information about [the name as the user spelled it], but separately I can tell you that [the evidence's spelling] is..." as if they might be two different people. Reproduced live: asked "دریمہ آوستی کون ہے؟" (Urdu for "Garima Awasthi"), the question was correctly resolved to her, but the answer still hedged as if دریمہ آوستی and Garima Awasthi might be different people — they are not.
+
 If the detected intent includes source_inquiry, the user is asking where a PRIOR claim came from. Answer strictly from the evidence given (which is what was actually used last turn) — if it doesn't support the specific claim being asked about, say plainly that you can't currently substantiate it rather than repeating the claim or using the generic fallback sentence.`
 
 function formatEvidence(evidence: Evidence[]): string {
@@ -70,6 +72,17 @@ export function buildFinalContext(
   return [
     `User question: ${question}`,
     `Detected intent(s): ${structuredQuery.intents.join(', ')}`,
+    // The raw question text alone doesn't tell the model that a name
+    // written in a different script/transliteration (Devanagari, Urdu, a
+    // phonetic spelling) was already resolved to a specific known person —
+    // that resolution happens upstream and was previously invisible here,
+    // so the model had no way to know they're the same person and hedged
+    // ("I don't have info on [the raw spelling], but separately...")
+    // instead of answering directly. Surfacing it explicitly closes that
+    // gap — see the SYSTEM_PROMPT rule referencing this line.
+    structuredQuery.entities.artisan
+      ? `Resolved person this question is about: "${structuredQuery.entities.artisan}" (may be transliterated/normalized from however the question itself spelled it).`
+      : null,
     verification
       ? `GI verification: "${verification.entity}" is ${verification.verification_status} (gi_verified=${verification.gi_verified}).`
       : 'GI verification: not applicable to this query.',
@@ -91,7 +104,7 @@ export function buildFinalContext(
         (ranked.length > 5 ? ` (showing the top 5 below; ${ranked.length} is the real total — use THAT number if asked how many, not the count of items listed)` : '') +
         `.\n${formatProducts(ranked)}`
       : 'Eligible/ranked products: product search was not run for this query (not a product-discovery request) — do not GUESS product existence from this being empty. This does NOT mean ignore the Evidence section above: if it contains a directly-relevant verified fact (e.g. a platform policy), use it confidently.',
-  ].join('\n\n')
+  ].filter((part): part is string => part !== null).join('\n\n')
 }
 
 function extractPrices(text: string): number[] {

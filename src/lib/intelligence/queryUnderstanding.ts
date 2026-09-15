@@ -45,7 +45,7 @@ Extract intent(s) and entities from the user's message as JSON. Rules:
 - "What GI tag number does X have?", "What is X's GI tag number?", "What is the registration number/year for X?" are gi_information intent with entities.craft = X — extract X as the craft/product being asked about exactly as you would for "Is X GI certified?". Do not let the words "tag" or "number" stop you from recognizing X as the craft entity — this phrasing is asking for a specific fact ABOUT a named craft, not a generic question with nothing to extract.
 - A question asking about state coverage IN AGGREGATE across MULTIPLE states, with no single state named — "which states have products", "how many products per state", "list products from every state" — is state_information intent with entities.state = null. This is DIFFERENT from an ordinary question about products from ONE named state ("what products does Madhya Pradesh have", "products from Bihar") — that is still product_discovery with entities.state set to the named state, exactly as for any other state question. Do not reclassify a single-named-state product question as the aggregate case.
 - source_inquiry is for a follow-up asking where a PRIOR claim came from — "where did you get that", "what's your source for X", "how do you know that", "where is that from". Use it only when the user is asking about the origin of something already said in this conversation, not when asking a new factual question.
-- The user may write in Hindi, English, or a mix of both. Regardless of input language, output entity string values (state, craft, product_type, material, colour, occasion, gifting_purpose, cultural_preference) in English using the standard canonical English name (e.g. "बिहार" -> "Bihar", "साड़ी" -> "saree") — these are matched against an English-language database. Transliterate "artisan" proper names to standard Latin spelling rather than translating them.
+- The user may write in Hindi, English, Urdu, or another script/language, including a rough phonetic spelling. Regardless of input language or script, output entity string values (state, craft, product_type, material, colour, occasion, gifting_purpose, cultural_preference) in English using the standard canonical English name (e.g. "बिहार" -> "Bihar", "साड़ी" -> "saree") — these are matched against an English-language database. For entities.artisan specifically: ALWAYS attempt a best-effort Latin-script transliteration of the person's name, in ANY script (Devanagari, Urdu/Arabic, etc.) — do not return null just because the spelling is unusual, phonetic, or you are not fully certain of the exact standard spelling. A reasonable phonetic guess (e.g. "असबी सरमा" -> "Asbi Sarma", "دریمہ آوستی" -> "Garima Awasthi") is far more useful than null, since the transliterated name is only ever checked against real, known records downstream — an imperfect guess that matches nothing real simply results in an honest "not found" answer, exactly as if you had returned null, so there is no harm in guessing. Only return null if the message truly names no person at all.
 
 Valid intents: ${VALID_INTENTS.join(', ')}
 
@@ -289,6 +289,36 @@ export function mergeEntities(previous: ExtractedEntities | null, extracted: Ext
   return merged
 }
 
+// See the call site's doc comment (understandQuery, below) for why this
+// exists as a separate, focused call rather than relying on the main
+// extraction prompt's own transliteration instruction. Best-effort only —
+// the returned name is still checked against real, known records
+// downstream, so a wrong or overly-literal guess just results in an
+// honest "not found" rather than a fabricated answer.
+async function transliteratePersonName(question: string): Promise<string | null> {
+  try {
+    const raw = await callOpenAI(
+      [
+        {
+          role: 'system',
+          content:
+            'The user is asking about a specific PERSON by name, in Hindi, Urdu, or another script, possibly with ' +
+            'imperfect or phonetic spelling. Identify the person\'s name being asked about and respond with ONLY ' +
+            'its best-effort Latin-script transliteration (e.g. "गरिमा अवस्थी" -> "Garima Awasthi"), no other text. ' +
+            'If the message does not name any specific person, respond with exactly: NONE',
+        },
+        { role: 'user', content: question },
+      ],
+      { temperature: 0 }
+    )
+    const trimmed = raw.trim()
+    return trimmed && trimmed.toUpperCase() !== 'NONE' ? trimmed : null
+  } catch (err) {
+    console.error('Person-name transliteration failed:', err)
+    return null
+  }
+}
+
 export async function understandQuery(
   question: string,
   history: HistoryMessage[],
@@ -329,6 +359,24 @@ export async function understandQuery(
   // (entities.state was null); never overrides whatever the LLM did extract.
   if (!entities.state) {
     entities.state = scanForStateName(question)
+  }
+
+  // Same class of gap as scanForStateName above, but for person names: the
+  // main extraction prompt (20+ competing rules plus a large JSON schema)
+  // reliably fails to transliterate a person's name when it's written in a
+  // non-Latin script (Devanagari, Urdu, etc.), even though the SAME model
+  // transliterates it correctly when asked in an isolated, focused prompt.
+  // Reproduced live: "गरिमा अवस्थी कौन है?" (clean, correct Devanagari for
+  // "Garima Awasthi") returned entities.artisan: null from the main
+  // extraction, and a plain-English sentence with the SAME name already in
+  // Latin script ("Garima Awasthi कौन है?") extracted it fine — so this is
+  // specific to non-Latin script in the name itself, not a general Hindi
+  // gap. Only runs when actually needed (intent recognized as
+  // artisan_information but no name extracted, and the question has
+  // non-ASCII characters) — a second LLM call isn't worth paying for on
+  // every request, only this specific, narrow gap.
+  if (!entities.artisan && intents.includes('artisan_information') && /[^\x00-\x7F]/.test(question)) {
+    entities.artisan = await transliteratePersonName(question)
   }
 
   const merged = mergeEntities(previousQuery?.entities ?? null, entities, question)

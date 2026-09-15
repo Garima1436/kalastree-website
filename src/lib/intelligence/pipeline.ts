@@ -9,13 +9,14 @@ import { supabaseAdmin } from '@/lib/supabase-admin'
 import { understandQuery, isAllStatesRequest, isTotalProductsRequest, isShowMoreRequest } from './queryUnderstanding'
 import { buildConstraints } from './constraints'
 import { verifyGI } from './verification'
-import { getAllGIProducts, findArtisanByName, findNewsMentioningPerson, findReviewMentioningPerson, getProductCountsByState } from './relationships'
+import { getAllGIProducts, findArtisanByName, findNewsMentioningPerson, findReviewMentioningPerson, getProductCountsByState, getAllArtisans, resolvePersonName } from './relationships'
+import type { PersonCandidate } from './relationships'
 import { retrieveCandidateProducts, retrieveNarrativeEvidence, warmUpChatbotBackend } from './retrieval'
 import { filterEligible } from './eligibility'
 import { rankProducts } from './ranking'
 import { buildEvidence } from './evidence'
 import { generateResponse } from './responseGenerator'
-import { KALASTREE_EVIDENCE, WOMEN_ONLY_PLATFORM_EVIDENCE, GI_DEFINITION_EVIDENCE, ORDER_RELATED_EVIDENCE, isFounderName, findAboutStoryMention } from './kalastreeInfo'
+import { KALASTREE_EVIDENCE, WOMEN_ONLY_PLATFORM_EVIDENCE, GI_DEFINITION_EVIDENCE, ORDER_RELATED_EVIDENCE, isFounderName, findAboutStoryMention, FOUNDER_NAME, CO_FOUNDER_NAME } from './kalastreeInfo'
 import { PRODUCT_INTENTS } from './types'
 import type { DebugInfo, Evidence, StructuredQuery } from './types'
 
@@ -191,8 +192,36 @@ export async function runPipeline(
         })
       }
     } else {
-      const artisan = await findArtisanByName(structuredQuery.entities.artisan)
-      if (artisan) {
+      const personName = structuredQuery.entities.artisan
+      let artisan = await findArtisanByName(personName)
+      let resolvedFuzzyFounder = false
+
+      if (!artisan) {
+        // Typo-tolerant last resort across the WHOLE known-person pool at
+        // once (founder, co-founder, every real artisan) — see
+        // resolvePersonName's doc comment (relationships.ts) for why this
+        // can't safely be done as separate per-candidate fuzzy checks (it
+        // could reintroduce the exact Manish/Manisha collision the exact
+        // matching above was built to prevent). Reproduced live: "who is
+        // manis rawat" (one letter short of the real co-founder, Manish
+        // Rawat) fell all the way to the generic refusal.
+        const allArtisans = await getAllArtisans()
+        const pool: PersonCandidate<'founder' | 'cofounder' | typeof allArtisans[number]>[] = [
+          { name: FOUNDER_NAME, data: 'founder' },
+          { name: CO_FOUNDER_NAME, data: 'cofounder' },
+          ...allArtisans.map(a => ({ name: a.name, data: a })),
+        ]
+        const resolved = resolvePersonName(personName, pool)
+        if (resolved === 'founder' || resolved === 'cofounder') {
+          resolvedFuzzyFounder = true
+        } else if (resolved) {
+          artisan = resolved
+        }
+      }
+
+      if (resolvedFuzzyFounder) {
+        evidence.unshift(...KALASTREE_EVIDENCE)
+      } else if (artisan) {
         evidence.unshift({
           source_id: `artisans:${artisan.id}`,
           source_type: 'database',
@@ -220,14 +249,14 @@ export async function runPipeline(
           verification_status: 'verified',
         })
       } else {
-        // Not in the artisans table and not the founder/co-founder — before
-        // declaring the name unknown, check every other public,
-        // name-bearing source on the site, in order: the About page's own
-        // founding story, News & Events, then product reviews. See each
-        // helper's doc comment for the reproduced case it fixes (e.g. "who
-        // is Sunita?" — the About page's origin story literally names her,
-        // but she isn't in any table).
-        const personName = structuredQuery.entities.artisan
+        // Not in the artisans table, not the founder/co-founder (exactly
+        // or via a tolerable typo) — before declaring the name unknown,
+        // check every other public, name-bearing source on the site, in
+        // order: the About page's own founding story, News & Events, then
+        // product reviews. See each helper's doc comment for the
+        // reproduced case it fixes (e.g. "who is Sunita?" — the About
+        // page's origin story literally names her, but she isn't in any
+        // table).
         const aboutMention = findAboutStoryMention(personName)
         if (aboutMention) {
           evidence.unshift({

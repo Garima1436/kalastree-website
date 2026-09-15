@@ -153,6 +153,11 @@ export interface AboutStoryMention {
   paragraph: string
 }
 
+// "S.B." confirmed directly by the site owner to stand for "Shyam Babu" —
+// not present in the About page copy itself (same as CO_FOUNDER_NAME
+// above), so listed explicitly here rather than derived from about.ts.
+const MEMORIAL_FULL_FIRST_NAME = 'Shyam Babu'
+
 // Built from the SAME about.ts fields the About page itself renders
 // (memorialName/memorialQuote/memorialAttribution) — never a hand-copied
 // snapshot. If that content is ever edited, both the live page and this
@@ -160,19 +165,21 @@ export interface AboutStoryMention {
 // needs to be hand-updated to stay in sync. Reproduced live: a real user
 // asked the chatbot the EXACT name shown on the page ("SB Sharma" /
 // "S.B. Sharma") and it flatly said not found, despite the About page
-// naming him. Deliberately does NOT also match "Shyam Babu Sharma" or any
-// other expansion of "S.B." — there's no evidence on the site of what the
-// initials stand for, and guessing would be exactly the kind of
-// fabrication this whole lookup chain exists to avoid.
+// naming him. Also matches "Shyam Babu Sharma" / "Shyam Babu" now that the
+// site owner has confirmed that's the real expansion of "S.B." — until
+// that confirmation this deliberately did NOT match it, since guessing an
+// unconfirmed expansion would have been exactly the kind of fabrication
+// this whole lookup chain exists to avoid.
 // Framed in third person, and attribution stated explicitly up front,
 // specifically so the quote itself can't be misread as HIS words — it is
 // Garima's own dedication, addressed to his memory, not something he said.
 function buildMemorialText(): string {
   const { memorialName, memorialQuote, memorialAttribution } = aboutDict.en
   return (
-    `The About page carries an in-memoriam dedication to "Late Shri ${memorialName}" (Garima Awasthi's ` +
-    `father-in-law, per the signature "${memorialAttribution.replace(/^—\s*/, '')}"). The dedication is words ` +
-    `WRITTEN BY Garima Awasthi, addressed to his memory — not a quote from him: ${memorialQuote}`
+    `The About page carries an in-memoriam dedication to "Late Shri ${memorialName}" (full name: ` +
+    `${MEMORIAL_FULL_FIRST_NAME} Sharma), Garima Awasthi's father-in-law, per the signature ` +
+    `"${memorialAttribution.replace(/^—\s*/, '')}". The dedication is words WRITTEN BY Garima Awasthi, addressed ` +
+    `to his memory — not a quote from him: ${memorialQuote}`
   )
 }
 

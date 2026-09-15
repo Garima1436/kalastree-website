@@ -59,7 +59,7 @@ function normalizeText(s: string): string {
   return s.trim().toLowerCase().replace(/\s+/g, ' ')
 }
 
-function levenshtein(a: string, b: string): number {
+export function levenshtein(a: string, b: string): number {
   const rows = a.length + 1
   const cols = b.length + 1
   const dp: number[][] = Array.from({ length: rows }, () => new Array(cols).fill(0))

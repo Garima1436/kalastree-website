@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { matchesGIRegistry, matchesPersonName } from './relationships'
+import { matchesGIRegistry, matchesPersonName, resolvePersonName } from './relationships'
 import { makeGIProduct, makeProduct } from './testFixtures'
 
 describe('matchesPersonName', () => {
@@ -28,6 +28,48 @@ describe('matchesPersonName', () => {
   it('returns false for an empty needle', () => {
     expect(matchesPersonName('', 'Manish Rawat')).toBe(false)
     expect(matchesPersonName('   ', 'Manish Rawat')).toBe(false)
+  })
+})
+
+describe('resolvePersonName', () => {
+  const pool = [
+    { name: 'Manish Rawat', data: 'cofounder' },
+    { name: 'Manisha Dhurve', data: 'manisha-artisan' },
+    { name: 'Garima Awasthi', data: 'founder' },
+    { name: 'Sunita Jha', data: 'sunita-artisan' },
+  ]
+
+  it('resolves an exact whole-word match', () => {
+    expect(resolvePersonName('Manish', pool)).toBe('cofounder')
+    expect(resolvePersonName('manisha', pool)).toBe('manisha-artisan')
+  })
+
+  it('resolves a one-letter-short typo to the correct person, not the substring-collision candidate', () => {
+    // Reproduced live: "who is manis rawat" (one letter short of the real
+    // co-founder) fell all the way to the generic refusal.
+    expect(resolvePersonName('manis', pool)).toBe('cofounder')
+    expect(resolvePersonName('manis rawat', pool)).toBe('cofounder')
+  })
+
+  it('never lets a correctly-spelled name resolve to a different, longer near-miss name', () => {
+    // "Manisha" is only 1 edit away from "Manish", but the exact tier must
+    // win outright for a query that is itself an exact, correct spelling.
+    expect(resolvePersonName('Manisha Dhurve', pool)).toBe('manisha-artisan')
+    expect(resolvePersonName('Manish Rawat', pool)).toBe('cofounder')
+  })
+
+  it('refuses to guess when a typo is equally close to two different people', () => {
+    // "manisa" is edit-distance 1 from BOTH "manish" and "manisha" — must
+    // not arbitrarily pick one.
+    expect(resolvePersonName('manisa', pool)).toBeNull()
+  })
+
+  it('returns null for a genuinely unrelated name', () => {
+    expect(resolvePersonName('Ramesh Kumar Yadav', pool)).toBeNull()
+  })
+
+  it('returns null for an empty query', () => {
+    expect(resolvePersonName('', pool)).toBeNull()
   })
 })
 

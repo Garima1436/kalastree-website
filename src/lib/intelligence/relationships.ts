@@ -9,6 +9,7 @@
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import type { GIProduct, Artisan } from '@/lib/types'
 import type { ExtractedEntities } from './types'
+import { levenshtein } from './entityNormalization'
 
 // Resolves the GI_PRODUCT an entity (craft name, GI tag, or product state)
 // refers to. Returns null when nothing matches — the caller must treat that
@@ -89,16 +90,87 @@ export function matchesPersonName(needle: string, fullName: string): boolean {
   return full === n || full.split(/\s+/).includes(n)
 }
 
-// Table is tiny (12 rows at last check) — fetched in full and matched in
-// memory via matchesPersonName rather than a raw ILIKE '%name%' filter.
+// Table is tiny (12 rows at last check) — fetched in full and matched
+// in-memory rather than filtered server-side.
+export async function getAllArtisans(): Promise<Artisan[]> {
+  const { data } = await supabaseAdmin.from('artisans').select('*')
+  return (data ?? []) as Artisan[]
+}
+
 // Reproduced live: "who is manish?" silently matched "Manisha Dhurve" via
 // ILIKE '%manish%' and buried the real answer (the co-founder) entirely.
 export async function findArtisanByName(name: string): Promise<Artisan | null> {
   const needle = name.trim().toLowerCase()
   if (!needle) return null
-  const { data } = await supabaseAdmin.from('artisans').select('*')
-  const artisans = (data ?? []) as Artisan[]
+  const artisans = await getAllArtisans()
   return artisans.find(a => matchesPersonName(needle, a.name)) ?? null
+}
+
+export interface PersonCandidate<T> {
+  name: string
+  data: T
+}
+
+// Last-resort typo-tolerant resolution across a WHOLE pool of known people
+// at once — deliberately NOT built on matchesPersonName's exact check plus
+// a per-candidate fuzzy add-on, because a single-candidate fuzzy check
+// cannot tell whether a typo like "manis" was meant as "Manish" (edit
+// distance 1) or as a truncation of "Manisha" (edit distance 2) — that
+// judgment only works by comparing every candidate at once and picking the
+// closest, and refusing to guess on a tie. Reproduced live: "who is manis
+// rawat" (one letter short of the real co-founder, Manish Rawat) fell all
+// the way to the generic "not found" refusal because isFounderName and
+// findArtisanByName only ever check one exact spelling each.
+//
+// Tier 1 (exact) always wins outright, over every candidate, before tier 2
+// is even considered — so a correctly-spelled query is never second-guessed
+// just because some other candidate happens to be a near-miss (e.g. typing
+// "Manisha" correctly must never risk resolving to "Manish" instead).
+// Tier 2 (fuzzy) only fires when NO exact match exists anywhere in the
+// pool, uses the same tight length-relative threshold as
+// entityNormalization.ts's fuzzyMatch, and returns null on a tie between
+// two DIFFERENT people rather than arbitrarily picking one — misattributing
+// a real person's identity is worse than saying "not found."
+export function resolvePersonName<T>(query: string, candidates: PersonCandidate<T>[]): T | null {
+  const needle = query.trim().toLowerCase()
+  if (!needle) return null
+
+  for (const c of candidates) {
+    const full = c.name.trim().toLowerCase()
+    if (full === needle || full.split(/\s+/).includes(needle)) return c.data
+  }
+
+  // The query itself may be multiple words (e.g. "manis rawat", a typo of
+  // "Manish Rawat") — compare every query word against every candidate
+  // word and keep each candidate's BEST (lowest-distance) pairing, an
+  // exact word match counting as distance 0. Comparing the whole query
+  // string against single candidate words (as an earlier version of this
+  // function did) missed this: "manis rawat" as a whole is nowhere near
+  // any single word by edit distance, even though "manis"~"manish" and
+  // "rawat"=="rawat" individually are a near-perfect match.
+  const needleWords = needle.split(/\s+/).filter(Boolean)
+  let best: { data: T; distance: number } | null = null
+  let tied = false
+  for (const c of candidates) {
+    let candidateBest: number | null = null
+    for (const word of c.name.trim().toLowerCase().split(/\s+/)) {
+      if (word.length < 4) continue // too short for a safe fuzzy threshold
+      const threshold = Math.min(2, Math.max(1, Math.floor(word.length * 0.15)))
+      for (const nw of needleWords) {
+        const distance = nw === word ? 0 : levenshtein(nw, word)
+        if (distance > threshold) continue
+        if (candidateBest === null || distance < candidateBest) candidateBest = distance
+      }
+    }
+    if (candidateBest === null) continue
+    if (!best || candidateBest < best.distance) {
+      best = { data: c.data, distance: candidateBest }
+      tied = false
+    } else if (candidateBest === best.distance && c.data !== best.data) {
+      tied = true
+    }
+  }
+  return best && !tied ? best.data : null
 }
 
 export interface NewsMention {
