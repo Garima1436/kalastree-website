@@ -158,7 +158,7 @@ export default async function AboutPage() {
         <Reveal style={{ maxWidth: 680, margin: '0 auto' }}>
           <div style={{ fontSize: '2.5rem', marginBottom: '1rem', animation: 'diya 3s ease-in-out infinite', display: 'inline-block' }}>🪔</div>
           <p style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#D4A000', marginBottom: '1rem' }}>{t('memorialEyebrow')}</p>
-          <h3 style={{ fontFamily: "'EB Garamond', serif", fontSize: '2rem', fontWeight: 700, color: '#fff', marginBottom: '0.5rem' }}>{t('memorialTitlePart1')} <span style={{ color: '#D4A000' }}>S.B. Sharma</span></h3>
+          <h3 style={{ fontFamily: "'EB Garamond', serif", fontSize: '2rem', fontWeight: 700, color: '#fff', marginBottom: '0.5rem' }}>{t('memorialTitlePart1')} <span style={{ color: '#D4A000' }}>{t('memorialName')}</span></h3>
           <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.1rem', fontStyle: 'italic', color: 'rgba(255,255,255,0.8)', lineHeight: 1.85, maxWidth: 580, margin: '1.5rem auto' }}>
             {t('memorialQuote')}
           </p>

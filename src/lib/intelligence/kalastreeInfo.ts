@@ -10,6 +10,7 @@
 // content changes rarely and living in a second system just for this would
 // be more infrastructure than the problem needs.
 import type { Evidence } from './types'
+import aboutDict from '../i18n/dictionaries/about'
 
 export const FOUNDER_NAME = 'Garima Awasthi'
 
@@ -136,4 +137,61 @@ export const ORDER_RELATED_EVIDENCE: Evidence = {
     '(kalastree.com/account/orders). For any other order issue, contact KalaStree directly at garima@kalastree.com.',
   relevance_score: 1,
   verification_status: 'verified',
+}
+
+export interface AboutStoryMention {
+  paragraph: string
+}
+
+// Built from the SAME about.ts fields the About page itself renders
+// (memorialName/memorialQuote/memorialAttribution) — never a hand-copied
+// snapshot. If that content is ever edited, both the live page and this
+// answer change together automatically on the next deploy; nothing here
+// needs to be hand-updated to stay in sync. Reproduced live: a real user
+// asked the chatbot the EXACT name shown on the page ("SB Sharma" /
+// "S.B. Sharma") and it flatly said not found, despite the About page
+// naming him. Deliberately does NOT also match "Shyam Babu Sharma" or any
+// other expansion of "S.B." — there's no evidence on the site of what the
+// initials stand for, and guessing would be exactly the kind of
+// fabrication this whole lookup chain exists to avoid.
+// Framed in third person, and attribution stated explicitly up front,
+// specifically so the quote itself can't be misread as HIS words — it is
+// Garima's own dedication, addressed to his memory, not something he said.
+function buildMemorialText(): string {
+  const { memorialName, memorialQuote, memorialAttribution } = aboutDict.en
+  return (
+    `The About page carries an in-memoriam dedication to "Late Shri ${memorialName}" (Garima Awasthi's ` +
+    `father-in-law, per the signature "${memorialAttribution.replace(/^—\s*/, '')}"). The dedication is words ` +
+    `WRITTEN BY Garima Awasthi, addressed to his memory — not a quote from him: ${memorialQuote}`
+  )
+}
+
+// The About page's "Why KalaStree?" origin story names a real person who
+// has no artisans-table record, no News & Events mention, and no product
+// review: Sunita, the Jitwarpur (Bihar) artisan whose underpayment is the
+// platform's founding story (about.ts storyPara1/3/5). Reproduced live:
+// "who is Sunita?" flatly said no artisan/news/review match existed, even
+// though the About page is *literally* about her — every other
+// named-person lookup in pipeline.ts is DB-backed and had no reason to
+// ever look at this static story content. English-only (the `en` dict):
+// a Latin-script name query wouldn't match the Hindi paragraphs anyway.
+//
+// Matching is done on a letters/digits-only normalized form so "SB
+// Sharma", "S.B. Sharma", and "sb sharma" all resolve to the same
+// substring check regardless of punctuation/spacing differences.
+function normalize(s: string): string {
+  return s.toLowerCase().replace(/[^a-z0-9]/g, '')
+}
+
+export function findAboutStoryMention(name: string | null): AboutStoryMention | null {
+  if (!name) return null
+  const needle = normalize(name)
+  if (!needle) return null
+  const paragraphs = [
+    aboutDict.en.storyPara1, aboutDict.en.storyPara2, aboutDict.en.storyPara3, aboutDict.en.storyPara4,
+    aboutDict.en.storyPara5, aboutDict.en.storyPara6, aboutDict.en.storyPara7, aboutDict.en.storyPara8,
+    buildMemorialText(),
+  ]
+  const match = paragraphs.find(p => normalize(p).includes(needle))
+  return match ? { paragraph: match.replace(/\n/g, ' ') } : null
 }

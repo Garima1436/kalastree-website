@@ -48,6 +48,7 @@ const dict = {
 
     memorialEyebrow: 'In Loving Memory',
     memorialTitlePart1: 'Late Shri',
+    memorialName: 'S.B. Sharma',
     memorialQuote: '"Every word I write, every woman\'s story I tell, every step I take — I take it hoping you are watching, and that it makes you proud."',
     memorialAttribution: '— Garima, your daughter-in-law, with all her love.',
 
@@ -106,6 +107,7 @@ const dict = {
 
     memorialEyebrow: 'स्नेहिल स्मृति में',
     memorialTitlePart1: 'स्वर्गीय श्री',
+    memorialName: 'S.B. Sharma',
     memorialQuote: '"मैं जो भी शब्द लिखती हूं, हर महिला की जो कहानी मैं सुनाती हूं, हर कदम जो मैं उठाती हूं — मैं यह इस उम्मीद के साथ करती हूं कि आप देख रहे हैं, और यह आपको गर्व महसूस कराता है।"',
     memorialAttribution: '— गरिमा, आपकी बहू, अपने पूरे प्रेम के साथ।',
 

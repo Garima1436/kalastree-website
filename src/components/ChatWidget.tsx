@@ -457,26 +457,42 @@ export default function ChatWidget() {
       )}
 
       {/* Floating button */}
-      <button
-        className={open ? 'chat-fab' : 'chat-fab chat-fab-attention'}
-        onClick={() => setOpen(v => !v)}
-        aria-label={t('openChatbotAria')}
-        style={{
-          position: 'fixed', bottom: 24, right: 24, zIndex: 1000,
-          width: 56, height: 56, borderRadius: '50%', border: 'none',
-          background: open ? '#1B2E4A' : '#FFE8A8',
-          color: '#fff', cursor: 'pointer', fontSize: '1.4rem',
-          boxShadow: '0 4px 20px rgba(232,56,10,0.4)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          overflow: 'hidden',
-          transition: 'background 0.2s, transform 0.2s',
-          transform: open ? 'rotate(0deg)' : 'scale(1)',
-        }}
-        onMouseEnter={e => { if (!open) (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1.1)' }}
-        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1)' }}
-      >
-        {open ? '✕' : <Image src="/Kalasakhi.png" alt="Open chat" fill sizes="56px" style={{ objectFit: 'cover' }} />}
-      </button>
+      <div className="chat-fab-wrap" style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 1000 }}>
+        <button
+          className={open ? 'chat-fab' : 'chat-fab chat-fab-attention'}
+          onClick={() => setOpen(v => !v)}
+          aria-label={t('openChatbotAria')}
+          style={{
+            position: 'relative',
+            width: 56, height: 56, borderRadius: '50%', border: 'none',
+            background: open ? '#1B2E4A' : '#FFE8A8',
+            color: '#fff', cursor: 'pointer', fontSize: '1.4rem',
+            boxShadow: '0 4px 20px rgba(232,56,10,0.4)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            overflow: 'hidden',
+            transition: 'background 0.2s, transform 0.2s',
+            transform: open ? 'rotate(0deg)' : 'scale(1)',
+          }}
+          onMouseEnter={e => { if (!open) (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1.1)' }}
+          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1)' }}
+        >
+          {open ? '✕' : <Image src="/Kalasakhi.png" alt="Open chat" fill sizes="56px" style={{ objectFit: 'cover' }} />}
+        </button>
+        {/* The character avatar alone doesn't read as "this opens a chatbot" the way
+            the old 🤖 emoji did — this badge is the visual cue that this is chat,
+            not just a photo/profile picture. */}
+        {!open && (
+          <div aria-hidden="true" className="chat-fab-badge" style={{
+            position: 'absolute', bottom: -2, right: -2, width: 22, height: 22, borderRadius: '50%',
+            background: '#E8380A', border: '2px solid #FFF8EE', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            pointerEvents: 'none', boxShadow: '0 2px 6px rgba(0,0,0,0.25)',
+          }}>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="#fff">
+              <path d="M4 4h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9l-5 4V6a2 2 0 0 1 2-2z" />
+            </svg>
+          </div>
+        )}
+      </div>
 
       <style>{`
         @keyframes chatSlideUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
@@ -494,7 +510,8 @@ export default function ChatWidget() {
         .chat-fab-attention:hover::after { animation: none; }
         @media(max-width:480px){
           .chat-panel { width:92vw !important; right:4vw !important; bottom:76px !important; height:70vh !important; }
-          .chat-fab { bottom:12px !important; right:12px !important; width:48px !important; height:48px !important; }
+          .chat-fab-wrap { bottom:12px !important; right:12px !important; }
+          .chat-fab { width:48px !important; height:48px !important; }
         }
       `}</style>
     </>

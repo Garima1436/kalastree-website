@@ -83,6 +83,62 @@ export async function findArtisanByName(name: string): Promise<Artisan | null> {
   return (data as Artisan) ?? null
 }
 
+export interface NewsMention {
+  title: string
+  author: string | null
+  published_at: string
+  external_link: string | null
+}
+
+// Reproduced live: asked about a name that isn't a founder/co-founder and
+// isn't in the artisans table, the chatbot flatly said "no artisan found"
+// even for a name that IS real and IS on the site — just as a News & Events
+// author/subject, not an artisan. Before concluding nothing is known about
+// a named person, also check here (title/author/body) rather than only the
+// single artisans table. Still returns null (and the caller still says "not
+// found") for a genuinely unknown name — this only widens where we look.
+export async function findNewsMentioningPerson(name: string): Promise<NewsMention | null> {
+  const { data } = await supabaseAdmin
+    .from('news_events')
+    .select('title, author, published_at, external_link, body')
+    .or(`author.ilike.%${name}%,title.ilike.%${name}%,body.ilike.%${name}%`)
+    .order('published_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+  if (!data) return null
+  return { title: data.title, author: data.author, published_at: data.published_at, external_link: data.external_link }
+}
+
+export interface ReviewMention {
+  reviewerName: string
+  productName: string | null
+  rating: number
+  title: string | null
+}
+
+// Same widening as findNewsMentioningPerson, for the third public
+// name-bearing source on the site: product reviews (reviewer_name is shown
+// publicly on every product page already, so surfacing it here exposes
+// nothing that isn't already public). Deliberately selects ONLY
+// reviewer_name/rating/title — never email or user_id, which are private
+// account fields. For the same reason, profiles/orders/payments/inquiries
+// are intentionally never searched by name anywhere in this pipeline: those
+// hold private account/order data, and letting an anonymous chatbot confirm
+// "yes, a person named X has an account/order" would be a real privacy leak
+// (account enumeration), not a helpfulness gap.
+export async function findReviewMentioningPerson(name: string): Promise<ReviewMention | null> {
+  const { data } = await supabaseAdmin
+    .from('reviews')
+    .select('reviewer_name, rating, title, product_id, products(name)')
+    .ilike('reviewer_name', `%${name}%`)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+  if (!data) return null
+  const productName = (data as unknown as { products: { name: string } | null }).products?.name ?? null
+  return { reviewerName: data.reviewer_name, productName, rating: data.rating, title: data.title }
+}
+
 let giProductsCache: { rows: GIProduct[]; fetchedAt: number } | null = null
 const GI_PRODUCTS_CACHE_TTL_MS = 5 * 60 * 1000
 

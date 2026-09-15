@@ -9,13 +9,13 @@ import { supabaseAdmin } from '@/lib/supabase-admin'
 import { understandQuery, isAllStatesRequest, isTotalProductsRequest, isShowMoreRequest } from './queryUnderstanding'
 import { buildConstraints } from './constraints'
 import { verifyGI } from './verification'
-import { getAllGIProducts, findArtisanByName, getProductCountsByState } from './relationships'
+import { getAllGIProducts, findArtisanByName, findNewsMentioningPerson, findReviewMentioningPerson, getProductCountsByState } from './relationships'
 import { retrieveCandidateProducts, retrieveNarrativeEvidence, warmUpChatbotBackend } from './retrieval'
 import { filterEligible } from './eligibility'
 import { rankProducts } from './ranking'
 import { buildEvidence } from './evidence'
 import { generateResponse } from './responseGenerator'
-import { KALASTREE_EVIDENCE, WOMEN_ONLY_PLATFORM_EVIDENCE, GI_DEFINITION_EVIDENCE, ORDER_RELATED_EVIDENCE, isFounderName } from './kalastreeInfo'
+import { KALASTREE_EVIDENCE, WOMEN_ONLY_PLATFORM_EVIDENCE, GI_DEFINITION_EVIDENCE, ORDER_RELATED_EVIDENCE, isFounderName, findAboutStoryMention } from './kalastreeInfo'
 import { PRODUCT_INTENTS } from './types'
 import type { DebugInfo, Evidence, StructuredQuery } from './types'
 
@@ -220,15 +220,74 @@ export async function runPipeline(
           verification_status: 'verified',
         })
       } else {
-        evidence.unshift({
-          source_id: `artisans:not_found:${structuredQuery.entities.artisan}`,
-          source_type: 'database',
-          source_title: 'Artisan Lookup',
-          source_reference: 'artisans lookup (no match)',
-          retrieved_text: `No artisan named "${structuredQuery.entities.artisan}" was found in the verified artisan records.`,
-          relevance_score: 1,
-          verification_status: 'not_verified',
-        })
+        // Not in the artisans table and not the founder/co-founder — before
+        // declaring the name unknown, check every other public,
+        // name-bearing source on the site, in order: the About page's own
+        // founding story, News & Events, then product reviews. See each
+        // helper's doc comment for the reproduced case it fixes (e.g. "who
+        // is Sunita?" — the About page's origin story literally names her,
+        // but she isn't in any table).
+        const personName = structuredQuery.entities.artisan
+        const aboutMention = findAboutStoryMention(personName)
+        if (aboutMention) {
+          evidence.unshift({
+            source_id: `about:story:${personName}`,
+            source_type: 'static',
+            source_title: 'About KalaStree — Why KalaStree?',
+            source_reference: 'src/lib/i18n/dictionaries/about.ts (About page story)',
+            retrieved_text:
+              `"${personName}" is not a KalaStree marketplace artisan, but is named in the About page's founding ` +
+              `story: "${aboutMention.paragraph}"`,
+            relevance_score: 1,
+            verification_status: 'verified',
+          })
+        } else {
+          const newsMention = await findNewsMentioningPerson(personName)
+          if (newsMention) {
+            evidence.unshift({
+              source_id: `news:${newsMention.title}`,
+              source_type: 'database',
+              source_title: newsMention.title,
+              source_reference: 'news_events lookup',
+              retrieved_text:
+                `"${personName}" is not a KalaStree marketplace artisan, but is mentioned in a ` +
+                `KalaStree News & Events entry: "${newsMention.title}"${newsMention.author ? ` (author: ${newsMention.author})` : ''}, ` +
+                `published ${newsMention.published_at}.${newsMention.external_link ? ` Link: ${newsMention.external_link}` : ''}`,
+              relevance_score: 1,
+              verification_status: 'verified',
+            })
+          } else {
+            // Still nothing — check the last public, name-bearing source:
+            // product reviews (reviewer_name only; see
+            // findReviewMentioningPerson's doc comment for why private
+            // account/order tables are deliberately never checked here).
+            const reviewMention = await findReviewMentioningPerson(personName)
+            if (reviewMention) {
+              evidence.unshift({
+                source_id: `reviews:${reviewMention.reviewerName}`,
+                source_type: 'database',
+                source_title: `Review by ${reviewMention.reviewerName}`,
+                source_reference: 'reviews lookup',
+                retrieved_text:
+                  `"${personName}" is not a KalaStree marketplace artisan, but left a ${reviewMention.rating}-star ` +
+                  `product review${reviewMention.productName ? ` for "${reviewMention.productName}"` : ''}` +
+                  `${reviewMention.title ? `, titled "${reviewMention.title}"` : ''} on KalaStree.`,
+                relevance_score: 1,
+                verification_status: 'verified',
+              })
+            } else {
+              evidence.unshift({
+                source_id: `artisans:not_found:${personName}`,
+                source_type: 'database',
+                source_title: 'Artisan Lookup',
+                source_reference: 'artisans/about/news/reviews lookup (no match)',
+                retrieved_text: `No artisan named "${personName}" was found in the verified artisan records, and no mention of that name was found on the About page, in News & Events, or in product reviews either.`,
+                relevance_score: 1,
+                verification_status: 'not_verified',
+              })
+            }
+          }
+        }
       }
     }
   }
