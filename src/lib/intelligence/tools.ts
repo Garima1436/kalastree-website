@@ -108,8 +108,8 @@ export const TOOL_DEFINITIONS: ToolDefinition[] = [
   {
     name: 'list_gi_products',
     description:
-      'Look up KalaStree\'s real Geographical Indication (GI) REGISTRY (the ~478 officially registered GI crafts ' +
-      'it cross-checks products against — kalastree.com/gi-products) — NOT the marketplace products for sale. Use ' +
+      'Look up KalaStree\'s real Geographical Indication (GI) REGISTRY (the full set of officially registered GI ' +
+      'crafts it cross-checks products against — kalastree.com/gi-products) — NOT the marketplace products for sale. Use ' +
       'for "list your GI products/tags", "what GI products do you track", or any question about the registry ' +
       'itself rather than what is currently for sale. NEVER substitute a marketplace product search for this — ' +
       'the registry and the marketplace are two different, independently-sized lists.',

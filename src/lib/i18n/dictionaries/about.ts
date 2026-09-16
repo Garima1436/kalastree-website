@@ -14,7 +14,7 @@ const dict = {
     pillar2Title: 'FinTech for Artisans',
     pillar2Body: 'Digital wallets, Artisan Credit Scores, microloans, and sachet insurance — financial tools built specifically for women in GI value chains.',
     pillar3Title: 'AI Knowledge Engine',
-    pillar3Body: 'A RAG chatbot trained on 478 GI products and 2,500 survey responses. Ask it anything about Indian crafts, regions, or artisan stories.',
+    pillar3Body: 'A RAG chatbot trained on 637 GI products and 2,500 survey responses. Ask it anything about Indian crafts, regions, or artisan stories.',
 
     founderEyebrow: 'About the Founder',
     founderNameIntro: "I'm",
@@ -73,7 +73,7 @@ const dict = {
     pillar2Title: 'कारीगरों के लिए फिनटेक',
     pillar2Body: 'डिजिटल वॉलेट, आर्टिज़न क्रेडिट स्कोर, माइक्रोलोन और सैशे बीमा — विशेष रूप से जीआई वैल्यू चेन में काम करने वाली महिलाओं के लिए बनाए गए वित्तीय उपकरण।',
     pillar3Title: 'एआई नॉलेज इंजन',
-    pillar3Body: '478 जीआई उत्पादों और 2,500 सर्वेक्षण उत्तरों पर प्रशिक्षित एक RAG चैटबॉट। भारतीय शिल्प, क्षेत्रों या कारीगरों की कहानियों के बारे में कुछ भी पूछें।',
+    pillar3Body: '637 जीआई उत्पादों और 2,500 सर्वेक्षण उत्तरों पर प्रशिक्षित एक RAG चैटबॉट। भारतीय शिल्प, क्षेत्रों या कारीगरों की कहानियों के बारे में कुछ भी पूछें।',
 
     founderEyebrow: 'संस्थापक के बारे में',
     founderNameIntro: 'मैं हूं',

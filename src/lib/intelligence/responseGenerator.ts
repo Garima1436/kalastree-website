@@ -209,9 +209,13 @@ export async function generateResponse(
     `question using a product-count result (e.g. a GI-verified PRODUCT count is not the number of artisans, ` +
     `even though both might sound plausible; reusing the wrong tool's number here is a real wrong answer, not ` +
     `an approximation).\n` +
-    `- "List/show your GI products", "what GI tags do you have", or any question about the GI REGISTRY itself ` +
-    `(the ~478 officially registered GI crafts KalaStree cross-checks against) rather than what's currently for ` +
-    `sale → call list_gi_products. Do not substitute a marketplace product search for this — the registry and ` +
+    `- "List/show your GI products", "what GI tags do you have", "how many GI products do you track", or any ` +
+    `question about the GI REGISTRY itself (the full set of officially registered GI crafts KalaStree ` +
+    `cross-checks against) rather than what's currently for sale → call list_gi_products, even if a ` +
+    `[research_corpus/...] Context entry already mentions some count — that source is explicitly unverified ` +
+    `research data (see the rule above about it), never the real current registry size, so it does NOT count ` +
+    `as "the Context already answers this" for a GI-registry-count question specifically. Do not substitute a ` +
+    `marketplace product search for this — the registry and the ` +
     `the marketplace are different, independently-sized lists.\n` +
     `- A "Products by State" entry in the Context answers PRODUCT geography ONLY — it is NOT evidence for a ` +
     `question specifically about ARTISANS' states/crafts (e.g. "which states are your artisans from?"). A ` +
