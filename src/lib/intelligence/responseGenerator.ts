@@ -16,6 +16,7 @@ You will be given: the user's question, a structured interpretation of it, verif
 
 Strict rules:
 - Answer ONLY using the provided context. Never invent GI status, artisan identity, geographical origin, prices, availability, or sources.
+- NEVER construct or invent a product purchase URL (e.g. "kalastree.com/products/product-name-slug") — you do not reliably know the real URL pattern, and a wrong one is a broken link that looks legitimate to the user, which is worse than no link at all. Reproduced live: asked for a link, the answer fabricated "https://kalastree.com/products/bastar-iron-craft-leaf-branch-wall-decor" — a URL nobody gave you and that doesn't match the site's real pattern. If asked for a link: when real products are shown to you as ranked/eligible items (not just named in a tool result), say the products shown above/below are clickable — do not restate their names as a fake link. Otherwise, say you don't have a direct link to give and suggest searching for the product by name on kalastree.com — never construct a URL yourself under any circumstances.
 - If the context does not contain enough information to answer, reply with exactly: "${FALLBACK_MESSAGE}" — BUT if the Evidence section below contains ANY entry that directly answers the question (even a general platform-policy fact rather than a specific product), you DO have enough information: state it plainly and confidently. Do not default to this fallback out of caution when a directly-relevant, verified Evidence entry is right there — that is the opposite of what this rule is for. This applies even when "Eligible/ranked products" says the product search didn't run — that note means "don't guess from silence," not "ignore the Evidence section too."
 - Never claim something is GI-verified unless the context marks it verification_status: "verified".
 - When recommending products, briefly explain why each one matches (use the provided matched constraints / ranking reason) — do not restate raw JSON.
@@ -24,6 +25,8 @@ Strict rules:
 - Use only the exact title/designation given in the evidence for a person (e.g. "founder") — never substitute, upgrade, or echo back a different title the user's own question used (e.g. "CEO", "owner", "director"). Reproduced live: asked "Who is the CEO?", the evidence only ever calls Garima Awasthi "founder" (that is her real, sole designation — KalaStree has no CEO title), but the answer opened with "The CEO of KalaStree is Garima Awasthi," inventing a title nowhere in the evidence just because the question used that word. If a question's title doesn't match the evidence's title for that person, answer using the evidence's actual title and gently correct the mismatch rather than repeating the user's word as fact.
 - A question about YOUR OWN capabilities as this chatbot (e.g. "can you talk in Hindi?", "what languages do you speak?", "can you help with X?") is not a KalaStree-data claim and does not need Evidence to answer — answer it directly and truthfully from what you actually are: a GPT-4o-mini-based assistant that fluently understands and can respond in both English and Hindi (and other languages the model supports). Reproduced live: asked "Can you talk in hindi?", this fell to the generic insufficient-evidence fallback even though the true, confident answer ("Yes") requires no KalaStree-specific evidence at all — never use the fallback for a question about yourself.
 - Respond in the language the user is actually using: if their current message is written in Hindi, answer in Hindi; if they explicitly ask you to switch language (e.g. "हिंदी में बात करो", "reply in Hindi", "switch to English"), do so for that reply and continue in that language afterward unless asked to switch back. Do not silently answer in English when the question was asked in Hindi.
+
+If Evidence contains an "Image Analysis" entry saying a photo's craft could NOT be confirmed, but a SEPARATE "Similar products based on photo" evidence entry (plus real product listings) is ALSO present, you DO have something real to say — never collapse straight to the generic fallback sentence just because the craft/GI name itself is unconfirmed. Say plainly that the specific GI craft couldn't be confirmed, THEN still describe the real similar products that were found, clearly labeled as not a confirmed GI match (exactly as the evidence itself already states). Reproduced live: with this exact evidence shape present (an honest "can't confirm the craft" entry alongside 4 real, priced, in-stock products from a real photo-based search), the answer wrongly gave ONLY the generic fallback sentence and never mentioned the 4 real products sitting right there in evidence — omitting real, relevant evidence you were given is wrong regardless of how the "can't confirm" wording elsewhere in the same evidence set reads.
 
 GI status and marketplace availability are TWO SEPARATE, INDEPENDENT facts — never conflate them:
 - "GI verification" (in the context above) answers: is this craft/product officially GI-registered?
@@ -102,7 +105,7 @@ export function buildFinalContext(
       // had no total count to read instead of just counting what it saw.
       ? `Eligible/ranked products: ${ranked.length} total match${ranked.length === 1 ? '' : 'es'} found` +
         (ranked.length > 5 ? ` (showing the top 5 below; ${ranked.length} is the real total — use THAT number if asked how many, not the count of items listed)` : '') +
-        `.\n${formatProducts(ranked)}`
+        `.${ranked.length ? ' Each of these is ALSO shown to the user as its own clickable product card with a real link, right alongside your answer — if asked for a link to buy, say the cards shown are clickable, never construct a URL yourself.' : ''}\n${formatProducts(ranked)}`
       : 'Eligible/ranked products: product search was not run for this query (not a product-discovery request) — do not GUESS product existence from this being empty. This does NOT mean ignore the Evidence section above: if it contains a directly-relevant verified fact (e.g. a platform policy), use it confidently.',
   ].filter((part): part is string => part !== null).join('\n\n')
 }
@@ -160,6 +163,74 @@ export async function generateResponse(
   if (structuredQuery.entities.artisan_gender === 'male') {
     const answer = evidence.find(e => e.source_id === 'static:women-only-platform')?.retrieved_text
       ?? 'KalaStree exclusively features women artisans ("Heritage by Her"). There are no male artisans or products made by men on the platform.'
+    return { answer, finalContext, groundednessWarnings: [] }
+  }
+
+  // Deterministic short-circuit: an uploaded photo whose craft couldn't be
+  // GI-confirmed, but whose object/material description DID find real
+  // similar products (pipeline.ts's 'image:object_fallback' evidence,
+  // matching ranked products in hand) — even after adding an explicit
+  // system-prompt rule for exactly this evidence shape, the model still
+  // sometimes collapsed straight to the plain fallback sentence and
+  // silently dropped every real product sitting right there in its own
+  // evidence (reproduced live, a second time, with that rule already in
+  // place). Same class of unreliable prompt-following already established
+  // for the "made by men" case above — build this answer directly from the
+  // real evidence/ranked data instead of hoping the model states it.
+  const objectFallbackEvidence = evidence.find(e => e.source_id === 'image:object_fallback')
+  if (objectFallbackEvidence && ranked.length) {
+    const noMatchEvidence = evidence.find(e => e.source_id === 'image:no_match')
+    const description = noMatchEvidence?.retrieved_text.match(/analyzed \((.+?)\), but/)?.[1]
+    // A keyword-matched product can be a REAL, verified GI product in its
+    // own right (see pipeline.ts's matchesGIRegistry check) even though the
+    // PHOTOGRAPHED item's own craft is unconfirmed — those are two separate
+    // facts, and conflating them either way is wrong: silently calling a
+    // genuinely GI-verified product "unconfirmed" is as much a factual
+    // error as claiming the photo itself is that exact GI piece.
+    const productLines = ranked
+      .slice(0, 5)
+      .map(r => {
+        const giNote = r.giVerification?.gi_verified
+          ? ` — verified GI product (${r.giVerification.entity})`
+          : ''
+        return `- **${r.product.name}** — ₹${r.product.price}, by ${r.product.artisan?.name ?? 'unknown artisan'}, ${r.product.state ?? 'state unknown'}${giNote}.`
+      })
+    const anyGiVerified = ranked.some(r => r.giVerification?.gi_verified)
+    // pipeline.ts sets score: 1 ONLY for a near-perfect embedding match
+    // (score >= 0.95 in the real CLIP similarity, distinct from every other
+    // fallback match's fixed 0.5) — reproduced live: uploading a product's
+    // own real catalogue photo came back as a near-exact match (score 1.0),
+    // but this answer used to say the SAME hedged "may visually resemble...
+    // does not confirm your exact item" as it would for a barely-passing
+    // loose match. A near-perfect match is real evidence this IS the same
+    // item, not just similar to it, and deserves confident language, not
+    // uniform hedging regardless of match strength.
+    const nearIdentical = ranked.find(r => r.score === 1)
+    // description is already a full sentence (e.g. "The image shows a
+    // stylized figurine of a deer with intricate detailing.") — presented
+    // as its own clause, not spliced into a new sentence, to avoid a
+    // redundant "the photo shows the image shows..." construction.
+    const intro = description
+      ? `I analyzed the uploaded photo: ${description}`
+      : `I analyzed the uploaded photo.`
+    let answer: string
+    if (nearIdentical) {
+      const giNote = nearIdentical.giVerification?.gi_verified
+        ? ` It is itself a verified GI product (${nearIdentical.giVerification.entity}).`
+        : ''
+      answer =
+        `${intro} This appears to be an exact (or near-exact) match to **${nearIdentical.product.name}** — ₹${nearIdentical.product.price}, ` +
+        `by ${nearIdentical.product.artisan?.name ?? 'unknown artisan'}, ${nearIdentical.product.state ?? 'state unknown'}, already listed on KalaStree.${giNote}\n\n` +
+        `The card shown is clickable for more details.`
+    } else {
+      answer =
+        `${intro} It could not be confidently matched to any specific Geographical Indication craft in KalaStree's verified registry.\n\n` +
+        `However, I found some real KalaStree products that may visually or materially match what it shows` +
+        `${anyGiVerified ? ' — some of these ARE themselves verified GI products in their own right (marked below), though this ' +
+          'does not confirm your exact photographed item is officially that same GI piece' : ', though none of them are confirmed GI-verified products'}` +
+        `:\n\n${productLines.join('\n')}\n\n` +
+        `The cards shown are clickable for more details.`
+    }
     return { answer, finalContext, groundednessWarnings: [] }
   }
 

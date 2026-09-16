@@ -22,6 +22,24 @@ const KNOWN_SYNONYMS: Record<string, string> = {
   // levenshtein fallback (threshold 1 for a 10-char word) never bridges
   // them without an explicit synonym entry.
   'pondicherry': 'puducherry',
+  // "Kanjeevaram" is the common anglicized spelling of "Kanchipuram" (the
+  // real registered GI name) for the same silk saree — reproduced live: a
+  // vision guess on an actual Kanchipuram-style saree photo correctly said
+  // "Kanjeevaram Silk", but that's a large edit distance from
+  // "Kanchipuram Silk" (differs in the middle of the word, not just a
+  // couple of characters), so it never resolved to the real GI entry
+  // without this synonym entry, same class of gap as Pondicherry above.
+  'kanjeevaram silk': 'kanchipuram silk',
+  'kanjeevaram': 'kanchipuram',
+  // "Varanasi" is the actual city's modern name; "Banarasi" is the
+  // traditional/cultural adjective the GI registry uses for the same
+  // silk — checked live: a plausible vision guess on a real Banarasi-silk
+  // saree photo could reasonably come back as "Varanasi Silk" (it's the
+  // literal city name), which fuzzyMatch's levenshtein fallback doesn't
+  // bridge to "Banarasi Silk" (differs by more than the tight per-length
+  // threshold), same class of gap as Kanjeevaram/Pondicherry above.
+  'varanasi silk': 'banarasi silk',
+  'varanasi': 'banarasi',
 }
 
 interface KnowledgeCache {

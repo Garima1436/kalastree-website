@@ -81,6 +81,18 @@ export interface StructuredQuery {
   raw_query: string
   intents: Intent[]
   entities: ExtractedEntities
+  // Whether THIS message is actually about a photo the user uploaded/is
+  // still discussing (a correction, detail, or follow-up like "its of
+  // leather", "is it available", "what material is this"), vs. a fully
+  // unrelated question. ChatWidget keeps resending the last uploaded photo
+  // across turns until the user removes it (see imageIdentification.ts's
+  // doc comment), so a photo can still be "attached" server-side on a turn
+  // that has nothing to do with it — reproduced live: asking "which state
+  // has the most GI products?" while a photo was still stuck attached
+  // re-ran vision analysis on it and overrode that turn's real evidence
+  // with an unrelated image match, producing a wrong/contaminated answer.
+  // pipeline.ts only processes the attached image when this is true.
+  refersToUploadedPhoto: boolean
 }
 
 export type ConstraintField =

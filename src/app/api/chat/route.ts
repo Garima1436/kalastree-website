@@ -45,13 +45,20 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const { question, history, previousQuery, previousEvidence, debug } = await req.json()
+    const { question, history, previousQuery, previousEvidence, debug, image } = await req.json()
     if (!question?.trim()) {
       return NextResponse.json({ error: 'Question required' }, { status: 400 })
     }
     if (question.length > 500) {
       return NextResponse.json({ error: 'Question too long (max 500 characters)' }, { status: 400 })
     }
+
+    // Base64 data URL of a user-uploaded product photo (optional). Capped
+    // well under OpenAI's own per-image limit — this is a sanity/abuse
+    // check, not a precise byte-budget calc, so a generous round number is
+    // fine (base64 runs ~33% larger than the underlying image).
+    const safeImage: string | null =
+      typeof image === 'string' && image.startsWith('data:image/') && image.length < 8_000_000 ? image : null
 
     // Validate and sanitize history — cap at last 8 messages
     const safeHistory: HistoryMessage[] = Array.isArray(history)
@@ -83,7 +90,7 @@ export async function POST(req: NextRequest) {
 
     const includeDebug = debug === true && (await isAdmin())
 
-    const result = await runPipeline(question, safeHistory, safePreviousQuery, includeDebug, safePreviousEvidence)
+    const result = await runPipeline(question, safeHistory, safePreviousQuery, includeDebug, safePreviousEvidence, safeImage)
     return NextResponse.json(result)
   } catch (err) {
     const isTimeout = err instanceof Error && err.name === 'TimeoutError'

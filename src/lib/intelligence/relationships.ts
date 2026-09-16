@@ -1,5 +1,8 @@
 // Stage 3: GI / craft / region / artisan relationship resolution
-// (spec section 6). Deterministic Supabase lookups — no LLM involved.
+// (spec section 6). Mostly deterministic Supabase lookups; resolveGIProduct
+// has one narrow LLM-backed last resort (see resolveCraftNameViaLLM) for
+// name variants no deterministic rule can anticipate — see its own doc
+// comment for why a hand-maintained synonym table doesn't scale here.
 //
 //   GI_PRODUCT --belongs_to--> STATE
 //   GI_PRODUCT --represents--> CRAFT      (gi_products.name/gi_tag)
@@ -10,6 +13,127 @@ import { supabaseAdmin } from '@/lib/supabase-admin'
 import type { GIProduct, Artisan } from '@/lib/types'
 import type { ExtractedEntities } from './types'
 import { levenshtein } from './entityNormalization'
+import { callOpenAI } from './openai'
+
+const CRAFT_NAME_STOPWORDS = new Set(['of', 'the', 'and', '&'])
+
+function craftTokens(name: string): Set<string> {
+  return new Set(name.toLowerCase().split(/[^a-z0-9]+/).filter(w => w.length > 0 && !CRAFT_NAME_STOPWORDS.has(w)))
+}
+
+// True if every significant word on the shorter side appears among the
+// longer side's words — order-independent, unlike a plain substring check.
+// Reproduced live: a vision guess (and how a person would naturally type
+// it) said "Jaipur Blue Pottery" for an unmistakable, correctly-identified
+// photo, but the real registered name is "Blue Pottery of Jaipur" — same
+// craft, reversed word order — so neither direction of the substring check
+// above matched at all, and a correct identification was discarded as "no
+// match."
+export function sameCraftByTokens(a: string, b: string): boolean {
+  const tokensA = craftTokens(a)
+  const tokensB = craftTokens(b)
+  if (tokensA.size === 0 || tokensB.size === 0) return false
+  const [shorter, longer] = tokensA.size <= tokensB.size ? [tokensA, tokensB] : [tokensB, tokensA]
+  for (const t of shorter) {
+    if (!longer.has(t)) return false
+  }
+  return true
+}
+
+// Last-resort fallback: asks the LLM itself whether an unresolved guess
+// refers to the SAME real craft as one of the pool's actual registered
+// names, drawing on knowledge it already has of alternate spellings,
+// transliterations, and regional synonyms (e.g. "Kanjeevaram" = the same
+// place as "Kanchipuram"; "Varanasi" = the same city as "Banarasi").
+//
+// A hand-maintained synonym table (like KNOWN_SYNONYMS in
+// entityNormalization.ts) cannot realistically scale to ~637 GI crafts,
+// each with its own possible alternate names/spellings/languages — every
+// gap only surfaces after a real user hits it, one at a time. This uses
+// the SAME general-knowledge matching the LLM already applies elsewhere
+// in this pipeline (e.g. transliteratePersonName in queryUnderstanding.ts)
+// instead of trying to enumerate every case in advance. Only called when
+// every deterministic check in resolveGIProduct above has already failed,
+// so it adds no latency/cost to the common case where those succeed.
+// Counts whole-word overlap between guess and candidate, destemming a
+// trailing "s" so "toy"/"toys" count as the same word. Used as a
+// deterministic double-check on the LLM's pick below — reproduced live:
+// asked to match "leather toy horse figure" against a list containing
+// BOTH "Leather Toys of Indore" and "Santiniketan Leather Goods" (both
+// genuinely share "leather"), the LLM consistently (not just once) picked
+// "Santiniketan Leather Goods" despite explicit prompt instructions to use
+// the OTHER words to disambiguate — a real, repeatable prompt-following
+// limit, not sampling noise. Rather than keep iterating on prompt wording
+// indefinitely, a simple word-overlap count settles ties the LLM doesn't
+// reliably resolve on its own: "Leather Toys of Indore" shares "leather"
+// AND "toy" (2 words) with the guess; "Santiniketan Leather Goods" only
+// shares "leather" (1 word) — matching this session's general principle
+// that deterministic verification, not prompt precision alone, is what
+// should decide a final answer.
+function craftWordOverlap(guess: string, candidate: string): number {
+  // Stopwords excluded too (same set as craftTokens above) — otherwise a
+  // shared "of"/"and" could inflate an unrelated candidate's score and
+  // override a genuinely correct LLM answer with a worse one.
+  const destem = (w: string) => (w.length > 3 && w.endsWith('s') ? w.slice(0, -1) : w)
+  const words = (s: string) => s.toLowerCase().split(/[^a-z0-9]+/).filter(w => w.length > 0 && !CRAFT_NAME_STOPWORDS.has(w)).map(destem)
+  const guessWords = new Set(words(guess))
+  return words(candidate).filter(w => guessWords.has(w)).length
+}
+
+async function resolveCraftNameViaLLM(guess: string, candidateNames: string[]): Promise<string | null> {
+  try {
+    const raw = await callOpenAI(
+      [
+        {
+          role: 'system',
+          content:
+            'You are matching a possibly informally-spelled or transliterated craft/product name to India\'s ' +
+            'real, officially registered Geographical Indication (GI) craft names. Given a GUESS and a LIST of ' +
+            'real names, respond with the SINGLE exact name from the LIST that refers to the same craft/place ' +
+            'as the GUESS, accounting for alternate spellings, transliterations, or common regional synonyms ' +
+            '(e.g. "Kanjeevaram" is the same place as "Kanchipuram"; "Varanasi" is the same city as "Banarasi"). ' +
+            'IMPORTANT: weigh SPECIFIC, DISTINCTIVE words in THIS GUESS — a MATERIAL, a PLACE NAME, or a named ' +
+            'TECHNIQUE actually present in the GUESS text — far more heavily than generic category words like ' +
+            '"toy", "craft", "art", "figure", "décor", or "ware". A candidate that shares a distinctive material/' +
+            'place-name word FROM THE GUESS is almost always the correct match, even when a different, more ' +
+            'famous candidate only shares a generic category word with the guess. Never let a candidate\'s fame, ' +
+            'or mere category-word overlap, override a real material/place-name mismatch — and never pick a ' +
+            'candidate that shares NONE of the guess\'s distinctive words just because it sounds plausible in ' +
+            'general. If the GUESS itself has no distinctive material/place/technique word to match on, or ' +
+            'nothing in the LIST shares one, respond NONE rather than guessing from category alone. When SEVERAL ' +
+            'candidates all share the same distinctive material (e.g. multiple different "Leather ..." entries ' +
+            'for a leather guess), that material alone does not pick a winner among them — use whatever OTHER ' +
+            'words are in the GUESS (even generic ones like "toy" or "footwear") to pick the ONE candidate that ' +
+            'best fits the full guess, not just any candidate sharing the material. Respond with ONLY the exact ' +
+            'matched name (copied verbatim from the LIST) or NONE — no other text.',
+        },
+        { role: 'user', content: `GUESS: ${guess}\n\nLIST:\n${candidateNames.join('\n')}` },
+      ],
+      { temperature: 0 }
+    )
+    const trimmed = raw.trim()
+    if (!trimmed || trimmed.toUpperCase() === 'NONE') return null
+
+    // Deterministic re-rank: if some OTHER real candidate shares strictly
+    // more whole words with the guess than the LLM's own pick, prefer that
+    // one instead — see craftWordOverlap's doc comment for the reproduced
+    // case this catches.
+    const llmScore = craftWordOverlap(guess, trimmed)
+    let best = trimmed
+    let bestScore = llmScore
+    for (const name of candidateNames) {
+      const score = craftWordOverlap(guess, name)
+      if (score > bestScore) {
+        best = name
+        bestScore = score
+      }
+    }
+    return best
+  } catch (err) {
+    console.error('Craft-name LLM resolution failed:', err)
+    return null
+  }
+}
 
 // Resolves the GI_PRODUCT an entity (craft name, GI tag, or product state)
 // refers to. Returns null when nothing matches — the caller must treat that
@@ -25,18 +149,40 @@ export async function resolveGIProduct(entities: ExtractedEntities): Promise<GIP
   if (!entities.craft && !entities.state) return null
 
   const giProducts = await getAllGIProducts()
+
+  if (!entities.craft) {
+    return entities.state ? giProducts.find(g => g.state.toLowerCase() === entities.state!.toLowerCase()) ?? null : null
+  }
+
+  // Resolved against the FULL registry first, deliberately NOT pre-filtered
+  // by state — reproduced live: correcting "this is not Kanchipuram, it's
+  // Banarasi" mid-conversation correctly updated entities.craft to
+  // "Banarasi Silk", but entities.state was still "Tamil Nadu" (carried
+  // over from the earlier, now-corrected Kanchipuram identification — a
+  // craft correction doesn't automatically invalidate a state that was
+  // never independently confirmed by the user in the first place). Filtering
+  // the pool to Tamil Nadu BEFORE matching craft excluded the real
+  // "Banarasi Silk" (Uttar Pradesh) entry entirely, so even a clear, exact
+  // craft match was silently discarded, and the LLM fallback below was
+  // forced to pick the closest WRONG match from an already-wrong pool. A
+  // clear, unambiguous craft match must never be pre-excluded by a
+  // possibly-stale state.
+  const craft = entities.craft.toLowerCase()
+  const deterministicMatch =
+    giProducts.find(g => g.name.toLowerCase() === craft || g.gi_tag.toLowerCase() === craft) ??
+    giProducts.find(g => craft.includes(g.name.toLowerCase()) || g.name.toLowerCase().includes(craft)) ??
+    giProducts.find(g => sameCraftByTokens(craft, g.name)) ??
+    null
+  if (deterministicMatch) return deterministicMatch
+
+  // No exact/substring/token match against the full registry — craft
+  // alone is ambiguous or unrecognized, so state (if given) is a
+  // reasonable disambiguator for this last-resort LLM step specifically.
   const pool = entities.state
     ? giProducts.filter(g => g.state.toLowerCase() === entities.state!.toLowerCase())
     : giProducts
-
-  if (!entities.craft) return pool[0] ?? null
-
-  const craft = entities.craft.toLowerCase()
-  return (
-    pool.find(g => g.name.toLowerCase() === craft || g.gi_tag.toLowerCase() === craft) ??
-    pool.find(g => craft.includes(g.name.toLowerCase()) || g.name.toLowerCase().includes(craft)) ??
-    null
-  )
+  const llmMatchedName = await resolveCraftNameViaLLM(entities.craft, pool.map(g => g.name))
+  return llmMatchedName ? pool.find(g => g.name === llmMatchedName) ?? null : null
 }
 
 export async function findArtisansForGIProduct(giProductId: string): Promise<Artisan[]> {

@@ -42,6 +42,12 @@ const dict = {
     voiceTranscribeError: "Couldn't hear that clearly — please try again.",
     listenAria: 'Listen to this answer',
     stopListenAria: 'Stop playback',
+    attachImageAria: 'Attach a product photo',
+    removeImageAria: 'Remove photo',
+    imageTypeError: 'Please choose an image file.',
+    imageSizeError: 'That image is too large (max 6MB).',
+    imageReadError: "Couldn't read that image — please try again.",
+    imageDefaultQuestion: 'What GI product is this, and where is it from?',
   },
   hi: {
     liveLabel: 'लाइव',
@@ -86,6 +92,12 @@ const dict = {
     voiceTranscribeError: 'स्पष्ट रूप से सुनाई नहीं दिया — कृपया पुनः प्रयास करें।',
     listenAria: 'यह उत्तर सुनें',
     stopListenAria: 'प्लेबैक रोकें',
+    attachImageAria: 'उत्पाद की फोटो जोड़ें',
+    removeImageAria: 'फोटो हटाएं',
+    imageTypeError: 'कृपया एक इमेज फ़ाइल चुनें।',
+    imageSizeError: 'यह इमेज बहुत बड़ी है (अधिकतम 6MB)।',
+    imageReadError: 'इमेज पढ़ी नहीं जा सकी — कृपया पुनः प्रयास करें।',
+    imageDefaultQuestion: 'यह कौन सा जीआई उत्पाद है, और यह कहाँ से है?',
   },
 } as const
 

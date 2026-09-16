@@ -7,6 +7,7 @@
 // back to an empty structured query rather than guessing.
 import { callOpenAI } from './openai'
 import { normalizeCraft, normalizeState, scanForStateName } from './entityNormalization'
+import { resolveGIProduct } from './relationships'
 import type { StructuredQuery, ExtractedEntities, Intent } from './types'
 import { PRODUCT_INTENTS } from './types'
 
@@ -39,12 +40,13 @@ Extract intent(s) and entities from the user's message as JSON. Rules:
 - price_mode: "max" if the user said "under/below/within X", "min" if "above/over X", "target" if "around/about/approximately X". null if no price mentioned.
 - gi_required: true only if the user explicitly asked for GI-certified/authentic/GI-tagged items. Otherwise null.
 - artisan_gender_mode (only set when artisan_gender is set): "required" for a firm statement — "made by a woman artisan", "only women artisans", "must be a woman artisan" — this is the DEFAULT for plain/unhedged mentions. "preferred" ONLY when the wording itself signals a soft preference — "I prefer a woman artisan", "preferably a woman artisan", "ideally by a woman". When in doubt, use "required".
-- Conversation history is provided ONLY to resolve what the user's latest message refers back to (e.g. "under 3000" after "show me Madhubani paintings" means craft=Madhubani Painting, max_price=3000). Extract entities ONLY from words the USER actually wrote across their own turns. NEVER pull a value from the assistant's prior replies (product names, artisan names, materials, prices it mentioned) unless the user's own message repeats or confirms it themselves — the assistant's answers are not user-stated facts.
+- Conversation history is provided ONLY to resolve what the user's latest message refers back to (e.g. "under 3000" after "show me Madhubani paintings" means craft=Madhubani Painting, max_price=3000). Extract entities ONLY from words the USER actually wrote across their own turns. NEVER pull a value from the assistant's prior replies (product names, artisan names, materials, prices, or its own descriptive wording) unless the user's own message repeats or confirms it themselves — the assistant's answers are not user-stated facts, and a follow-up with no new craft/product name of its own should leave that field null rather than inventing one from the assistant's prose.
 - Phrasing variants asking about the same entity must produce the SAME intent and the SAME entities. "About X", "Who is X?", "Tell me about X", "Give information about X", and "Who is the artisan X?" are ALL artisan_information with entities.artisan = X. Likewise "What is Kalastree?", "Tell me about Kalastree", "Who founded Kalastree?", and "What does Kalastree do?" are ALL kalastree_information — do not classify a plain rewording as a different intent.
 - kalastree_information is for questions about the KalaStree company/platform itself (what it is, its mission, its founder) — NOT about a GI product, craft, artisan, or marketplace product. "Who is Garima Awasthi" is artisan_information (she may also be the founder — that's resolved later in the pipeline, not by you).
 - "What GI tag number does X have?", "What is X's GI tag number?", "What is the registration number/year for X?" are gi_information intent with entities.craft = X — extract X as the craft/product being asked about exactly as you would for "Is X GI certified?". Do not let the words "tag" or "number" stop you from recognizing X as the craft entity — this phrasing is asking for a specific fact ABOUT a named craft, not a generic question with nothing to extract.
 - A question asking about state coverage IN AGGREGATE across MULTIPLE states, with no single state named — "which states have products", "how many products per state", "list products from every state" — is state_information intent with entities.state = null. This is DIFFERENT from an ordinary question about products from ONE named state ("what products does Madhya Pradesh have", "products from Bihar") — that is still product_discovery with entities.state set to the named state, exactly as for any other state question. Do not reclassify a single-named-state product question as the aggregate case.
-- source_inquiry is for a follow-up asking where a PRIOR claim came from — "where did you get that", "what's your source for X", "how do you know that", "where is that from". Use it only when the user is asking about the origin of something already said in this conversation, not when asking a new factual question.
+- source_inquiry is ONLY for a follow-up asking where a PRIOR claim in THIS conversation came from — "where did you get that", "what's your source for X", "how do you know that". It requires an earlier assistant claim to trace back to; with no conversation history yet, or when nothing has been claimed yet for this photo/product, source_inquiry can never apply. Do NOT confuse this with "where is it from" asked about a product/craft/photo's own geographic origin (a state/region) — that is an ordinary product_information/craft_information/gi_information question asking to establish a NEW fact, not to trace an existing one. "What GI product is this, and where is it from?" (an original question about an uploaded photo, first message or not) is product_information — it is never source_inquiry.
+- "refers_to_uploaded_photo": true if this message is plausibly about a product photo the user has uploaded (a correction, a detail, a follow-up like "its of leather", "no that's not right", "is it available", "what material is this", or an initial "what GI product is this/what is this" that names no other specific subject). Default to true whenever the message has no other clear subject of its own (a bare "is it available?" with nothing else named could only be about an already-shown item). Set it false ONLY when the message is clearly about something else entirely — a different, specifically-named state/craft/product/artisan, a company/platform question, or an aggregate question (e.g. "which state has the most GI products?", "who founded Kalastree?", "show me silk sarees under 2000").
 - The user may write in Hindi, English, Urdu, or another script/language, including a rough phonetic spelling. Regardless of input language or script, output entity string values (state, craft, product_type, material, colour, occasion, gifting_purpose, cultural_preference) in English using the standard canonical English name (e.g. "बिहार" -> "Bihar", "साड़ी" -> "saree") — these are matched against an English-language database. For entities.artisan specifically: ALWAYS attempt a best-effort Latin-script transliteration of the person's name, in ANY script (Devanagari, Urdu/Arabic, etc.) — do not return null just because the spelling is unusual, phonetic, or you are not fully certain of the exact standard spelling. A reasonable phonetic guess (e.g. "असबी सरमा" -> "Asbi Sarma", "دریمہ آوستی" -> "Garima Awasthi") is far more useful than null, since the transliterated name is only ever checked against real, known records downstream — an imperfect guess that matches nothing real simply results in an honest "not found" answer, exactly as if you had returned null, so there is no harm in guessing. Only return null if the message truly names no person at all.
 
 Valid intents: ${VALID_INTENTS.join(', ')}
@@ -52,6 +54,7 @@ Valid intents: ${VALID_INTENTS.join(', ')}
 JSON schema:
 {
   "intents": string[],
+  "refers_to_uploaded_photo": boolean,
   "entities": {
     "state": string|null, "region": string|null, "gi_required": boolean|null,
     "craft": string|null, "product_type": string|null, "artisan": string|null,
@@ -322,16 +325,45 @@ async function transliteratePersonName(question: string): Promise<string | null>
 export async function understandQuery(
   question: string,
   history: HistoryMessage[],
-  previousQuery: StructuredQuery | null
+  previousQuery: StructuredQuery | null,
+  hasImage = false
 ): Promise<StructuredQuery> {
   let intents: Intent[] = ['general_question']
   let entities: ExtractedEntities = EMPTY_ENTITIES
+  // Fails safe to true (process an attached photo) rather than false (silently
+  // ignore it) — a wrongly-skipped photo just misses a nice-to-have answer, while
+  // a wrongly-processed one degrades UNRELATED turns (see StructuredQuery's
+  // refersToUploadedPhoto doc comment for the reproduced bug this guards).
+  // Worse of the two failure modes is silence, so default true on parse failure.
+  let refersToUploadedPhoto = true
+
+  // This call previously had NO WAY to know whether an image was attached
+  // to THIS turn — `hasImage` was never passed in at all, so the model was
+  // reasoning entirely blind to it. Reproduced live, severely: after a
+  // "honey product" turn, uploading an unrelated HORSE FIGURINE photo and
+  // asking the exact default "What GI product is this, and where is it
+  // from?" got refers_to_uploaded_photo: false (the model had no idea a
+  // photo even existed, so it read "this" as continuing the honey topic)
+  // AND fabricated entities.craft: "Sundarban Honey" — a real GI product,
+  // but one NEVER mentioned anywhere in the conversation, invented purely
+  // to complete "this" in a honey-themed context. Telling the model the
+  // literal fact of whether an image is attached fixes the root cause,
+  // not just this one phrasing.
+  const imageContextLine = hasImage
+    ? 'An image WAS attached to this specific message — it will be analyzed separately by a dedicated vision step, ' +
+      'not by you. Given that, "this"/"it" in the message very likely refers to that photo, not to something earlier ' +
+      'in the conversation, unless the message clearly names a different, specific topic. Do NOT guess or invent a ' +
+      'specific craft/product name for entities.craft from conversation history or general knowledge just to explain ' +
+      'what "this" might mean — leave craft null unless the user\'s OWN CURRENT TEXT explicitly names one. The photo ' +
+      'itself, not a guess from you, is what identifies the craft.'
+    : 'No image is attached to this specific message.'
 
   try {
     const raw = await callOpenAI(
       [
         { role: 'system', content: SYSTEM_PROMPT },
         ...(history.length ? [{ role: 'user' as const, content: `Conversation so far:\n${historyToText(history)}` }] : []),
+        { role: 'user', content: imageContextLine },
         { role: 'user', content: question },
       ],
       { jsonMode: true, temperature: 0 }
@@ -342,8 +374,65 @@ export async function understandQuery(
       : []
     intents = parsedIntents.length ? parsedIntents : ['general_question']
     entities = groundInCurrentMessage({ ...EMPTY_ENTITIES, ...(parsed.entities ?? {}) }, question)
+    refersToUploadedPhoto = parsed.refers_to_uploaded_photo !== false
   } catch (err) {
     console.error('Query understanding failed, falling back to general_question:', err)
+  }
+
+  // Deterministic backstop, regardless of what the LLM decided above: the
+  // client (ChatWidget.tsx) only ever auto-fills this EXACT default
+  // question when a photo is attached with no other typed text — it is
+  // structurally impossible for this phrasing to appear with an image
+  // attached and NOT be about that image. Belt-and-suspenders alongside
+  // the imageContextLine fix above, for this one unambiguous case.
+  const DEFAULT_IMAGE_QUESTIONS = new Set([
+    'what gi product is this, and where is it from?',
+    'यह कौन सा जीआई उत्पाद है, और यह कहाँ से है?',
+  ])
+  if (hasImage && DEFAULT_IMAGE_QUESTIONS.has(question.trim().toLowerCase())) {
+    refersToUploadedPhoto = true
+  }
+
+  // Deterministic backstop: despite the explicit prompt rule above,
+  // strengthening the wording alone did not reliably stop this (verified
+  // live) — the extraction copied the ASSISTANT's own prior descriptive
+  // text into entities.craft. Reproduced: the assistant described an
+  // unmatched uploaded photo as showing "decorative metal masks and wall
+  // hangings" (its own prose, not a craft name), and the user's next
+  // message "which metal product is it?" got entities.craft set to that
+  // exact phrase, producing a nonsense GI-registry lookup for a phrase
+  // nobody ever claimed was a craft name. Only clears it when BOTH: (a)
+  // the phrase appears verbatim in a PRIOR ASSISTANT message but not in
+  // the CURRENT user question (a genuine user restatement is always
+  // trusted, never touched), AND (b) it doesn't resolve to any real GI
+  // craft — so continuing to ask about a real craft the assistant just
+  // named is never affected, only a made-up non-craft phrase is.
+  if (entities.craft) {
+    const needle = entities.craft.toLowerCase()
+    const inCurrentQuestion = question.toLowerCase().includes(needle)
+    const inPriorAssistantText = history.some(m => m.role === 'ai' && m.text.toLowerCase().includes(needle))
+    if (!inCurrentQuestion && inPriorAssistantText) {
+      const resolved = await resolveGIProduct({ craft: entities.craft, state: null } as never)
+      if (!resolved) entities.craft = null
+    }
+  }
+
+  // Deterministic backstop, specifically for an image-attached turn: the
+  // imageContextLine prompt instruction above tells the model not to guess
+  // a craft from history/general knowledge when a photo is attached, but
+  // prompt instructions alone are not a guarantee (established repeatedly
+  // in this pipeline). Reproduced live: after a "honey product" turn, an
+  // unrelated horse-figurine photo + "What GI product is this?" got
+  // entities.craft: "Sundarban Honey" — a REAL, valid GI product, so the
+  // existing backstop above (which only clears on non-resolution) could
+  // never catch it; a fabricated craft that happens to be real is
+  // indistinguishable from a genuine one by resolution alone. When an
+  // image is attached, the photo itself is what should identify the craft
+  // (via identifyProductImage downstream) — a text-only craft guess is
+  // only trustworthy here if the user's OWN CURRENT TEXT actually names
+  // it themselves, never inferred from history/general knowledge.
+  if (hasImage && entities.craft && !question.toLowerCase().includes(entities.craft.toLowerCase())) {
+    entities.craft = null
   }
 
   // Normalize THIS turn's craft/state before merging (not after) — the
@@ -449,9 +538,26 @@ export async function understandQuery(
     intents = [...intents, 'product_discovery']
   }
 
+  // Same class of gap as the single-named-state backstop above, for a
+  // named material/craft/product_type: reproduced live — "check for iron
+  // in products" correctly extracted material="iron" but was classified
+  // as plain general_question, which isn't in PRODUCT_INTENTS, so the
+  // deterministic retrieval/eligibility/ranking pipeline never ran at all
+  // (needsProducts in pipeline.ts is keyed purely off intents) despite a
+  // real, specific thing to search for being right there in the entities
+  // — a differently-worded "anything related to iron?" classified
+  // correctly, so this is a genuine LLM classification inconsistency, not
+  // a case where nothing was extracted.
+  if (
+    (merged.material || merged.craft || merged.product_type) &&
+    !intents.some(i => PRODUCT_INTENTS.includes(i))
+  ) {
+    intents = [...intents, 'product_discovery']
+  }
+
   if (isGIDefinitionRequest(question) && !intents.includes('gi_information')) {
     intents = [...intents, 'gi_information']
   }
 
-  return { raw_query: question, intents, entities: merged }
+  return { raw_query: question, intents, entities: merged, refersToUploadedPhoto }
 }

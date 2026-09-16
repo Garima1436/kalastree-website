@@ -69,6 +69,7 @@ describe('generateResponse — male-artisan deterministic short-circuit', () => 
     raw_query: 'made by men',
     intents: ['general_question'],
     entities: { ...EMPTY_ENTITIES, artisan_gender: 'male' },
+    refersToUploadedPhoto: false,
   }
 
   it('answers directly from the women-only-platform evidence without calling the LLM', async () => {

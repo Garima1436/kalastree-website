@@ -131,3 +131,43 @@ export async function retrieveNarrativeEvidence(question: string, intents: Inten
     return []
   }
 }
+
+export interface ImageSearchMatch {
+  product_id: string
+  score: number
+  distance: number
+}
+
+// Real visual similarity search (CLIP embeddings, Chroma Cloud) for an
+// uploaded product photo — a more accurate alternative to pipeline.ts's
+// keyword-based text-description fallback, since it compares the photo's
+// actual visual features against real product photos directly instead of
+// going through a lossy vision-model-writes-a-caption step first (see
+// imageIdentification.ts's objectGuess, which flattened a distinctive
+// blackbuck figurine down to a generic "deer" — this bypasses that entirely
+// by matching the pixels themselves). Same cooldown/timeout pattern as
+// retrieveNarrativeEvidence above, since it's the same backend process and
+// the same free-tier sleep behavior.
+export async function retrieveImageSearchMatches(imageDataUrl: string, k = 5): Promise<ImageSearchMatch[]> {
+  if (Date.now() < backendCooldownUntil) return []
+
+  try {
+    const response = await fetch(`${CHATBOT_BACKEND_URL}/image-search`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image: imageDataUrl, k }),
+      signal: AbortSignal.timeout(15000),
+    })
+    if (!response.ok) {
+      backendCooldownUntil = Date.now() + BACKEND_COOLDOWN_MS
+      return []
+    }
+    backendCooldownUntil = 0
+    const data = await response.json()
+    return Array.isArray(data.matches) ? data.matches : []
+  } catch (err) {
+    console.error('Image search retrieval failed (non-fatal):', err)
+    backendCooldownUntil = Date.now() + BACKEND_COOLDOWN_MS
+    return []
+  }
+}

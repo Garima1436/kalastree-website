@@ -29,6 +29,7 @@ interface Message {
   sources?: string[]
   products?: ChatProduct[]
   debug?: DebugInfo
+  image?: string // base64 data URL of a photo the user attached to this message
 }
 
 // Strips common Markdown syntax before sending text to TTS — otherwise it
@@ -97,6 +98,46 @@ export default function ChatWidget() {
   const audioPlayerRef = useRef<HTMLAudioElement | null>(null)
   const audioContextRef = useRef<AudioContext | null>(null)
 
+  // Lets a user upload a product photo and ask "what GI product is this /
+  // where is it from?" — the image is sent as a base64 data URL alongside
+  // the typed question; /api/chat and the pipeline handle the rest
+  // (vision guess, checked against the real GI registry and marketplace,
+  // see imageIdentification.ts).
+  const [selectedImage, setSelectedImage] = useState<string | null>(null)
+  const [imageError, setImageError] = useState('')
+  const imageInputRef = useRef<HTMLInputElement>(null)
+  // "Sticky" image context: a follow-up like "its of leather" or "no, it's
+  // actually silk" carries no image of its own, but refers back to the last
+  // uploaded photo — without this, that correction only ever reaches
+  // /api/chat as a bare text hint with nothing to correct (reproduced live:
+  // the pipeline fell back to a generic "leather products" list instead of
+  // re-examining the actual photographed item and naming its real GI
+  // craft). Deliberately INVISIBLE in the UI (no chip, no manual "remove"
+  // control) — the user explicitly asked for the resend behavior to keep
+  // working without ever being shown. It clears only when a new photo is
+  // attached (replacing it); the server's own refersToUploadedPhoto check
+  // (queryUnderstanding.ts/pipeline.ts) is what keeps an unrelated later
+  // question from being wrongly treated as being about this photo, since
+  // there's no UI affordance here to do that anymore.
+  const [activeImage, setActiveImage] = useState<string | null>(null)
+
+  const onImageSelected = (file: File | undefined) => {
+    setImageError('')
+    if (!file) return
+    if (!file.type.startsWith('image/')) {
+      setImageError(t('imageTypeError'))
+      return
+    }
+    if (file.size > 6_000_000) {
+      setImageError(t('imageSizeError'))
+      return
+    }
+    const reader = new FileReader()
+    reader.onload = () => setSelectedImage(reader.result as string)
+    reader.onerror = () => setImageError(t('imageReadError'))
+    reader.readAsDataURL(file)
+  }
+
   useEffect(() => {
     if (open && messages.length === 0) {
       setMessages([{ role: 'ai', text: `Namaste! 🌾 ${t('greetingBody')}` }])
@@ -122,15 +163,27 @@ export default function ChatWidget() {
   // behind /api/chat never knows or cares whether the question was typed or
   // spoken.
   const send = async (overrideText?: string, opts?: { viaVoice?: boolean }) => {
-    const q = (overrideText ?? input).trim()
+    // A photo alone (no typed text) is a valid send — falls back to a
+    // default "what is this" question, same as if the user had typed it.
+    const q = (overrideText ?? input).trim() || (selectedImage ? t('imageDefaultQuestion') : '')
     if (!q || loading) return
     if (overrideText === undefined) setInput('')
+    // A freshly attached photo always wins over (and replaces) whatever was
+    // still active from an earlier turn; otherwise keep resending the
+    // active one so a text-only correction/detail still has the photo to
+    // refer to. Only a genuinely NEW upload is shown in the chat bubble —
+    // a resent sticky image would otherwise redundantly reprint the same
+    // photo on every follow-up turn.
+    const newUpload = selectedImage
+    const imageToSend = newUpload ?? activeImage
+    setSelectedImage(null)
+    if (newUpload) setActiveImage(newUpload)
 
     // Snapshot history before adding the new user message (exclude the initial greeting)
     const historySnapshot = messages.filter(m => !(m.role === 'ai' && m.text.startsWith('Namaste!')))
     const aiMessageIndex = messages.length + 1 // user goes at messages.length, AI right after
 
-    setMessages(m => [...m, { role: 'user', text: q }])
+    setMessages(m => [...m, { role: 'user', text: q, image: newUpload ?? undefined }])
     setLoading(true)
     try {
       const res = await fetch('/api/chat', {
@@ -138,6 +191,7 @@ export default function ChatWidget() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           question: q,
+          image: imageToSend,
           history: historySnapshot,
           previousQuery: structuredQueryRef.current,
           previousEvidence: previousEvidenceRef.current,
@@ -291,6 +345,11 @@ export default function ChatWidget() {
           <div style={{ flex: 1, overflowY: 'auto', padding: '14px 14px 8px', display: 'flex', flexDirection: 'column', gap: 10 }}>
             {messages.map((msg, i) => (
               <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: msg.role === 'user' ? 'flex-end' : 'flex-start' }}>
+                {msg.image && (
+                  <div style={{ position: 'relative', width: 120, height: 120, borderRadius: 12, overflow: 'hidden', marginBottom: 5, border: '1px solid #EDD060' }}>
+                    <Image src={msg.image} alt="Uploaded photo" fill sizes="120px" style={{ objectFit: 'cover' }} unoptimized />
+                  </div>
+                )}
                 <div style={{
                   maxWidth: '82%', padding: '9px 13px', borderRadius: msg.role === 'user' ? '14px 14px 2px 14px' : '14px 14px 14px 2px',
                   background: msg.role === 'user' ? '#E8380A' : '#FFE8A8',
@@ -405,7 +464,45 @@ export default function ChatWidget() {
 
           {/* Input */}
           <div style={{ borderTop: '1px solid #EDD060', padding: '10px 12px', background: '#FFFFFF', flexShrink: 0 }}>
+            {selectedImage && (
+              <div style={{ position: 'relative', width: 56, height: 56, borderRadius: 8, overflow: 'hidden', marginBottom: 8, border: '1px solid #EDD060' }}>
+                <Image src={selectedImage} alt="Selected photo" fill sizes="56px" style={{ objectFit: 'cover' }} unoptimized />
+                <button
+                  onClick={() => setSelectedImage(null)}
+                  aria-label={t('removeImageAria')}
+                  style={{
+                    position: 'absolute', top: 2, right: 2, width: 18, height: 18, borderRadius: '50%',
+                    background: 'rgba(27,46,74,0.8)', color: '#fff', border: 'none', cursor: 'pointer',
+                    fontSize: '0.6rem', display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1,
+                  }}>
+                  ✕
+                </button>
+              </div>
+            )}
+            {imageError && (
+              <div style={{ fontSize: '0.68rem', color: '#E8380A', marginBottom: 6 }}>{imageError}</div>
+            )}
             <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>
+              <input
+                ref={imageInputRef}
+                type="file"
+                accept="image/*"
+                onChange={e => { onImageSelected(e.target.files?.[0]); e.target.value = '' }}
+                style={{ display: 'none' }}
+              />
+              <button
+                onClick={() => imageInputRef.current?.click()}
+                disabled={loading}
+                aria-label={t('attachImageAria')}
+                style={{
+                  width: 38, height: 38, borderRadius: '50%', border: 'none', flexShrink: 0,
+                  background: '#FFE8A8', color: '#1B2E4A',
+                  cursor: loading ? 'not-allowed' : 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem',
+                  transition: 'background 0.2s',
+                }}>
+                📷
+              </button>
               <textarea
                 ref={inputRef}
                 value={input}
@@ -438,11 +535,11 @@ export default function ChatWidget() {
                   🎙
                 </button>
               )}
-              <button onClick={() => send()} disabled={loading || !input.trim() || recording || transcribing}
+              <button onClick={() => send()} disabled={loading || (!input.trim() && !selectedImage) || recording || transcribing}
                 style={{
                   width: 38, height: 38, borderRadius: '50%', border: 'none', flexShrink: 0,
-                  background: loading || !input.trim() || recording || transcribing ? '#DDB840' : '#E8380A',
-                  color: '#fff', cursor: loading || !input.trim() ? 'not-allowed' : 'pointer',
+                  background: loading || (!input.trim() && !selectedImage) || recording || transcribing ? '#DDB840' : '#E8380A',
+                  color: '#fff', cursor: loading || (!input.trim() && !selectedImage) ? 'not-allowed' : 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem',
                   transition: 'background 0.2s',
                 }}>
