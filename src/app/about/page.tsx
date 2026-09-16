@@ -154,19 +154,80 @@ export default async function AboutPage() {
       </section>
 
       {/* Memorial */}
-      <section id="tribute" style={{ background: '#1B2E4A', padding: '4rem 5%', borderTop: '1px solid rgba(212,160,0,0.2)', textAlign: 'center' }}>
-        <Reveal style={{ maxWidth: 680, margin: '0 auto' }}>
-          <div style={{ fontSize: '2.5rem', marginBottom: '1rem', animation: 'diya 3s ease-in-out infinite', display: 'inline-block' }}>🪔</div>
-          <p style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#D4A000', marginBottom: '1rem' }}>{t('memorialEyebrow')}</p>
-          <h3 style={{ fontFamily: "'EB Garamond', serif", fontSize: '2rem', fontWeight: 700, color: '#fff', marginBottom: '0.5rem' }}>{t('memorialTitlePart1')} <span style={{ color: '#D4A000' }}>{t('memorialName')}</span></h3>
-          <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.1rem', fontStyle: 'italic', color: 'rgba(255,255,255,0.8)', lineHeight: 1.85, maxWidth: 580, margin: '1.5rem auto' }}>
+      <section id="tribute" style={{ background: '#1B2E4A', padding: '2.25rem 5%', borderTop: '1px solid rgba(212,160,0,0.2)', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+        {/* Gently falling marigold/lotus petals — the flowers traditionally
+            offered in Indian remembrance. Fixed (not random) positions/
+            timings: this is a Server Component, and Math.random() here
+            would render differently on the server vs. during client
+            hydration inside Reveal (a client component), causing a
+            hydration mismatch. Hand-varied values read as naturally
+            scattered without that risk. */}
+        <div aria-hidden="true" style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+          {[
+            { left: '3%', delay: '0s', duration: '9s', emoji: '🌼', size: '1.1rem' },
+            { left: '10%', delay: '4.2s', duration: '10.5s', emoji: '🌸', size: '0.85rem' },
+            { left: '16%', delay: '2.4s', duration: '11s', emoji: '🪷', size: '1rem' },
+            { left: '22%', delay: '6.5s', duration: '8s', emoji: '🌼', size: '0.9rem' },
+            { left: '27%', delay: '5s', duration: '8.5s', emoji: '🌼', size: '0.9rem' },
+            { left: '33%', delay: '1.6s', duration: '10s', emoji: '🪷', size: '1.05rem' },
+            { left: '39%', delay: '1.2s', duration: '10s', emoji: '🌸', size: '1rem' },
+            { left: '45%', delay: '7s', duration: '9s', emoji: '🌼', size: '0.95rem' },
+            { left: '50%', delay: '3.6s', duration: '9.5s', emoji: '🪷', size: '1.1rem' },
+            { left: '56%', delay: '5.8s', duration: '11.5s', emoji: '🌸', size: '0.9rem' },
+            { left: '61%', delay: '0.6s', duration: '11.5s', emoji: '🌼', size: '0.95rem' },
+            { left: '67%', delay: '2.9s', duration: '8.5s', emoji: '🪷', size: '1rem' },
+            { left: '72%', delay: '4.4s', duration: '8s', emoji: '🌸', size: '1.05rem' },
+            { left: '78%', delay: '0.2s', duration: '10.5s', emoji: '🌼', size: '0.9rem' },
+            { left: '83%', delay: '1.8s', duration: '10.5s', emoji: '🪷', size: '0.9rem' },
+            { left: '88%', delay: '6.1s', duration: '9.5s', emoji: '🌸', size: '1rem' },
+            { left: '93%', delay: '3s', duration: '9s', emoji: '🌼', size: '1rem' },
+            { left: '97%', delay: '4.9s', duration: '11s', emoji: '🪷', size: '0.85rem' },
+          ].map((p, i) => (
+            <span
+              key={i}
+              className="tribute-petal"
+              style={{
+                position: 'absolute', top: '-8%', left: p.left, fontSize: p.size,
+                animation: `petalFall ${p.duration} linear infinite`, animationDelay: p.delay,
+              }}
+            >
+              {p.emoji}
+            </span>
+          ))}
+        </div>
+
+        <Reveal style={{ maxWidth: 560, margin: '0 auto', position: 'relative', zIndex: 1 }}>
+          <div style={{ width: 92, height: 92, margin: '0 auto 0.4rem' }}>
+            <video
+              src="/diwali-diya-nobg.webm"
+              autoPlay
+              loop
+              muted
+              playsInline
+              style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+            />
+          </div>
+          <p style={{ fontSize: '0.64rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#D4A000', marginBottom: '0.6rem' }}>{t('memorialEyebrow')}</p>
+          <h3 style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.4rem', fontWeight: 700, color: '#fff', marginBottom: '0.4rem' }}>{t('memorialTitlePart1')} <span style={{ color: '#D4A000' }}>{t('memorialName')}</span></h3>
+          <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1.15rem', fontStyle: 'italic', color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, maxWidth: 520, margin: '0.9rem auto' }}>
             {t('memorialQuote')}
           </p>
-          <p style={{ fontSize: '0.88rem', color: 'rgba(255,255,255,0.5)', lineHeight: 1.75 }}>
+          <p style={{ fontSize: '0.76rem', color: 'rgba(255,255,255,0.5)', lineHeight: 1.6 }}>
             {t('memorialAttribution')}
           </p>
         </Reveal>
-        <style>{`@keyframes diya { 0%,100%{transform:scale(1) rotate(-2deg)} 50%{transform:scale(1.08) rotate(2deg)} }`}</style>
+        <style>{`
+          @keyframes petalFall {
+            0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+            8% { opacity: 0.65; }
+            50% { transform: translateY(220px) translateX(18px) rotate(160deg); }
+            92% { opacity: 0.5; }
+            100% { transform: translateY(440px) translateX(-12px) rotate(340deg); opacity: 0; }
+          }
+          @media (max-width: 480px) {
+            .tribute-petal { font-size: 0.8rem !important; }
+          }
+        `}</style>
       </section>
 
       {/* Contact */}
