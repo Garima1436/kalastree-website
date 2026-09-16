@@ -37,6 +37,14 @@ export async function retrieveCandidateProducts(entities: ExtractedEntities): Pr
     // reason over) applies the precise match afterwards.
     const keyword = sanitizeForOrFilter(entities.craft.split(/\s+/)[0])
     query = query.or(`name.ilike.%${keyword}%,gi_tag.ilike.%${keyword}%,category.ilike.%${keyword}%`)
+  } else if (entities.material) {
+    // Same recall-favoring keyword approach as craft above — a material
+    // mention ("iron items?", "any wooden stuff") previously wasn't used
+    // as a filter AT ALL here (see constraints.ts's doc comment on this),
+    // so whether the right products surfaced was pure luck of ranking.ts's
+    // soft semantic score, not a real, repeatable match.
+    const keyword = sanitizeForOrFilter(entities.material.split(/\s+/)[0])
+    query = query.or(`name.ilike.%${keyword}%,category.ilike.%${keyword}%`)
   } else if (entities.product_type) {
     query = query.textSearch('search_vector', entities.product_type, { type: 'websearch', config: 'english' })
   }
@@ -55,8 +63,8 @@ export async function retrieveCandidateProducts(entities: ExtractedEntities): Pr
   // mention the craft but whose artisan's craft field does (e.g. a plain
   // "silk stole" made by a Madhubani-craft artisan) would be missed by the
   // query above. Catch those with a second, artisan-scoped pass.
-  if (entities.craft) {
-    const keyword = entities.craft.split(/\s+/)[0]
+  if (entities.craft || entities.material) {
+    const keyword = (entities.craft ?? entities.material)!.split(/\s+/)[0]
     const { data: byArtisan, error: artisanQueryError } = await supabaseAdmin
       .from('products')
       .select('*, artisan:artisans!inner(*)')

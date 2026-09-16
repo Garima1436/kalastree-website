@@ -96,7 +96,7 @@ export interface StructuredQuery {
 }
 
 export type ConstraintField =
-  | 'state' | 'gi_verified' | 'craft' | 'artisan_gender' | 'min_price'
+  | 'state' | 'gi_verified' | 'craft' | 'material' | 'artisan_gender' | 'min_price'
   | 'max_price' | 'target_price' | 'availability'
 
 export interface Constraint {

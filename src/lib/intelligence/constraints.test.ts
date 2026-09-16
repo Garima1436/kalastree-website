@@ -10,7 +10,7 @@ function query(entities: Partial<ExtractedEntities>): StructuredQuery {
     cultural_preference: null, material: null, colour: null, size: null, occasion: null,
     traditional: null, handmade: null,
   }
-  return { raw_query: 'test', intents: ['product_discovery'], entities: { ...base, ...entities } }
+  return { raw_query: 'test', intents: ['product_discovery'], entities: { ...base, ...entities }, refersToUploadedPhoto: false }
 }
 
 describe('buildConstraints', () => {

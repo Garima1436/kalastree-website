@@ -20,6 +20,17 @@ export function buildConstraints(query: StructuredQuery): Constraint[] {
   if (e.craft) {
     constraints.push({ field: 'craft', operator: '=', value: e.craft, kind: 'hard', label: e.craft })
   }
+  // Reproduced live: "iron items?", "any wooden stuff", "silk related
+  // items" etc. correctly extract entities.material, but until now nothing
+  // downstream (retrieval.ts, eligibility.ts) ever read it — it was
+  // extracted and then silently discarded. Whether a material-only
+  // question found the right products was pure luck of ranking.ts's soft
+  // semantic-relevance scoring, not a real filter; the same phrasing could
+  // work on one run and return nothing on the next. Handled identically to
+  // craft downstream (see eligibility.ts's satisfiesConstraint).
+  if (e.material) {
+    constraints.push({ field: 'material', operator: '=', value: e.material, kind: 'hard', label: e.material })
+  }
 
   // Every artisan on KalaStree is a woman ("Heritage by Her") — there is no
   // artisan_gender column to filter on, so a request for a FEMALE artisan
