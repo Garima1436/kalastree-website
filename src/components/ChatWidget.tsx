@@ -62,6 +62,11 @@ export default function ChatWidget() {
   ]
 
   const [open, setOpen] = useState(false)
+  // Expands the panel to fill most of the viewport instead of the small
+  // fixed-size default. Persists across closing/reopening the widget within
+  // the same page visit (not written to storage, so a full page reload
+  // always starts back at the compact size).
+  const [maximized, setMaximized] = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
@@ -318,9 +323,11 @@ export default function ChatWidget() {
     <>
       {/* Chat panel */}
       {open && (
-        <div className="chat-panel" style={{
-          position: 'fixed', bottom: 88, right: 24, zIndex: 1000,
-          width: 360, height: 520,
+        <div className={maximized ? 'chat-panel chat-panel-maximized' : 'chat-panel'} style={{
+          position: 'fixed', zIndex: 1000,
+          ...(maximized
+            ? { top: 24, bottom: 24, left: '50%', transform: 'translateX(-50%)', width: 'min(900px, 94vw)' }
+            : { bottom: 88, right: 24, width: 360, height: 520 }),
           background: '#FFFFFF', border: '1.5px solid #DDB840',
           borderRadius: 16, boxShadow: '0 16px 60px rgba(26,10,0,0.18)',
           display: 'flex', flexDirection: 'column', overflow: 'hidden',
@@ -335,7 +342,14 @@ export default function ChatWidget() {
               <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#fff', fontFamily: "'Inter', sans-serif" }}>KalaSakhi</div>
               <div style={{ fontSize: '0.68rem', color: '#4CAF50', fontWeight: 700, letterSpacing: '0.05em' }}>● {t('giResearchAssistant')}</div>
             </div>
+            <button onClick={() => setMaximized(v => !v)}
+              aria-label={maximized ? t('restoreChatAria') : t('maximizeChatAria')}
+              className="chat-maximize-btn"
+              style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: 28, height: 28, borderRadius: '50%', cursor: 'pointer', fontSize: '0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              {maximized ? '🗗' : '⛶'}
+            </button>
             <button onClick={() => setOpen(false)}
+              aria-label={t('closeChatAria')}
               style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: 28, height: 28, borderRadius: '50%', cursor: 'pointer', fontSize: '0.9rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               ✕
             </button>
@@ -607,6 +621,12 @@ export default function ChatWidget() {
         .chat-fab-attention:hover::after { animation: none; }
         @media(max-width:480px){
           .chat-panel { width:92vw !important; right:4vw !important; bottom:76px !important; height:70vh !important; }
+          /* Same specificity as .chat-panel above (one class each) — wins by
+             source order since a maximized panel carries both classes.
+             Fills nearly the whole screen instead of the compact mobile
+             size, unsetting the compact rule's right/bottom anchoring so
+             the maximized inline top/bottom/left/transform styles apply. */
+          .chat-panel-maximized { width:96vw !important; height:92vh !important; right:auto !important; bottom:auto !important; }
           .chat-fab-wrap { bottom:12px !important; right:12px !important; }
           .chat-fab { width:48px !important; height:48px !important; }
         }
