@@ -2,6 +2,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { useState } from 'react'
+import { trackEvent, gaItem } from '@/lib/analytics'
 import type { Product } from '@/lib/types'
 import { CATEGORY_META } from '@/lib/types'
 import { useTranslation } from '@/lib/i18n/useTranslation'
@@ -23,6 +24,7 @@ export default function ProductCard({ product }: { product: Product }) {
     else cart.push({ id: product.id, name: product.name, price: product.price, image: product.images?.[0] || '', slug: product.slug, qty: 1 })
     localStorage.setItem('kalastree_cart', JSON.stringify(cart))
     window.dispatchEvent(new Event('cart_updated'))
+    trackEvent('add_to_cart', { currency: 'INR', value: product.price, items: [gaItem(product)] })
     setAdded(true)
     setTimeout(() => setAdded(false), 1600)
   }

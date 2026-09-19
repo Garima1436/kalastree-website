@@ -1,5 +1,6 @@
 'use client'
 import { useState, useRef, useEffect } from 'react'
+import { trackEvent } from '@/lib/analytics'
 import Link from 'next/link'
 import Image from 'next/image'
 import ReactMarkdown from 'react-markdown'
@@ -189,6 +190,7 @@ export default function ChatWidget() {
     const aiMessageIndex = messages.length + 1 // user goes at messages.length, AI right after
 
     setMessages(m => [...m, { role: 'user', text: q, image: newUpload ?? undefined }])
+    trackEvent('chatbot_message', { has_image: !!imageToSend, via_voice: !!opts?.viaVoice })
     setLoading(true)
     try {
       const res = await fetch('/api/chat', {

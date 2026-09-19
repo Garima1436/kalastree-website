@@ -1,12 +1,16 @@
 'use client'
 import { SOCIAL_LINKS } from '@/lib/socialLinks'
 import LanguageSwitcher from './LanguageSwitcher'
+import LiveVisitors from './LiveVisitors'
 
 export default function SocialBar() {
   return (
     <div style={{ background: '#FDFBF6', borderBottom: '1px solid #EDD060' }}>
       <div style={{ maxWidth: 1400, margin: '0 auto', padding: '3px 4%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-        <LanguageSwitcher tiny />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+          <LanguageSwitcher tiny />
+          <LiveVisitors />
+        </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
         <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#A07840', marginRight: 2 }}>
           Follow Us

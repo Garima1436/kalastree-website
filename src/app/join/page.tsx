@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { trackEvent } from '@/lib/analytics'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import { useTranslation } from '@/lib/i18n/useTranslation'
@@ -38,6 +39,7 @@ export default function JoinPage() {
     }).then(r => { if (!r.ok) console.error('Email send failed:', r.status) })
       .catch(err => console.error('Email send error:', err))
 
+    trackEvent('artisan_application')
     setStatus('success')
   }
 

@@ -1,5 +1,6 @@
 'use client'
 import { useState, Suspense } from 'react'
+import { trackEvent } from '@/lib/analytics'
 import { createClient } from '@/lib/supabase-browser'
 import { friendlyAuthError, isUnconfirmedEmailError } from '@/lib/auth-errors'
 import Link from 'next/link'
@@ -65,6 +66,7 @@ function LoginForm() {
       localStorage.setItem('kalastree_cart_owner', userId)
       window.dispatchEvent(new Event('cart_updated'))
     }
+    trackEvent('login', { method: 'email' })
     window.location.href = redirect
   }
 

@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { trackEvent } from '@/lib/analytics'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { createClient } from '@/lib/supabase-browser'
@@ -71,6 +72,8 @@ export default function NavSearch({ onClose }: { onClose: () => void }) {
   }, [query])
 
   const go = useCallback((href: string) => {
+    const term = href.startsWith('/shop?q=') ? decodeURIComponent(href.slice('/shop?q='.length)) : ''
+    if (term) trackEvent('search', { search_term: term })
     router.push(href)
     onClose()
   }, [router, onClose])

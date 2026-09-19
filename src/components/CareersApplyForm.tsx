@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { useTranslation } from '@/lib/i18n/useTranslation'
+import { trackEvent } from '@/lib/analytics'
 
 const inp = { width: '100%', background: 'rgba(253,246,227,0.8)', border: '1.5px solid #DDB840', borderRadius: 6, padding: '12px 16px', fontFamily: "'Inter', sans-serif", fontSize: '0.95rem', color: '#1A1A1A', outline: 'none' } as const
 const lbl = { display: 'block', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B4820', marginBottom: 8 } as const
@@ -53,6 +54,7 @@ export default function CareersApplyForm({ job }: { job?: { id: string; title: s
       const data = await res.json().catch(() => ({}))
       if (res.ok && data.ok) {
         setConfirmed(!!data.confirmed)
+        trackEvent('career_application', { job_id: job?.id ?? 'general' })
         setStatus('success')
         return
       }

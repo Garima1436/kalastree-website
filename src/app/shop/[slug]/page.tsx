@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
+import { trackEvent, gaItem } from '@/lib/analytics'
 import { useParams, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import type { Product } from '@/lib/types'
@@ -147,9 +148,15 @@ export default function ProductPage() {
     else cart.push({ id: product.id, name: product.name, price: product.price, image: coverImg, slug: product.slug, qty })
     localStorage.setItem('kalastree_cart', JSON.stringify(cart))
     window.dispatchEvent(new Event('cart_updated'))
+    trackEvent('add_to_cart', { currency: 'INR', value: product.price * qty, items: [gaItem(product, qty)] })
     setAdded(true)
     setTimeout(() => setAdded(false), 2000)
   }
+
+  // GA's product-view event, once per product.
+  useEffect(() => {
+    if (product) trackEvent('view_item', { currency: 'INR', value: product.price, items: [gaItem(product)] })
+  }, [product?.id]) // eslint-disable-line react-hooks/exhaustive-deps
 
   if (loading) return <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6B4820', fontSize: '1.1rem' }}>{tc('loading')}</div>
   if (!product) return (

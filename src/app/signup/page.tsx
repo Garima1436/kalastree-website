@@ -1,5 +1,6 @@
 'use client'
 import { useState, Suspense } from 'react'
+import { trackEvent } from '@/lib/analytics'
 import { createClient } from '@/lib/supabase-browser'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -31,6 +32,7 @@ function SignupForm() {
       setError(error.message)
       setLoading(false)
     } else {
+      trackEvent('sign_up', { method: 'email' })
       window.location.href = redirect
     }
   }

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { INDIAN_STATES } from '@/lib/indian-states'
 import { useTranslation } from '@/lib/i18n/useTranslation'
+import { trackEvent, gaItem } from '@/lib/analytics'
 
 interface CartItem { id: string; name: string; price: number; image: string; slug: string; qty: number }
 
@@ -26,6 +27,13 @@ export default function CheckoutPage() {
   useEffect(() => {
     const stored = JSON.parse(localStorage.getItem('kalastree_cart') || '[]')
     setCart(stored)
+    if (stored.length > 0) {
+      trackEvent('begin_checkout', {
+        currency: 'INR',
+        value: stored.reduce((n: number, i: CartItem) => n + i.price * i.qty, 0),
+        items: stored.map((i: CartItem) => gaItem(i, i.qty)),
+      })
+    }
 
     const supabase = createClient()
     supabase.auth.getSession().then(async ({ data: { session } }) => {
