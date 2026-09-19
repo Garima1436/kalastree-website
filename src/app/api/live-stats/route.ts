@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getGa } from '@/lib/ga'
+import { getGa, gaConfigProblem } from '@/lib/ga'
 
 // Live numbers for the top-bar pill, read from Google Analytics' Data API.
 // Needs two server-only env vars: GA_PROPERTY_ID (the numeric property id, not G-XXXX)
@@ -11,7 +11,7 @@ let cached: { at: number; body: { online: number; today: number } } | null = nul
 
 export async function GET() {
   const ga = getGa()
-  if (!ga) return NextResponse.json({ enabled: false })
+  if (!ga) return NextResponse.json({ enabled: false, reason: gaConfigProblem() })
 
   // One Google call per minute no matter how many visitors are on the site.
   if (cached && Date.now() - cached.at < CACHE_MS) return NextResponse.json({ enabled: true, ...cached.body })
