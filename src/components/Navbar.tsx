@@ -20,6 +20,7 @@ export default function Navbar() {
   const ABOUT_LINKS = [
     { href: '/about', label: tCommon('aboutUs') },
     { href: '/about/news', label: tCommon('newsAndEvents') },
+    { href: '/careers', label: tCommon('careers') },
   ]
 
   const SHOP_CATEGORIES: { key: Category; href: string; label: string; icon: string }[] = [

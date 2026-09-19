@@ -9,6 +9,7 @@ import artisansPage from './dictionaries/artisansPage'
 import artisanDetail from './dictionaries/artisanDetail'
 import about from './dictionaries/about'
 import join from './dictionaries/join'
+import careers from './dictionaries/careers'
 import chatbot from './dictionaries/chatbot'
 import home from './dictionaries/home'
 import adminArtisans from './dictionaries/adminArtisans'
@@ -33,6 +34,7 @@ export const registry = {
   artisanDetail,
   about,
   join,
+  careers,
   chatbot,
   home,
   adminArtisans,

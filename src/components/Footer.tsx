@@ -23,6 +23,7 @@ export default function Footer() {
     { href: '/about#our-story', label: tFooter('ourStory') },
     { href: '/about/news', label: tFooter('newsAndEvents') },
     { href: '/join', label: tFooter('sellOnKalastree') },
+    { href: '/careers', label: tFooter('careers') },
     { href: '/about#contact', label: tCommon('contact') },
   ]
 
@@ -116,7 +117,7 @@ export default function Footer() {
       <div style={{ height: 6, background: 'linear-gradient(90deg, #E8380A, #D4A000, #1A7A32, #C21859, #E8380A)' }} />
       <style>{`
         .footer-link { transition: color 0.2s; }
-        .footer-link:hover { color: #1B2E4A !important; }
+        .footer-link:hover { color: #E8380A !important; }
         .footer-social-icon { transition: transform 0.15s; }
         .footer-social-icon:hover { transform: scale(1.12); }
         @media(max-width:600px){
